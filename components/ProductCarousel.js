@@ -23,7 +23,14 @@ function getSpan(idx) {
 }
 
 function ProductTile({ product, span }) {
-  const images = (product.images?.length ? product.images : [product.image]).filter(Boolean);
+  // Products come from the Mongoose schema, which stores images/price
+  // inside `variants[]`, not on the product itself. Pick a variant to
+  // display — defaulting to the first one — and fall back to basePrice
+  // if for some reason there's no variant at all.
+  const variant = product.variants?.[0] || {};
+  const images = (variant.images?.length ? variant.images : ['/placeholder.png']).filter(Boolean);
+  const price = variant.price ?? product.basePrice;
+
   const [i, setI] = useState(0);
   const hovering = useRef(false);
 
@@ -71,7 +78,7 @@ function ProductTile({ product, span }) {
 
       <div className="absolute left-3 right-3 bottom-3 text-white opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0 transition-all duration-300">
         <p className="text-[11px] sm:text-xs tracking-wide truncate">{product.name}</p>
-        <p className="text-xs sm:text-sm font-semibold mt-0.5">{formatINR(product.price)}</p>
+        <p className="text-xs sm:text-sm font-semibold mt-0.5">{formatINR(price)}</p>
       </div>
     </Link>
   );
