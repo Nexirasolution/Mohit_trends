@@ -1,0 +1,184 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Playfair Display', serif;
+  --font-body: 'Poppins', sans-serif;
+
+  /* Mohith Trends — ink, gold, champagne */
+  --mt-ink: #14110D;
+  --mt-ink-soft: #3A342A;
+  --mt-gold: #A8842E;
+  --mt-gold-deep: #6B5B2C;
+  --mt-gold-light: #D9C48F;
+  --mt-champagne: #F6F1E7;
+  --mt-white: #FFFFFF;
+  --mt-line: #E7DEC8;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--mt-champagne);
+  color: var(--mt-ink);
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Scrollbar — gold thumb on champagne track */
+::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--mt-champagne);
+}
+::-webkit-scrollbar-thumb {
+  background: #A8842E66;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--mt-gold);
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Primary button — ink field, gold hairline, no shadow theatrics */
+.btn-primary {
+  background: var(--mt-ink);
+  color: var(--mt-champagne);
+  font-weight: 600;
+  border-radius: 2px;
+  padding: 0.75rem 1.75rem;
+  border: 1px solid var(--mt-gold);
+  font-family: var(--font-body);
+  letter-spacing: 0.02em;
+  transition: background 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+}
+.btn-primary:hover {
+  background: var(--mt-gold);
+  color: var(--mt-ink);
+}
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Outline button — gold hairline, flips to ink on hover */
+.btn-outline {
+  border: 1px solid var(--mt-ink);
+  color: var(--mt-ink);
+  font-weight: 600;
+  border-radius: 2px;
+  padding: 0.7rem 1.65rem;
+  background: transparent;
+  font-family: var(--font-body);
+  letter-spacing: 0.02em;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+}
+.btn-outline:hover {
+  background: var(--mt-ink);
+  border-color: var(--mt-ink);
+  color: var(--mt-champagne);
+}
+
+/* Gold accent button — for secondary CTAs */
+.btn-gold {
+  background: var(--mt-gold);
+  color: var(--mt-ink);
+  font-weight: 700;
+  border-radius: 2px;
+  padding: 0.75rem 1.75rem;
+  border: 1px solid var(--mt-ink);
+  font-family: var(--font-body);
+  letter-spacing: 0.02em;
+  transition: background 0.2s ease;
+  cursor: pointer;
+}
+.btn-gold:hover {
+  background: var(--mt-gold-deep);
+  color: var(--mt-champagne);
+}
+
+/* Eyebrow label — tracked small caps, echoes the tagline under the wordmark */
+.eyebrow {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--mt-gold-deep);
+}
+
+/* Section title — restrained, no icon clutter */
+.section-title {
+  font-family: var(--font-display);
+  color: var(--mt-ink);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* Signature arc divider — a thin open gold ring, echoing the logo's circle.
+   Usage: <div class="arc-divider"><span>Section Name</span></div> */
+.arc-divider {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto 2rem;
+  width: 100%;
+  max-width: 22rem;
+}
+.arc-divider::before,
+.arc-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--mt-line));
+}
+.arc-divider::after {
+  background: linear-gradient(90deg, var(--mt-line), transparent);
+}
+.arc-divider span {
+  padding: 0 1rem;
+}
+
+/* Thin gold ring for avatars/category circles — replaces solid border */
+.ring-thin {
+  border: 1px solid var(--mt-line);
+  transition: border-color 0.2s ease;
+}
+.ring-thin:hover,
+.group:hover .ring-thin {
+  border-color: var(--mt-gold);
+}
+
+/* Card — flat, hairline border, no drop shadow */
+.card-soft {
+  background: var(--mt-white);
+  border-radius: 4px;
+  border: 1px solid var(--mt-line);
+  box-shadow: none;
+}
+.card-soft:hover {
+  border-color: var(--mt-gold);
+}
+
+/* Legacy gold divider, kept for compatibility */
+.gold-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--mt-gold), transparent);
+  margin: 0.75rem 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
