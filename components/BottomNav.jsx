@@ -24,43 +24,61 @@ export default function BottomNav() {
     href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-black/10 pb-[env(safe-area-inset-bottom)]">
-      <div className="flex items-stretch justify-between">
+    <nav
+      className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white pb-[env(safe-area-inset-bottom)]"
+      style={{
+        borderTop: '1.5px solid #C9A84C',
+        boxShadow: '0 -2px 12px rgba(139,26,26,0.08)',
+      }}
+    >
+      <div className="flex items-stretch justify-between px-1">
         {items.map(({ href, label, icon: Icon, badge }) => {
           const active = isActive(href);
           return (
             <Link
               key={href}
               href={href}
-              className="flex-1 flex flex-col items-center justify-center gap-1.5 py-3"
+              className="flex-1 flex flex-col items-center justify-center gap-0.5 py-2 pt-2.5 relative"
             >
+              {/* Crimson top indicator bar */}
+              {active && (
+                <span
+                  className="absolute top-0 left-[20%] right-[20%] h-[2px] rounded-b"
+                  style={{ background: '#8B1A1A' }}
+                />
+              )}
+
               <span className="relative">
                 <Icon
-                  size={20}
-                  strokeWidth={active ? 1.75 : 1.4}
-                  className={active ? 'text-black' : 'text-black/30'}
-                  fill={active && label === 'Wishlist' ? '#0A0A0A' : 'none'}
+                  size={21}
+                  strokeWidth={active ? 2.4 : 1.8}
+                  style={{ color: active ? '#8B1A1A' : '#C4B8A8' }}
+                  fill={active && label === 'Wishlist' ? '#8B1A1A' : 'none'}
                 />
                 {badge > 0 && (
-                  <span className="absolute -top-1.5 -right-2 bg-black text-white text-[8px] leading-none rounded-full min-w-[14px] h-[14px] flex items-center justify-center px-[3px]">
+                  <span
+                    className="absolute -top-1.5 -right-2 text-white text-[8px] font-bold leading-none rounded-full min-w-[13px] h-[13px] flex items-center justify-center px-[3px]"
+                    style={{ background: '#8B1A1A', border: '1.5px solid #fff' }}
+                  >
                     {badge > 9 ? '9+' : badge}
                   </span>
                 )}
               </span>
 
               <span
-                className={`text-[9px] tracking-[0.08em] ${
-                  active ? 'text-black' : 'text-black/30'
-                }`}
+                className="text-[9px] font-semibold tracking-wide"
+                style={{ color: active ? '#8B1A1A' : '#C4B8A8' }}
               >
                 {label}
               </span>
 
-              {/* Gold underline dash when active */}
-              <span
-                className="h-[2px] w-4 mt-0.5 transition-colors"
-                style={{ background: active ? '#C6A15B' : 'transparent' }}
-              />
+              {/* Gold dot at bottom when active */}
+              {active && (
+                <span
+                  className="absolute bottom-1 w-1 h-1 rounded-full"
+                  style={{ background: '#C9A84C' }}
+                />
+              )}
             </Link>
           );
         })}

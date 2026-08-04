@@ -112,93 +112,72 @@ export default function AdminCombosPage() {
     load();
   }
 
-  const inputClass =
-    'w-full border border-black/15 px-3 py-2.5 text-sm text-black placeholder:text-black/35 outline-none focus:border-black transition-colors bg-white';
-
   return (
     <div>
-      <div className="flex items-center justify-between mb-8 pb-5 border-b border-black/10">
-        <h1 className="font-serif text-2xl text-black">Combo Offers</h1>
-        <button
-          onClick={openCreateForm}
-          className="flex items-center gap-2 text-xs tracking-[0.15em] uppercase bg-black text-white px-5 py-3 hover:bg-black/85 transition-colors"
-        >
-          <Plus size={14} strokeWidth={1.5} /> Add Combo
+      <div className="flex items-center justify-between mb-5">
+        <h1 className="font-display text-2xl font-bold text-brand-magenta">Combo Offers</h1>
+        <button onClick={openCreateForm} className="btn-primary flex items-center gap-1 text-sm">
+          <Plus size={16} /> Add Combo
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={submit} className="border border-black/10 p-6 mb-8 space-y-4">
-          <div className="flex justify-between items-center pb-4 border-b border-black/10">
-            <h2 className="text-[11px] tracking-[0.2em] uppercase text-black/50">
-              {editingId ? 'Edit Combo' : 'New Combo'}
-            </h2>
-            <button type="button" onClick={closeForm} className="text-black/40 hover:text-black transition-colors">
-              <X size={16} strokeWidth={1.5} />
-            </button>
+        <form onSubmit={submit} className="card-soft p-5 mb-6 space-y-3">
+          <div className="flex justify-between">
+            <h2 className="font-semibold">{editingId ? 'Edit Combo' : 'New Combo'}</h2>
+            <button type="button" onClick={closeForm}><X size={18} /></button>
           </div>
 
           {/* Image upload */}
           <div
             onClick={() => !uploading && fileRef.current?.click()}
-            className="w-full h-40 border border-dashed border-black/25 flex flex-col items-center justify-center cursor-pointer hover:border-black transition-colors overflow-hidden relative bg-[#FAF9F6]"
+            className="w-full h-36 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-brand-magenta transition-colors overflow-hidden relative"
           >
             {preview
               ? <img src={preview} alt="preview" className="w-full h-full object-cover" />
-              : <div className="flex flex-col items-center gap-2 text-black/35 text-xs tracking-wide"><Upload size={20} strokeWidth={1.25} /><span>Click to choose image</span></div>
+              : <div className="flex flex-col items-center gap-1 text-brand-ink/40 text-sm"><Upload size={24} /><span>Click to choose image</span></div>
             }
             {uploading && (
-              <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
-                <Loader2 size={20} strokeWidth={1.5} className="animate-spin text-black" />
+              <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+                <Loader2 size={24} className="animate-spin text-brand-magenta" />
               </div>
             )}
           </div>
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
 
-          <input required placeholder="Combo name (e.g. 2 Kurti Combo)" className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          <textarea placeholder="Description" className={inputClass} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <input required placeholder="Combo name (e.g. 2 Kurti Combo)" className="w-full border rounded-lg px-3 py-2 text-sm" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <textarea placeholder="Description" className="w-full border rounded-lg px-3 py-2 text-sm" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
           <div className="grid grid-cols-2 gap-3">
-            <input required type="number" placeholder="Combo price ₹" className={inputClass} value={form.comboPrice} onChange={(e) => setForm({ ...form, comboPrice: e.target.value })} />
-            <input type="number" placeholder="Original price ₹" className={inputClass} value={form.originalPrice} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} />
+            <input required type="number" placeholder="Combo price ₹" className="border rounded-lg px-3 py-2 text-sm" value={form.comboPrice} onChange={(e) => setForm({ ...form, comboPrice: e.target.value })} />
+            <input type="number" placeholder="Original price ₹" className="border rounded-lg px-3 py-2 text-sm" value={form.originalPrice} onChange={(e) => setForm({ ...form, originalPrice: e.target.value })} />
           </div>
-
-          <p className="text-[11px] tracking-[0.15em] uppercase text-black/40">Select products in this combo</p>
-          <div className="max-h-40 overflow-y-auto border border-black/15 p-3 space-y-2">
+          <p className="text-sm font-medium">Select products in this combo:</p>
+          <div className="max-h-40 overflow-y-auto border rounded-lg p-2 space-y-1">
             {products.map((p) => (
-              <label key={p._id} className="flex items-center gap-2.5 text-sm text-black/70">
-                <input
-                  type="checkbox"
-                  checked={form.productIds.includes(p._id)}
-                  onChange={() => toggleProduct(p._id)}
-                  style={{ accentColor: '#0A0A0A' }}
-                />
-                {p.name}
+              <label key={p._id} className="flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={form.productIds.includes(p._id)} onChange={() => toggleProduct(p._id)} /> {p.name}
               </label>
             ))}
           </div>
-
-          <button
-            className="text-xs tracking-[0.15em] uppercase bg-black text-white px-6 py-3 hover:bg-black/85 transition-colors disabled:opacity-40"
-            disabled={uploading}
-          >
+          <button className="btn-primary text-sm" disabled={uploading}>
             {uploading ? 'Uploading…' : editingId ? 'Save Changes' : 'Create'}
           </button>
         </form>
       )}
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {combos.map((c) => (
-          <div key={c._id} className="border border-black/10 overflow-hidden">
-            <div className="h-32 bg-[#FAF9F6]">{c.image && <img src={c.image} alt={c.name} className="w-full h-full object-cover" />}</div>
-            <div className="p-4">
-              <p className="text-sm text-black">{c.name}</p>
-              <p className="text-sm text-black/70 mt-0.5">₹{c.comboPrice}</p>
-              <div className="flex items-center gap-3 mt-3">
-                <button onClick={() => openEditForm(c)} className="text-black/40 hover:text-black transition-colors" title="Edit">
-                  <Pencil size={15} strokeWidth={1.5} />
+          <div key={c._id} className="card-soft overflow-hidden">
+            <div className="h-32 bg-brand-cream">{c.image && <img src={c.image} alt={c.name} className="w-full h-full object-cover" />}</div>
+            <div className="p-3">
+              <p className="font-medium text-sm">{c.name}</p>
+              <p className="text-brand-magenta font-semibold text-sm">₹{c.comboPrice}</p>
+              <div className="flex items-center gap-3 mt-2">
+                <button onClick={() => openEditForm(c)} className="text-brand-ink/60 hover:text-brand-magenta" title="Edit">
+                  <Pencil size={16} />
                 </button>
-                <button onClick={() => remove(c._id)} className="text-black/40 hover:text-black transition-colors" title="Delete">
-                  <Trash2 size={15} strokeWidth={1.5} />
+                <button onClick={() => remove(c._id)} className="text-brand-magenta" title="Delete">
+                  <Trash2 size={16} />
                 </button>
               </div>
             </div>

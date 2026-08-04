@@ -2,19 +2,60 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Play, ShoppingBag } from 'lucide-react';
+import { Play, Instagram, ShoppingBag } from 'lucide-react';
 
 export default function ReelsSection({ reels }) {
   if (!reels?.length) return null;
 
   return (
-    <section className="py-10">
-      {/* Reels scroll row — full bleed, no heading */}
-      <div className="flex gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar px-1.5 sm:px-2">
+    <section className="max-w-7xl mx-auto px-4 py-10">
+      {/* Section heading */}
+      <div className="text-center mb-6">
+        <p
+          className="text-xs font-bold uppercase tracking-widest mb-1"
+          style={{ color: '#C9A84C', fontFamily: 'sans-serif' }}
+        >
+          Watch &amp; Shop
+        </p>
+        <h2
+          className="text-2xl sm:text-3xl font-bold mb-2"
+          style={{ color: '#8B0000', fontFamily: 'Georgia, serif', letterSpacing: '0.5px' }}
+        >
+          Shop by Reels
+        </h2>
+
+        {/* Gold ornament divider */}
+        <div className="flex items-center justify-center gap-2 mb-3">
+          <div style={{ height: '1px', width: '50px', background: '#C9A84C' }} />
+          <span style={{ color: '#C9A84C', fontSize: '14px' }}>✦</span>
+          <div style={{ height: '1px', width: '50px', background: '#C9A84C' }} />
+        </div>
+
+        <a
+          href="https://instagram.com/ssrkcollections"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex items-center gap-1.5 text-sm font-semibold transition-colors"
+          style={{ color: '#8B0000', fontFamily: 'sans-serif' }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = '#C9A84C')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = '#8B0000')}
+        >
+          <Instagram size={15} /> Follow us on Instagram
+        </a>
+      </div>
+
+      {/* Reels scroll row */}
+      <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
         {reels.map((reel) => (
           <div
             key={reel._id}
-            className="relative min-w-[130px] sm:min-w-[170px] aspect-[9/16] shrink-0 group overflow-hidden bg-black"
+            className="relative min-w-[145px] sm:min-w-[175px] aspect-[9/16] shrink-0 group"
+            style={{
+              borderRadius: '14px',
+              overflow: 'hidden',
+              border: '2px solid #C9A84C',
+              boxShadow: '0 2px 10px rgba(139,0,0,0.15)',
+            }}
           >
             <Image
               src={reel.thumbnail || '/placeholder.png'}
@@ -23,8 +64,8 @@ export default function ReelsSection({ reels }) {
               className="object-cover group-hover:scale-105 transition-transform duration-500"
             />
 
-            {/* Quiet black gradient — legibility only, no color tint */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
+            {/* Gradient overlay */}
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(80,0,0,0.75) 0%, rgba(0,0,0,0.1) 50%, rgba(139,0,0,0.2) 100%)' }} />
 
             {/* Play button */}
             <a
@@ -34,32 +75,51 @@ export default function ReelsSection({ reels }) {
               className="absolute inset-0 flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="w-9 h-9 border border-white/70 flex items-center justify-center rounded-full group-hover:scale-110 group-hover:border-white transition-all">
-                <Play size={13} fill="#fff" color="#fff" className="ml-0.5" />
+              <div
+                className="w-10 h-10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"
+                style={{
+                  background: 'rgba(255,255,255,0.92)',
+                  border: '2px solid #C9A84C',
+                  boxShadow: '0 2px 8px rgba(139,0,0,0.25)',
+                }}
+              >
+                <Play size={16} fill="#8B0000" color="#8B0000" className="ml-0.5" />
               </div>
             </a>
 
             {/* Bottom info + CTA */}
-            <div className="absolute bottom-0 inset-x-0 p-3">
+            <div className="absolute bottom-0 inset-x-0 p-2.5">
               {reel.product?.name && (
-                <p className="text-[11px] text-white/90 font-light line-clamp-1 mb-2">
+                <p
+                  className="text-[11px] font-medium line-clamp-1 mb-1.5"
+                  style={{ color: '#fff', fontFamily: 'Georgia, serif' }}
+                >
                   {reel.product.name}
                 </p>
               )}
               {reel.product?.slug && (
                 <Link
                   href={`/product/${reel.product.slug}`}
-                  className="flex items-center justify-center gap-1.5 w-full text-[10px] tracking-widest uppercase py-2 border border-white/70 text-white transition-colors"
+                  className="flex items-center justify-center gap-1 w-full text-[11px] font-bold py-1.5 transition-all"
+                  style={{
+                    background: '#C9A84C',
+                    color: '#8B0000',
+                    borderRadius: '7px',
+                    fontFamily: 'sans-serif',
+                    border: '1px solid #8B0000',
+                  }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#fff';
-                    e.currentTarget.style.color = '#0A0A0A';
+                    e.currentTarget.style.background = '#8B0000';
+                    e.currentTarget.style.color = '#fff';
+                    e.currentTarget.style.borderColor = '#C9A84C';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.background = 'transparent';
-                    e.currentTarget.style.color = '#fff';
+                    e.currentTarget.style.background = '#C9A84C';
+                    e.currentTarget.style.color = '#8B0000';
+                    e.currentTarget.style.borderColor = '#8B0000';
                   }}
                 >
-                  <ShoppingBag size={11} strokeWidth={1.5} /> Shop Now
+                  <ShoppingBag size={11} /> Shop Now
                 </Link>
               )}
             </div>

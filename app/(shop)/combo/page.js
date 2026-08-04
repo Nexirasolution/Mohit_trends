@@ -3,7 +3,7 @@ import { dbConnect } from '@/lib/mongodb';
 import Combo from '@/models/Combo';
 import Link from 'next/link';
 import { formatINR } from '@/lib/utils';
-import { Tag } from 'lucide-react';
+import { Tag, Zap } from 'lucide-react';
 
 async function getCombos() {
   await dbConnect();
@@ -15,21 +15,24 @@ export default async function CombosPage() {
   const combos = await getCombos();
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-10 min-h-[60vh] bg-brand-cream">
-      <div className="flex flex-col items-center text-center mb-9">
-        <div className="arc-divider">
-          <span className="eyebrow">Combo Offers</span>
+    <div className="max-w-7xl mx-auto px-4 py-8 min-h-[60vh]">
+      <div className="flex flex-col items-center text-center mb-8">
+        <div className="flex items-center gap-1.5 mb-1">
+          <Zap size={14} className="text-[#E0162F] fill-[#E0162F]" />
+          <span className="text-xs font-bold text-[#8B1A3D] uppercase tracking-widest">Save More</span>
         </div>
-        <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-ink -mt-4">Buy together, save together</h1>
+        <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#2B1B14]">Combo Offers</h1>
+        <p className="text-[#2B1B14]/50 text-sm mt-0.5">Buy together, save together</p>
+        <div className="h-px w-24 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mt-3" />
       </div>
 
       {combos.length === 0 ? (
-        <div className="text-center py-20 border border-dashed border-brand-ink/15">
-          <Tag size={28} strokeWidth={1.25} className="mx-auto mb-2 text-brand-gold" />
-          <p className="text-sm text-brand-ink/50">No combo offers available right now</p>
+        <div className="text-center py-16 text-[#2B1B14]/40">
+          <Tag size={36} className="mx-auto mb-2 text-[#D4AF37]" />
+          <p className="text-sm">No combo offers available right now</p>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
           {combos.map((c) => {
             const savings = c.originalPrice > c.comboPrice ? c.originalPrice - c.comboPrice : 0;
             const pct = c.originalPrice > 0 ? Math.round((savings / c.originalPrice) * 100) : 0;
@@ -38,33 +41,34 @@ export default async function CombosPage() {
               <Link
                 key={c._id}
                 href={`/combo/${c.slug}`}
-                className="card-soft group relative overflow-hidden"
+                className="group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-[#D4AF37]/25"
               >
-                <div className="relative w-full aspect-square overflow-hidden bg-brand-cream">
+                <div className="relative w-full aspect-square overflow-hidden bg-[#FBF6EC]">
                   {c.image && (
                     <img
                       src={c.image}
                       alt={c.name}
-                      className="w-full h-full object-cover grayscale-[10%] group-hover:grayscale-0 group-hover:scale-[1.03] transition-all duration-500"
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   )}
                   {pct > 0 && (
-                    <div className="absolute top-2 left-2 bg-brand-ink text-brand-cream text-[10px] font-semibold tracking-widest uppercase px-2 py-1">
-                      {pct}% off
+                    <div className="absolute top-2 left-2 bg-[#8B1A3D] text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 border border-[#D4AF37]/60">
+                      <Tag size={9} /> {pct}% OFF
                     </div>
                   )}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                 </div>
 
-                <div className="p-3.5">
-                  <p className="text-sm font-semibold text-brand-ink line-clamp-1">{c.name}</p>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <span className="text-brand-magenta font-bold text-sm">{formatINR(c.comboPrice)}</span>
+                <div className="p-3 bg-white">
+                  <p className="text-sm font-semibold text-[#2B1B14] line-clamp-1">{c.name}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-[#8B1A3D] font-bold text-sm">{formatINR(c.comboPrice)}</span>
                     {savings > 0 && (
-                      <span className="text-[11px] text-brand-ink/40 line-through">{formatINR(c.originalPrice)}</span>
+                      <span className="text-[11px] text-[#2B1B14]/40 line-through">{formatINR(c.originalPrice)}</span>
                     )}
                   </div>
                   {savings > 0 && (
-                    <p className="text-[11px] text-brand-gold font-semibold mt-1 uppercase tracking-wide">Save {formatINR(savings)}</p>
+                    <p className="text-[11px] text-[#1F6B3B] font-semibold mt-0.5">Save {formatINR(savings)}</p>
                   )}
                 </div>
               </Link>

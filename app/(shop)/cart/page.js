@@ -11,15 +11,25 @@ export default function CartPage() {
 
   if (items.length === 0) {
     return (
-      <div className="max-w-3xl mx-auto px-6 py-24 text-center">
-        <ShoppingBag size={40} className="mx-auto mb-5 text-black/25" strokeWidth={1.25} />
-        <p className="font-serif text-lg text-black mb-2">Your cart is empty</p>
-        <p className="mb-8 text-sm text-black/45 font-light">
-          Add something beautiful from our collection.
+      <div className="max-w-3xl mx-auto px-4 py-20 text-center">
+        <ShoppingBag size={48} className="mx-auto mb-4" style={{ color: '#C9A84C', opacity: 0.5 }} />
+        <p className="mb-2" style={{ color: '#8B0000', fontFamily: 'Georgia, serif', fontSize: '18px', fontWeight: '600' }}>
+          Your cart is empty
+        </p>
+        <p className="mb-6 text-sm" style={{ color: '#a07070', fontFamily: 'sans-serif' }}>
+          Add something beautiful from our collection!
         </p>
         <Link
           href="/"
-          className="inline-block px-8 py-3.5 text-xs tracking-[0.2em] uppercase bg-black text-white hover:bg-black/85 transition-colors"
+          className="inline-block px-8 py-3 font-bold text-sm transition-all"
+          style={{
+            background: '#8B0000',
+            color: '#fff',
+            border: '2px solid #C9A84C',
+            borderRadius: '8px',
+            fontFamily: 'Georgia, serif',
+            letterSpacing: '0.5px',
+          }}
         >
           Continue Shopping
         </Link>
@@ -28,52 +38,92 @@ export default function CartPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-10">
+    <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Page heading */}
-      <div className="mb-10 text-center">
-        <h1 className="font-serif text-2xl text-black">Your Cart</h1>
-        <div className="flex items-center justify-center gap-3 mt-3">
-          <span className="h-px w-8 bg-[#C6A15B]" />
-          <span className="text-[#C6A15B] text-xs">✦</span>
-          <span className="h-px w-8 bg-[#C6A15B]" />
+      <div className="mb-6">
+        <h1
+          className="text-2xl font-bold"
+          style={{ color: '#8B0000', fontFamily: 'Georgia, serif', letterSpacing: '0.5px' }}
+        >
+          Your Cart
+        </h1>
+        <div className="flex items-center gap-2 mt-1">
+          <div style={{ height: '1px', width: '50px', background: '#C9A84C' }} />
+          <span style={{ color: '#C9A84C', fontSize: '13px' }}>✦</span>
+          <div style={{ height: '1px', width: '50px', background: '#C9A84C' }} />
         </div>
       </div>
 
       {/* Cart items */}
-      <div className="divide-y divide-black/10 border-t border-b border-black/10">
+      <div className="space-y-4">
         {items.map((item) => {
           const key = cartKey(item);
           return (
-            <div key={key} className="flex gap-5 py-6">
-
+            <div
+              key={key}
+              className="flex gap-4 p-4 bg-white transition-all"
+              style={{
+                borderRadius: '12px',
+                border: '1.5px solid #e8d5d5',
+                boxShadow: '0 2px 8px rgba(139,0,0,0.06)',
+              }}
+            >
               {/* Product image */}
-              <div className="relative shrink-0 w-20 h-24 bg-[#FAF9F6] overflow-hidden">
+              <div
+                className="relative shrink-0 overflow-hidden"
+                style={{ width: '80px', height: '96px', borderRadius: '8px', background: '#fdf5f5', border: '1px solid #e8d5d5' }}
+              >
                 <Image src={item.image || '/placeholder.png'} alt={item.name} fill className="object-cover" />
               </div>
 
               {/* Product info */}
               <div className="flex-1 min-w-0">
-                <p className="font-serif text-black text-[15px] line-clamp-1">{item.name}</p>
-                <p className="text-xs mt-1 text-black/40 font-light">
+                <p
+                  className="font-medium line-clamp-1"
+                  style={{ color: '#1a1a1a', fontFamily: 'Georgia, serif', fontSize: '14px' }}
+                >
+                  {item.name}
+                </p>
+                <p
+                  className="text-xs mt-0.5"
+                  style={{ color: '#a07070', fontFamily: 'sans-serif' }}
+                >
                   Color: {item.color} &nbsp;|&nbsp; Size: {item.size}
                 </p>
-                <p className="text-sm mt-1.5 text-black/70">{formatINR(item.price)}</p>
+                <p
+                  className="font-semibold mt-1"
+                  style={{ color: '#8B0000', fontFamily: 'Georgia, serif', fontSize: '15px' }}
+                >
+                  {formatINR(item.price)}
+                </p>
 
                 {/* Qty controls + remove */}
-                <div className="flex items-center gap-4 mt-3">
-                  <div className="flex items-center border border-black/15">
+                <div className="flex items-center gap-3 mt-2">
+                  <div
+                    className="flex items-center"
+                    style={{ border: '1.5px solid #C9A84C', borderRadius: '6px', overflow: 'hidden' }}
+                  >
                     <button
                       onClick={() => updateQty(key, item.qty - 1)}
-                      className="w-7 h-7 flex items-center justify-center text-sm text-black/60 hover:bg-black/5 transition-colors"
+                      className="px-2.5 py-1 text-sm font-bold transition-all"
+                      style={{ color: '#8B0000', background: '#fdf5f5', fontFamily: 'sans-serif' }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = '#f5e0e0')}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = '#fdf5f5')}
                     >
                       −
                     </button>
-                    <span className="w-8 h-7 flex items-center justify-center text-sm text-black border-x border-black/15">
+                    <span
+                      className="px-3 py-1 text-sm font-semibold"
+                      style={{ color: '#8B0000', borderLeft: '1px solid #C9A84C', borderRight: '1px solid #C9A84C', fontFamily: 'sans-serif' }}
+                    >
                       {item.qty}
                     </span>
                     <button
                       onClick={() => updateQty(key, item.qty + 1)}
-                      className="w-7 h-7 flex items-center justify-center text-sm text-black/60 hover:bg-black/5 transition-colors"
+                      className="px-2.5 py-1 text-sm font-bold transition-all"
+                      style={{ color: '#8B0000', background: '#fdf5f5', fontFamily: 'sans-serif' }}
+                      onMouseEnter={(e) => (e.currentTarget.style.background = '#f5e0e0')}
+                      onMouseLeave={(e) => (e.currentTarget.style.background = '#fdf5f5')}
                     >
                       +
                     </button>
@@ -81,16 +131,22 @@ export default function CartPage() {
 
                   <button
                     onClick={() => removeItem(key)}
-                    className="text-black/30 hover:text-black transition-colors"
+                    className="transition-colors"
+                    style={{ color: '#c9a0a0' }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = '#8B0000')}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = '#c9a0a0')}
                     aria-label="Remove item"
                   >
-                    <Trash2 size={16} strokeWidth={1.5} />
+                    <Trash2 size={17} />
                   </button>
                 </div>
               </div>
 
               {/* Line total */}
-              <p className="text-sm text-black shrink-0 self-start pt-1">
+              <p
+                className="font-bold shrink-0 self-start pt-1"
+                style={{ color: '#8B0000', fontFamily: 'Georgia, serif', fontSize: '15px' }}
+              >
                 {formatINR(item.price * item.qty)}
               </p>
             </div>
@@ -98,16 +154,40 @@ export default function CartPage() {
         })}
       </div>
 
-      {/* Subtotal */}
-      <div className="flex items-center justify-between py-6">
-        <span className="text-sm text-black/50 tracking-wide">Subtotal</span>
-        <span className="font-serif text-xl text-black">{formatINR(subtotal)}</span>
+      {/* Subtotal card */}
+      <div
+        className="flex items-center justify-between p-5 mt-6"
+        style={{
+          background: '#fff',
+          borderRadius: '12px',
+          border: '1.5px solid #C9A84C',
+          boxShadow: '0 2px 8px rgba(139,0,0,0.07)',
+        }}
+      >
+        <span style={{ color: '#5a2020', fontFamily: 'sans-serif', fontSize: '14px' }}>Subtotal</span>
+        <span
+          className="font-bold text-xl"
+          style={{ color: '#8B0000', fontFamily: 'Georgia, serif' }}
+        >
+          {formatINR(subtotal)}
+        </span>
       </div>
 
       {/* Checkout CTA */}
       <Link
         href="/checkout"
-        className="block w-full text-center py-4 text-xs tracking-[0.2em] uppercase bg-black text-white hover:bg-black/85 transition-colors"
+        className="block w-full text-center mt-4 py-3 font-bold text-sm transition-all"
+        style={{
+          background: '#8B0000',
+          color: '#fff',
+          border: '2px solid #C9A84C',
+          borderRadius: '8px',
+          fontFamily: 'Georgia, serif',
+          fontSize: '15px',
+          letterSpacing: '0.5px',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = '#6e0000')}
+        onMouseLeave={(e) => (e.currentTarget.style.background = '#8B0000')}
       >
         Proceed to Checkout
       </Link>

@@ -69,26 +69,30 @@ export default function CategoryPage() {
     return pages;
   };
 
-  const pageBtnBase =
-    'h-9 min-w-9 px-3 flex items-center justify-center text-[12px] tracking-wide border transition-colors disabled:opacity-30 disabled:cursor-not-allowed';
-
   return (
-    <div className="max-w-7xl mx-auto px-6 py-10">
+    <div className="max-w-7xl mx-auto px-4 py-6">
 
       {/* Page heading */}
-      <div className="mb-10 text-center">
-        <h1 className="font-serif text-2xl sm:text-3xl text-black">
+      <div className="mb-4">
+        <h1
+          className="text-2xl sm:text-3xl font-bold"
+          style={{ color: '#8B0000', fontFamily: 'Georgia, serif', letterSpacing: '0.5px' }}
+        >
           {category?.name || 'Products'}
         </h1>
 
-        <div className="flex items-center justify-center gap-3 mt-3">
-          <span className="h-px w-8 bg-[#C6A15B]" />
-          <span className="text-[#C6A15B] text-xs">✦</span>
-          <span className="h-px w-8 bg-[#C6A15B]" />
+        {/* Gold ornament divider */}
+        <div className="flex items-center gap-2 mt-1.5 mb-1">
+          <div style={{ height: '1px', width: '40px', background: '#C9A84C' }} />
+          <span style={{ color: '#C9A84C', fontSize: '12px' }}>✦</span>
+          <div style={{ height: '1px', width: '40px', background: '#C9A84C' }} />
         </div>
 
         {category?.description && (
-          <p className="text-sm mt-3 text-black/45 font-light max-w-xl mx-auto">
+          <p
+            className="text-sm mt-1"
+            style={{ color: '#a07070', fontFamily: 'sans-serif' }}
+          >
             {category.description}
           </p>
         )}
@@ -99,30 +103,42 @@ export default function CategoryPage() {
 
       {/* Loading skeleton */}
       {loading ? (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 mt-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
           {Array.from({ length: 8 }).map((_, i) => (
             <div
               key={i}
-              className="aspect-[3/4] animate-pulse bg-[#FAF9F6] border border-black/5"
+              className="aspect-[3/4] animate-pulse"
+              style={{
+                borderRadius: '12px',
+                background: '#f5e8e8',
+                border: '1.5px solid #e8d5d5',
+              }}
             />
           ))}
         </div>
 
       /* Empty state */
       ) : products.length === 0 ? (
-        <div className="text-center py-24 border-t border-black/10 mt-8">
-          <p className="text-sm tracking-wide text-black/70">
+        <div className="text-center py-20">
+          <span style={{ fontSize: '40px' }}>🛍️</span>
+          <p
+            className="mt-3 text-base font-medium"
+            style={{ color: '#8B0000', fontFamily: 'Georgia, serif' }}
+          >
             No products found in this category yet.
           </p>
-          <p className="text-xs mt-2 text-black/35 font-light">
-            Check back soon — new arrivals every week.
+          <p
+            className="text-sm mt-1"
+            style={{ color: '#a07070', fontFamily: 'sans-serif' }}
+          >
+            Check back soon — new arrivals every week!
           </p>
         </div>
 
       /* Product grid */
       ) : (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5 mt-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
             {products.map((p) => (
               <ProductCard key={p._id} product={p} />
             ))}
@@ -130,11 +146,12 @@ export default function CategoryPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-14 mb-2 flex-wrap">
+            <div className="flex items-center justify-center gap-2 mt-8 mb-2 flex-wrap">
               <button
                 onClick={() => goToPage(page - 1)}
                 disabled={page === 1}
-                className={`${pageBtnBase} border-black/15 text-black/60 hover:border-black`}
+                className="h-9 px-3 flex items-center justify-center text-[12px] font-semibold border-[1.5px] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: '#fff', color: '#5a3a2a', borderColor: '#C9A84C', borderRadius: '4px' }}
               >
                 Prev
               </button>
@@ -143,11 +160,12 @@ export default function CategoryPage() {
                 <>
                   <button
                     onClick={() => goToPage(1)}
-                    className={`${pageBtnBase} border-black/15 text-black/60 hover:border-black`}
+                    className="w-9 h-9 flex items-center justify-center text-[12px] font-semibold border-[1.5px] transition-all"
+                    style={{ background: '#fff', color: '#5a3a2a', borderColor: '#C9A84C', borderRadius: '4px' }}
                   >
                     1
                   </button>
-                  <span className="text-black/30">…</span>
+                  <span style={{ color: '#a07070' }}>…</span>
                 </>
               )}
 
@@ -155,11 +173,13 @@ export default function CategoryPage() {
                 <button
                   key={p}
                   onClick={() => goToPage(p)}
-                  className={`${pageBtnBase} ${
-                    p === page
-                      ? 'bg-black text-white border-black'
-                      : 'border-black/15 text-black/60 hover:border-black'
-                  }`}
+                  className="w-9 h-9 flex items-center justify-center text-[12px] font-semibold border-[1.5px] transition-all"
+                  style={{
+                    background: p === page ? '#8B1A1A' : '#fff',
+                    color: p === page ? '#fff' : '#5a3a2a',
+                    borderColor: '#C9A84C',
+                    borderRadius: '4px',
+                  }}
                 >
                   {p}
                 </button>
@@ -167,10 +187,11 @@ export default function CategoryPage() {
 
               {getPageNumbers()[getPageNumbers().length - 1] < totalPages && (
                 <>
-                  <span className="text-black/30">…</span>
+                  <span style={{ color: '#a07070' }}>…</span>
                   <button
                     onClick={() => goToPage(totalPages)}
-                    className={`${pageBtnBase} border-black/15 text-black/60 hover:border-black`}
+                    className="w-9 h-9 flex items-center justify-center text-[12px] font-semibold border-[1.5px] transition-all"
+                    style={{ background: '#fff', color: '#5a3a2a', borderColor: '#C9A84C', borderRadius: '4px' }}
                   >
                     {totalPages}
                   </button>
@@ -180,7 +201,8 @@ export default function CategoryPage() {
               <button
                 onClick={() => goToPage(page + 1)}
                 disabled={page === totalPages}
-                className={`${pageBtnBase} border-black/15 text-black/60 hover:border-black`}
+                className="h-9 px-3 flex items-center justify-center text-[12px] font-semibold border-[1.5px] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: '#fff', color: '#5a3a2a', borderColor: '#C9A84C', borderRadius: '4px' }}
               >
                 Next
               </button>

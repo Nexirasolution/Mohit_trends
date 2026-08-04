@@ -18,17 +18,17 @@ export async function generateMetadata() {
   } catch {
     settings = null;
   }
-  const title = settings?.seoTitle || 'Mohith Trends - Style That Speaks You';
+  const title = settings?.seoTitle || 'SSRK Trending Collections - Women Kurtis, Nighties & More';
   const description =
     settings?.seoDescription ||
-    'Shop authentic women\'s kurtis, nighties, innerwear and trending collections online from Mohith Trends.';
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mohithtrends.com';
+    'Shop authentic women kurtis, nighties, innerwear and trending collections online from SSRK Trending Collections.';
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ssrkcollections.com';
   return {
-    title: { default: title, template: '%s | Mohith Trends' },
+    title: { default: title, template: '%s | SSRK Trending Collections' },
     description,
     metadataBase: new URL(siteUrl),
-    keywords: ['women kurtis online', 'nighties online', 'innerwear online', 'Mohith Trends', 'women fashion'],
-    openGraph: { title, description, siteName: 'Mohith Trends', type: 'website' },
+    keywords: ['women kurtis online', 'nighties online', 'innerwear online', 'SSRK trending collections', 'women fashion'],
+    openGraph: { title, description, siteName: 'SSRK Trending Collections', type: 'website' },
     icons: { icon: '/favicon.ico' },
   };
 }
@@ -37,7 +37,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${display.variable} ${body.variable} font-body antialiased bg-white text-black`}
+        className={`${display.variable} ${body.variable} font-body antialiased`}
+        style={{ background: '#fdf5f5' }}
       >
         <CartProvider>
           <WishlistProvider>
@@ -56,23 +57,21 @@ export default function RootLayout({ children }) {
             style: {
               fontFamily: 'var(--font-body)',
               background: '#fff',
-              color: '#0A0A0A',
-              border: '1px solid rgba(0,0,0,0.08)',
-              borderRadius: '2px',
+              color: '#8B0000',
+              border: '1.5px solid #C9A84C',
+              borderRadius: '8px',
               fontSize: '13px',
-              fontWeight: '400',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-              padding: '12px 16px',
+              fontWeight: '600',
             },
             success: {
               iconTheme: {
-                primary: '#C6A15B',
+                primary: '#8B0000',
                 secondary: '#fff',
               },
             },
             error: {
               iconTheme: {
-                primary: '#0A0A0A',
+                primary: '#C9A84C',
                 secondary: '#fff',
               },
             },

@@ -53,31 +53,39 @@ export default async function ProductsPage({ searchParams }) {
   const { products, total, pages } = await getAllProducts(page, sort);
 
   return (
-    <section className="max-w-6xl mx-auto px-5 py-16 bg-brand-cream">
-      {/* Header — eyebrow + serif title on the left, quiet count on the right, hairline rule beneath */}
-      <div className="mb-10 pb-6 border-b border-brand-ink/10">
-        <div className="flex items-end justify-between flex-wrap gap-3">
-          <div>
-            <span className="eyebrow">Full Collection</span>
-            <h1 className="font-display text-brand-ink text-[clamp(28px,4vw,40px)] tracking-tight mt-1.5">
-              All Products
-            </h1>
-          </div>
-          <span className="text-[11px] tracking-[0.15em] uppercase text-brand-ink/40">
-            {total} {total === 1 ? 'item' : 'items'}
-          </span>
-        </div>
+    <section className="max-w-6xl mx-auto px-5 py-16" style={{ background: '#FBF7F0' }}>
+      <div className="mb-10 flex items-baseline justify-between flex-wrap gap-3">
+        <h1
+          style={{
+            fontFamily: 'Georgia, "Times New Roman", serif',
+            color: '#2A211C',
+            fontSize: 'clamp(28px, 4vw, 40px)',
+            letterSpacing: '0.01em',
+          }}
+        >
+          All Products
+        </h1>
+        <span
+          style={{
+            fontFamily: 'system-ui, sans-serif',
+            fontSize: 12,
+            letterSpacing: '0.1em',
+            color: '#8A7B6C',
+          }}
+        >
+          {total} {total === 1 ? 'item' : 'items'}
+        </span>
       </div>
 
       <Filters sort={sort} />
 
       {products.length === 0 ? (
-        <div className="text-center py-20 mt-6 border border-dashed border-brand-ink/15">
-          <p className="text-brand-ink/50 text-sm tracking-wide">Nothing here yet — check back soon.</p>
-        </div>
+        <p style={{ color: '#8A7B6C', fontFamily: 'system-ui, sans-serif', fontSize: 14 }}>
+          Nothing here yet — check back soon.
+        </p>
       ) : (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10 mt-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10">
             {products.map((p) => (
               <ProductCard key={p._id} product={p} />
             ))}

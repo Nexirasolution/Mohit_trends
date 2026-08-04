@@ -12,8 +12,9 @@ import ReviewSection from '@/components/ReviewSection';
 import ReelsSection from '@/components/ReelsSection';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { formatINR } from '@/lib/utils';
-import { ArrowRight } from 'lucide-react';
+import { Zap, ArrowRight, Tag } from 'lucide-react';
 
 async function getData() {
   await dbConnect();
@@ -36,55 +37,33 @@ export default async function HomePage() {
   const plainCategories = JSON.parse(JSON.stringify(categories));
 
   return (
-    <div className="overflow-x-hidden bg-brand-cream">
+    <div className="overflow-x-hidden">
+
+      {/* Coupon marquee */}
+      
 
       {/* Banner */}
       <BannerCarousel banners={JSON.parse(JSON.stringify(banners))} />
 
-      {/* Shop by Category — editorial collage */}
-      {plainCategories?.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 pt-12 pb-4">
-          <div className="grid grid-cols-6 auto-rows-[110px] sm:auto-rows-[130px] gap-2 sm:gap-3">
-            {plainCategories.map((c, idx) => {
-              // Repeating collage rhythm: one large tile every 6, rest small.
-              const pattern = idx % 6;
-              let span = 'col-span-2 row-span-2';
-              if (pattern === 0) span = 'col-span-4 row-span-3';
-              else if (pattern === 3) span = 'col-span-3 row-span-2';
-              else if (pattern === 4) span = 'col-span-3 row-span-2';
-              else span = 'col-span-2 row-span-2';
-
-              const isLarge = pattern === 0;
-
-              return (
-                <Link
-                  key={c._id}
-                  href={`/category/${c.slug}`}
-                  className={`group relative overflow-hidden ${span}`}
-                >
-                  {c.image ? (
-                    <img
-                      src={c.image}
-                      alt={c.name}
-                      className="absolute inset-0 w-full h-full object-cover grayscale-[8%] group-hover:grayscale-0 group-hover:scale-[1.04] transition-all duration-700 ease-out"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-brand-cream" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent" />
-                  <span
-                    className={`absolute left-3 bottom-3 sm:left-4 sm:bottom-4 font-serif text-white tracking-wide drop-shadow-sm ${
-                      isLarge ? 'text-lg sm:text-2xl' : 'text-sm sm:text-base'
-                    }`}
-                  >
-                    {c.name}
-                  </span>
-                </Link>
-              );
-            })}
+      {/* Shop by Category */}
+{plainCategories?.length > 0 && (
+  <section className="max-w-7xl mx-auto px-4 pt-8 pb-2">
+    <h2 className="font-display text-xl font-bold text-brand-ink mb-4 text-center">Shop by Category</h2>
+    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1 justify-center flex-wrap sm:flex-nowrap">
+      {plainCategories.map((c) => (
+        <Link key={c._id} href={`/category/${c.slug}`} className="flex flex-col items-center gap-2 shrink-0 group">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-brand-cream border-2 border-transparent group-hover:border-brand-magenta transition-all shadow-sm">
+            {c.image
+              ? <img src={c.image} alt={c.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300" />
+              : <div className="w-full h-full bg-brand-cream" />
+            }
           </div>
-        </section>
-      )}
+          <span className="text-[11px] font-medium text-brand-ink/60 group-hover:text-brand-magenta transition-colors text-center max-w-[72px] leading-tight">{c.name}</span>
+        </Link>
+      ))}
+    </div>
+  </section>
+)}
 
       {/* Product tabs — Bestsellers / Top Sellers / New Arrivals */}
       <ProductTabs
@@ -94,77 +73,95 @@ export default async function HomePage() {
       />
 
       {/* Combo Offers */}
-      {plainCombos?.length > 0 && (
-        <section className="py-14 bg-white border-y border-brand-ink/10">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="flex flex-col items-center text-center mb-8">
-              <div className="arc-divider">
-                <span className="eyebrow">Combo Offers</span>
+{plainCombos?.length > 0 && (
+  <section className="py-10 bg-gradient-to-br from-brand-magenta/5 via-white to-brand-gold/5">
+    <div className="max-w-7xl mx-auto px-4">
+      <div className="flex flex-col items-center text-center mb-6">
+        <div className="flex items-center gap-1.5 mb-1">
+          <Zap size={14} className="text-brand-pink fill-brand-pink" />
+          <span className="text-xs font-bold text-brand-magenta uppercase tracking-widest">Save More</span>
+        </div>
+        <h2 className="font-display text-2xl sm:text-3xl font-bold text-brand-ink">Combo Offers</h2>
+        <p className="text-brand-ink/50 text-sm mt-0.5">Buy together, save together</p>
+        <Link href="/combos" className="hidden sm:flex items-center gap-1 text-sm text-brand-magenta font-semibold hover:gap-2 transition-all mt-2">
+          View all <ArrowRight size={14} />
+        </Link>
+      </div>
+
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-5">
+        {plainCombos.map((c, idx) => {
+          const savings = c.originalPrice > c.comboPrice ? c.originalPrice - c.comboPrice : 0;
+          const pct = c.originalPrice > 0 ? Math.round((savings / c.originalPrice) * 100) : 0;
+          const isFeatured = idx === 0;
+
+          return (
+            <Link
+              key={c._id}
+              href={`/combo/${c.slug}`}
+              className={`group relative rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow ${isFeatured ? 'sm:col-span-1 row-span-1' : ''}`}
+            >
+              {/* Image */}
+              <div className={`relative w-full overflow-hidden bg-brand-cream ${isFeatured ? 'aspect-[4/5]' : 'aspect-square'}`}>
+                {c.image && (
+                  <img
+                    src={c.image}
+                    alt={c.name}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                )}
+                {pct > 0 && (
+                  <div className="absolute top-2 left-2 bg-brand-magenta text-white text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <Tag size={9} /> {pct}% OFF
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
               </div>
-              <h2 className="section-title text-2xl sm:text-3xl -mt-4">Buy together, save together</h2>
-              <Link href="/combos" className="hidden sm:flex items-center gap-1 text-sm text-brand-ink font-semibold hover:text-brand-magenta hover:gap-2 transition-all mt-4 uppercase tracking-widest text-xs">
-                View all <ArrowRight size={13} />
-              </Link>
-            </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 sm:gap-6">
-              {plainCombos.map((c, idx) => {
-                const savings = c.originalPrice > c.comboPrice ? c.originalPrice - c.comboPrice : 0;
-                const pct = c.originalPrice > 0 ? Math.round((savings / c.originalPrice) * 100) : 0;
-                const isFeatured = idx === 0;
+              {/* Info */}
+              <div className="p-3 bg-white">
+                <p className="text-sm font-semibold text-brand-ink line-clamp-1">{c.name}</p>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-brand-magenta font-bold text-sm">{formatINR(c.comboPrice)}</span>
+                  {savings > 0 && (
+                    <span className="text-[11px] text-brand-ink/40 line-through">{formatINR(c.originalPrice)}</span>
+                  )}
+                </div>
+                {savings > 0 && (
+                  <p className="text-[11px] text-brand-deepgreen font-semibold mt-0.5">Save {formatINR(savings)}</p>
+                )}
+              </div>
+            </Link>
+          );
+        })}
+      </div>
 
-                return (
-                  <Link
-                    key={c._id}
-                    href={`/combo/${c.slug}`}
-                    className={`card-soft group relative overflow-hidden ${isFeatured ? 'sm:col-span-1 row-span-1' : ''}`}
-                  >
-                    {/* Image */}
-                    <div className={`relative w-full overflow-hidden bg-brand-cream ${isFeatured ? 'aspect-[4/5]' : 'aspect-square'}`}>
-                      {c.image && (
-                        <img
-                          src={c.image}
-                          alt={c.name}
-                          className="w-full h-full object-cover grayscale-[10%] group-hover:grayscale-0 group-hover:scale-[1.03] transition-all duration-500"
-                        />
-                      )}
-                      {pct > 0 && (
-                        <div className="absolute top-2 left-2 bg-brand-ink text-brand-cream text-[10px] font-semibold tracking-widest uppercase px-2 py-1">
-                          {pct}% off
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Info */}
-                    <div className="p-3.5">
-                      <p className="text-sm font-semibold text-brand-ink line-clamp-1">{c.name}</p>
-                      <div className="flex items-center gap-2 mt-1.5">
-                        <span className="text-brand-magenta font-bold text-sm">{formatINR(c.comboPrice)}</span>
-                        {savings > 0 && (
-                          <span className="text-[11px] text-brand-ink/40 line-through">{formatINR(c.originalPrice)}</span>
-                        )}
-                      </div>
-                      {savings > 0 && (
-                        <p className="text-[11px] text-brand-gold font-semibold mt-1 uppercase tracking-wide">Save {formatINR(savings)}</p>
-                      )}
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
-
-            <div className="mt-6 text-center sm:hidden">
-              <Link href="/combo" className="text-xs uppercase tracking-widest text-brand-ink font-semibold">View all combos →</Link>
-            </div>
-          </div>
-        </section>
-      )}
+      <div className="mt-4 text-center sm:hidden">
+        <Link href="/combo" className="text-sm text-brand-magenta font-semibold">View all combos →</Link>
+      </div>
+    </div>
+  </section>
+)}
 
       {/* Reviews */}
       <ReviewSection reviews={JSON.parse(JSON.stringify(reviews))} />
 
       {/* Reels */}
       <ReelsSection reels={JSON.parse(JSON.stringify(reels))} />
+
+      {/* Brand strip */}
+      {/* <section className="bg-gradient-to-br from-brand-magenta to-brand-gold py-10 mt-4">
+        <div className="max-w-3xl mx-auto text-center px-4">
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-white mb-2">
+            Sivakasi's own clothing store, now online
+          </h2>
+          <p className="text-white/80 text-sm">
+            Women's kurtis, salwar sets, nighties and innerwear — handpicked and shipped across India.
+          </p>
+          <Link href="/category/salwar-set" className="inline-block mt-5 bg-white text-brand-magenta font-bold px-6 py-2.5 rounded-full text-sm hover:bg-white/90 transition-colors">
+            Shop Now
+          </Link>
+        </div>
+      </section> */}
 
     </div>
   );

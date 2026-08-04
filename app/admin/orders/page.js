@@ -8,13 +8,6 @@ import OrderItemModal from '@/components/admin/OrderItemModal';
 
 const STATUSES = ['placed', 'confirmed', 'packed', 'shipped', 'delivered', 'cancelled', 'returned'];
 
-// Mohith Trends theme tokens — keep in sync with other admin pages until centralized in tailwind.config.js
-const GOLD = '#B08D3F';
-const INK = '#1A1A1A';
-const INK_MUTED = '#6B6B66';
-const HAIRLINE = '#E8E4DA';
-const PAPER = '#FDFCFA';
-
 export default function AdminOrdersPage() {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
@@ -97,44 +90,26 @@ export default function AdminOrdersPage() {
     return categories.find((c) => c._id === cid)?.name || catRef?.name || '';
   }
 
-  const inputStyle = {
-    borderBottom: `1px solid ${HAIRLINE}`,
-    color: INK,
-    background: 'transparent',
-  };
-
   return (
-    <div style={{ background: PAPER }}>
-      <h1
-        className="text-2xl mb-6 tracking-tight"
-        style={{ color: INK, fontFamily: 'Georgia, "Times New Roman", serif' }}
-      >
-        Orders
-      </h1>
+    <div>
+      <h1 className="font-display text-2xl font-bold text-brand-magenta mb-5">Orders</h1>
 
-      <div className="flex flex-wrap items-center gap-4 mb-8 pb-4" style={{ borderBottom: `1px solid ${HAIRLINE}` }}>
+      <div className="flex flex-wrap gap-3 mb-4">
         <input
           placeholder="Search by order number, name, phone"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && load()}
-          className="px-1 py-2 text-sm flex-1 min-w-[200px] outline-none"
-          style={inputStyle}
+          className="border rounded-lg px-3 py-2 text-sm flex-1 min-w-[200px]"
         />
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
-          className="px-1 py-2 text-sm outline-none bg-transparent"
-          style={{ borderBottom: `1px solid ${HAIRLINE}`, color: INK }}
-        >
+        <select value={status} onChange={(e) => setStatus(e.target.value)} className="border rounded-lg px-3 py-2 text-sm">
           <option value="">All Status</option>
           {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="px-1 py-2 text-sm outline-none bg-transparent"
-          style={{ borderBottom: `1px solid ${HAIRLINE}`, color: INK }}
+          className="border rounded-lg px-3 py-2 text-sm"
         >
           <option value="all">All Categories</option>
           {categories.filter((c) => !c.parent).map((parent) => (
@@ -148,46 +123,34 @@ export default function AdminOrdersPage() {
             </optgroup>
           ))}
         </select>
-        <button
-          onClick={load}
-          className="text-sm font-medium px-4 py-2 transition-colors"
-          style={{ border: `1px solid ${GOLD}`, color: GOLD }}
-        >
-          Search
-        </button>
+        <button onClick={load} className="btn-outline text-sm">Search</button>
       </div>
 
       {loading ? (
-        <p style={{ color: INK_MUTED }}>Loading...</p>
+        <p className="text-brand-ink/50">Loading...</p>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="card-soft overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr
-                className="text-left text-[11px] uppercase tracking-wide"
-                style={{ borderBottom: `1px solid ${HAIRLINE}`, color: INK_MUTED }}
-              >
-                <th className="py-2 pr-3 font-medium">Order #</th>
-                <th className="py-2 pr-3 font-medium">Customer</th>
-                <th className="py-2 pr-3 font-medium">Items</th>
-                <th className="py-2 pr-3 font-medium">Product SKU</th>
-                <th className="py-2 pr-3 font-medium">Category</th>
-                <th className="py-2 pr-3 font-medium">Total</th>
-                <th className="py-2 pr-3 font-medium">Payment</th>
-                <th className="py-2 pr-3 font-medium">Status</th>
-                <th className="py-2 pr-3 font-medium">Date</th>
-                <th className="py-2"></th>
+              <tr className="text-left border-b border-brand-ink/10 text-brand-ink/50">
+                <th className="p-3">Order #</th>
+                <th className="p-3">Customer</th>
+                <th className="p-3">Items</th>
+                <th className="p-3">Product SKU</th>
+                <th className="p-3">Category</th>
+                <th className="p-3">Total</th>
+                <th className="p-3">Payment</th>
+                <th className="p-3">Status</th>
+                <th className="p-3">Date</th>
+                <th className="p-3"></th>
               </tr>
             </thead>
             <tbody>
               {filteredOrders.map((o) => (
-                <tr key={o._id} style={{ borderBottom: `1px solid ${HAIRLINE}` }}>
-                  <td className="py-3 pr-3 font-medium" style={{ color: INK }}>{o.orderNumber}</td>
-                  <td className="py-3 pr-3" style={{ color: INK }}>
-                    {o.customer?.name}<br />
-                    <span className="text-xs" style={{ color: INK_MUTED }}>{o.customer?.phone}</span>
-                  </td>
-                  <td className="py-3 pr-3 max-w-[220px]">
+                <tr key={o._id} className="border-b border-brand-ink/5">
+                  <td className="p-3 font-medium">{o.orderNumber}</td>
+                  <td className="p-3">{o.customer?.name}<br /><span className="text-xs text-brand-ink/50">{o.customer?.phone}</span></td>
+                  <td className="p-3 max-w-[220px]">
                     <div className="flex flex-wrap gap-1">
                       {o.resolvedItems.map((r, i) => (
                         <button
@@ -195,10 +158,7 @@ export default function AdminOrdersPage() {
                           onClick={() =>
                             setModalItem({ item: r.item, image: r.image, categoryName: categoryName(r.category), productSku: r.product?.sku })
                           }
-                          className="text-xs px-2 py-1 rounded-full transition-colors"
-                          style={{ background: HAIRLINE, color: INK_MUTED }}
-                          onMouseEnter={(e) => { e.currentTarget.style.background = GOLD; e.currentTarget.style.color = PAPER; }}
-                          onMouseLeave={(e) => { e.currentTarget.style.background = HAIRLINE; e.currentTarget.style.color = INK_MUTED; }}
+                          className="text-xs px-2 py-1 rounded-full bg-brand-ink/5 text-brand-ink/70 hover:bg-brand-magenta hover:text-white transition-colors"
                           title={r.item.sku || r.item.name}
                         >
                           {r.item.name} x{r.item.qty}
@@ -206,34 +166,22 @@ export default function AdminOrdersPage() {
                       ))}
                     </div>
                   </td>
-                  <td
-                    className="py-3 pr-3 text-xs max-w-[160px] truncate"
-                    style={{ color: INK_MUTED }}
-                    title={o.resolvedItems.map((r) => r.product?.sku || r.item.sku).filter(Boolean).join(', ')}
-                  >
+                  <td className="p-3 text-xs text-brand-ink/60 max-w-[160px] truncate" title={o.resolvedItems.map((r) => r.product?.sku || r.item.sku).filter(Boolean).join(', ')}>
                     {o.resolvedItems.map((r) => r.product?.sku || r.item.sku).filter(Boolean).join(', ') || '—'}
                   </td>
-                  <td className="py-3 pr-3 text-xs" style={{ color: INK_MUTED }}>
+                  <td className="p-3 text-xs text-brand-ink/60">
                     {[...o.categoryIds].map((cid) => categoryName(cid)).filter(Boolean).join(', ') || '—'}
                   </td>
-                  <td className="py-3 pr-3" style={{ color: INK }}>{formatINR(o.total)}</td>
-                  <td className="py-3 pr-3 capitalize" style={{ color: INK_MUTED }}>{o.paymentStatus}</td>
-                  <td className="py-3 pr-3 capitalize" style={{ color: INK }}>{o.status}</td>
-                  <td className="py-3 pr-3 text-xs" style={{ color: INK_MUTED }}>
-                    {new Date(o.createdAt).toLocaleDateString('en-IN')}
-                  </td>
-                  <td className="py-3">
-                    <Link href={`/admin/orders/${o._id}`} className="font-medium" style={{ color: GOLD }}>
-                      View
-                    </Link>
-                  </td>
+                  <td className="p-3">{formatINR(o.total)}</td>
+                  <td className="p-3 capitalize">{o.paymentStatus}</td>
+                  <td className="p-3 capitalize">{o.status}</td>
+                  <td className="p-3 text-xs text-brand-ink/50">{new Date(o.createdAt).toLocaleDateString('en-IN')}</td>
+                  <td className="p-3"><Link href={`/admin/orders/${o._id}`} className="text-brand-magenta font-medium">View</Link></td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {filteredOrders.length === 0 && (
-            <p className="text-center py-10" style={{ color: INK_MUTED }}>No orders found.</p>
-          )}
+          {filteredOrders.length === 0 && <p className="text-center text-brand-ink/40 py-10">No orders found.</p>}
         </div>
       )}
 

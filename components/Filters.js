@@ -21,21 +21,30 @@ export default function Filters({ sort, onSortChange }) {
   };
 
   return (
-    <div className="flex items-center justify-end py-4 border-b border-black/10">
+    <div
+      className="flex items-center justify-end py-3 px-4"
+      style={{ background: '#FAF7F2', borderBottom: '1.5px solid #EDE0C4' }}
+    >
       {/* Sort */}
-      <div className="flex items-center gap-3 shrink-0">
-        <span className="text-[11px] tracking-[0.15em] uppercase text-black/40">
-          Sort by
+      <div className="flex items-center gap-2 shrink-0">
+        <span
+          className="text-[11px] font-bold tracking-wide uppercase"
+          style={{ color: '#9A7A5A' }}
+        >
+          Sort
         </span>
         <select
           value={sort}
           onChange={(e) => handleChange(e.target.value)}
-          className="text-xs text-black outline-none border-none bg-transparent transition-colors cursor-pointer"
+          className="text-[11.5px] font-semibold rounded-full px-3 py-1 outline-none border-[1.5px] transition-colors"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%230A0A0A' stroke-width='1.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
+            background: '#fff',
+            borderColor: '#DDD0B8',
+            color: '#5a3a2a',
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238B1A1A' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
             backgroundRepeat: 'no-repeat',
-            backgroundPosition: 'right center',
-            paddingRight: '18px',
+            backgroundPosition: 'right 10px center',
+            paddingRight: '28px',
             appearance: 'none',
           }}
         >

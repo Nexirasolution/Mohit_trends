@@ -6,49 +6,6 @@ import toast from 'react-hot-toast';
 const WishlistContext = createContext(null);
 const STORAGE_KEY = 'lb_wishlist_v1';
 
-// ── Mohith Trends brand tokens — matches CartContext's toast styling ──
-const GOLD = '#C6A15B';
-
-const toastStyle = {
-  fontFamily: 'inherit',
-  fontSize: '13px',
-  fontWeight: 400,
-  color: '#0A0A0A',
-  background: '#FFFFFF',
-  borderRadius: '2px',
-  padding: '12px 16px',
-  boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-  border: '1px solid rgba(0,0,0,0.08)',
-};
-
-function mohithToast(message, dotColor = GOLD) {
-  return toast.custom((t) => (
-    <div
-      style={{
-        ...toastStyle,
-        opacity: t.visible ? 1 : 0,
-        transition: 'opacity 0.2s ease',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        minWidth: '220px',
-      }}
-    >
-      <span
-        style={{
-          width: '5px',
-          height: '5px',
-          borderRadius: '50%',
-          background: dotColor,
-          flexShrink: 0,
-        }}
-      />
-      <span style={{ flex: 1 }}>{message}</span>
-    </div>
-  ));
-}
-// ────────────────────────────────────────────────────────────────────
-
 export function WishlistProvider({ children }) {
   const [wishlist, setWishlist] = useState([]);
   const [loaded, setLoaded] = useState(false);
@@ -67,12 +24,12 @@ export function WishlistProvider({ children }) {
 
   const addToWishlist = useCallback((productId) => {
     setWishlist((prev) => (prev.includes(productId) ? prev : [...prev, productId]));
-    mohithToast('Added to wishlist', GOLD);
+    toast.success('Added to wishlist');
   }, []);
 
   const removeFromWishlist = useCallback((productId) => {
     setWishlist((prev) => prev.filter((id) => id !== productId));
-    mohithToast('Removed from wishlist', '#0A0A0A');
+    toast('Removed from wishlist', { icon: '💔' });
   }, []);
 
   const toggleWishlist = useCallback((productId) => {

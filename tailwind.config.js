@@ -17,14 +17,14 @@ module.exports = {
       },
       colors: {
         brand: {
-          pink: '#D9C48F',       // light gold — was bright red, now the light-gold fill/accent
-          magenta: '#A8842E',    // primary accent — was deep maroon, now the primary gold (wordmark, CTAs, prices)
-          rose: '#8C6D2F',       // secondary gold tint — for hovers/secondary accents
-          green: '#6B5B2C',      // folded into deep gold — no green in the new palette
-          deepgreen: '#6B5B2C',  // "savings" text — same deep gold, keeps one accent family
-          gold: '#6B5B2C',       // ring/scroll detailing — deep antique gold
-          cream: '#F6F1E7',      // warm champagne background
-          ink: '#14110D'         // near-black text, matches the logo's black M
+          pink: '#E0162F',       // bright red from the card's curved accent shapes
+          magenta: '#8B1A3D',    // deep maroon — primary brand color (wordmark, CTAs, prices)
+          rose: '#A8395C',       // lighter maroon tint, for hovers/secondary accents
+          green: '#3D8B5C',      // lighter green, for subtle highlights
+          deepgreen: '#1F6B3B',  // forest green from the logo's leaves
+          gold: '#D4AF37',       // gold ring/scroll detailing
+          cream: '#FBF6EC',      // warm off-white background
+          ink: '#2B1B14'         // dark brown-black text color
         }
       },
       fontFamily: {
@@ -32,7 +32,7 @@ module.exports = {
         body: ['var(--font-body)']
       },
       boxShadow: {
-        soft: '0 8px 30px -8px rgba(20,17,13,0.18)'
+        soft: '0 8px 30px -8px rgba(139,26,61,0.18)'
       },
       borderRadius: {
         xl2: '1.25rem'

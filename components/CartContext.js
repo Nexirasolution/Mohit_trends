@@ -6,53 +6,38 @@ import toast from 'react-hot-toast';
 const CartContext = createContext(null);
 const STORAGE_KEY = 'lb_cart_v1';
 
-// ── Mohith Trends brand tokens ─────────────────────────────────
-const INK  = '#0A0A0A';
-const GOLD = '#C6A15B';
-// ───────────────────────────────────────────────────────────────
+// ── SSRK brand tokens ──────────────────────────────────────────
+const CRIMSON = '#8B1A1A';
+const GOLD    = '#C9A84C';
+const GREEN   = '#2D6A2D';
+const RED     = '#c0392b';
 
 const toastBase = {
   duration: 2500,
   style: {
     fontFamily: 'inherit',
     fontSize: '13px',
-    fontWeight: 400,
-    color: '#0A0A0A',
+    fontWeight: 600,
+    color: '#3a1a1a',
     background: '#FFFFFF',
-    borderRadius: '2px',
-    padding: '12px 16px',
-    boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-    border: '1px solid rgba(0,0,0,0.08)',
+    borderRadius: '10px',
+    padding: '10px 14px',
+    boxShadow: '0 2px 12px rgba(139,26,26,0.12)',
+    borderLeft: `3px solid ${CRIMSON}`,
   },
 };
 
-function mohithToast(message, { dotColor = GOLD, ...opts } = {}) {
-  return toast.custom(
+function ssrkToast(message, opts = {}) {
+  return toast(
     (t) => (
-      <div
-        style={{
-          ...toastBase.style,
-          opacity: t.visible ? 1 : 0,
-          transition: 'opacity 0.2s ease',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          minWidth: '220px',
-        }}
-      >
-        <span
-          style={{
-            width: '5px',
-            height: '5px',
-            borderRadius: '50%',
-            background: dotColor,
-            flexShrink: 0,
-          }}
-        />
-        <span style={{ flex: 1 }}>{message}</span>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+        <span>{message}</span>
+        <span style={{ fontSize: 9, color: GOLD, fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase' }}>
+          SSRK Trending Collections
+        </span>
       </div>
     ),
-    { duration: toastBase.duration, ...opts }
+    { ...toastBase, ...opts }
   );
 }
 // ───────────────────────────────────────────────────────────────
@@ -122,16 +107,25 @@ export function CartProvider({ children }) {
     });
 
     if (blocked) {
-      mohithToast('Sorry, this item is out of stock', { dotColor: '#0A0A0A' });
+      ssrkToast('Sorry, this item is out of stock', {
+        icon: '⚠️',
+        style: { ...toastBase.style, borderLeftColor: RED },
+      });
       return;
     }
 
     if (clamped) {
-      mohithToast('Only limited stock available — quantity adjusted', { dotColor: GOLD });
+      ssrkToast('Only limited stock available — quantity adjusted', {
+        icon: '⚠️',
+        style: { ...toastBase.style, borderLeftColor: GOLD },
+      });
       return;
     }
 
-    mohithToast('Added to cart', { dotColor: GOLD });
+    ssrkToast('Added to cart', {
+      icon: '✓',
+      style: { ...toastBase.style, borderLeftColor: CRIMSON },
+    });
   }, []);
 
   const updateQty = useCallback((key, qty) => {
@@ -141,7 +135,10 @@ export function CartProvider({ children }) {
         const max = typeof i.stock === 'number' ? i.stock : Infinity;
         const nextQty = Math.max(1, Math.min(qty, max));
         if (qty > max) {
-          mohithToast(`Only ${max} left in stock`, { dotColor: GOLD });
+          ssrkToast(`Only ${max} left in stock`, {
+            icon: '⚠️',
+            style: { ...toastBase.style, borderLeftColor: GOLD },
+          });
         }
         return { ...i, qty: nextQty };
       })
@@ -150,7 +147,10 @@ export function CartProvider({ children }) {
 
   const removeItem = useCallback((key) => {
     setItems((prev) => prev.filter((i) => cartKey(i) !== key));
-    mohithToast('Removed from cart', { dotColor: '#0A0A0A' });
+    ssrkToast('Removed from cart', {
+      icon: '🗑️',
+      style: { ...toastBase.style, borderLeftColor: GOLD },
+    });
   }, []);
 
   /**
@@ -170,7 +170,10 @@ export function CartProvider({ children }) {
 
   const clearCart = useCallback(() => {
     setItems([]);
-    mohithToast('Cart cleared', { dotColor: '#0A0A0A' });
+    ssrkToast('Cart cleared', {
+      icon: '✕',
+      style: { ...toastBase.style, borderLeftColor: GREEN },
+    });
   }, []);
 
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);

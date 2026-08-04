@@ -7,13 +7,13 @@ import { Package, Phone, Truck, Star, X, Loader2, ImagePlus, CheckCircle2 } from
 import { formatINR } from '@/lib/utils';
 
 const STATUS_STYLES = {
-  placed: 'bg-brand-cream text-brand-ink/70 border border-brand-ink/15',
-  confirmed: 'bg-white text-brand-ink border border-brand-gold/40',
-  packed: 'bg-brand-gold/10 text-brand-gold border border-brand-gold/30',
-  shipped: 'bg-brand-ink/5 text-brand-ink border border-brand-ink/20',
-  delivered: 'bg-brand-ink text-brand-cream border border-brand-ink',
-  cancelled: 'bg-red-50 text-red-700 border border-red-200',
-  returned: 'bg-gray-50 text-gray-600 border border-gray-200'
+  placed: 'bg-brand-cream text-brand-ink/70 border border-brand-ink/10',
+  confirmed: 'bg-brand-gold/15 text-brand-ink border border-brand-gold/40',
+  packed: 'bg-brand-magenta/10 text-brand-magenta border border-brand-magenta/25',
+  shipped: 'bg-brand-magenta/15 text-brand-magenta border border-brand-magenta/30',
+  delivered: 'bg-brand-deepgreen/10 text-brand-deepgreen border border-brand-deepgreen/30',
+  cancelled: 'bg-red-50 text-red-600 border border-red-200',
+  returned: 'bg-gray-100 text-gray-600 border border-gray-200'
 };
 
 function ReviewForm({ order, item, phone, onDone }) {
@@ -68,7 +68,7 @@ function ReviewForm({ order, item, phone, onDone }) {
   }
 
   return (
-    <div className="border border-brand-ink/10 p-3 mt-2 bg-white">
+    <div className="border border-brand-gold/30 rounded-xl p-3 mt-2 bg-brand-cream/40">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs font-semibold text-brand-ink">Rate {item.name}</span>
         <button onClick={onDone} type="button"><X size={14} className="text-brand-ink/40" /></button>
@@ -83,15 +83,15 @@ function ReviewForm({ order, item, phone, onDone }) {
       <textarea
         rows={2}
         placeholder="How was the product?"
-        className="w-full border border-brand-ink/15 px-3 py-2 text-sm mb-2 focus:outline-none focus:ring-1 focus:ring-brand-gold"
+        className="w-full border border-brand-ink/15 rounded-lg px-3 py-2 text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-brand-magenta/30"
         value={comment}
         onChange={(e) => setComment(e.target.value)}
       />
       <div className="flex flex-wrap gap-2 mb-2">
         {images.map((url, i) => (
-          <img key={i} src={url} alt="" className="w-12 h-12 object-cover border border-brand-ink/10" />
+          <img key={i} src={url} alt="" className="w-12 h-12 rounded-lg object-cover border border-brand-gold/20" />
         ))}
-        <label className="w-12 h-12 border border-dashed border-brand-ink/25 flex items-center justify-center cursor-pointer text-brand-ink/40">
+        <label className="w-12 h-12 rounded-lg border border-dashed border-brand-gold/40 flex items-center justify-center cursor-pointer text-brand-ink/40">
           {uploading ? <Loader2 size={16} className="animate-spin" /> : <ImagePlus size={16} />}
           <input type="file" accept="image/*" multiple className="hidden" onChange={handleImageUpload} disabled={uploading} />
         </label>
@@ -99,7 +99,7 @@ function ReviewForm({ order, item, phone, onDone }) {
       <button
         onClick={submit}
         disabled={submitting}
-        className="btn-primary text-xs px-4 py-2 disabled:opacity-50"
+        className="bg-brand-magenta text-white text-xs font-semibold px-4 py-2 rounded-lg disabled:opacity-50"
       >
         {submitting ? 'Submitting…' : 'Submit Review'}
       </button>
@@ -169,9 +169,8 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10 min-h-[60vh] bg-brand-cream">
-      <span className="eyebrow">Track & Review</span>
-      <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-ink mt-1.5 mb-1">My Orders</h1>
+    <div className="max-w-2xl mx-auto px-4 py-8 min-h-[60vh]">
+      <h1 className="font-display text-2xl font-bold text-brand-ink mb-1">My Orders</h1>
       <p className="text-brand-ink/50 text-sm mb-6">
         Enter the phone number you used at checkout to view your orders.
       </p>
@@ -186,51 +185,51 @@ export default function OrdersPage() {
             onChange={(e) => setPhone(e.target.value)}
             placeholder="10-digit phone number"
             maxLength={10}
-            className="w-full pl-9 pr-3 py-2.5 border border-brand-ink/15 bg-white text-sm focus:outline-none focus:ring-1 focus:ring-brand-gold"
+            className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-brand-ink/15 text-sm focus:outline-none focus:ring-2 focus:ring-brand-magenta/30"
           />
         </div>
         <button
           type="submit"
           disabled={loading}
-          className="btn-primary text-sm px-5 disabled:opacity-50 shrink-0"
+          className="bg-brand-magenta text-white font-semibold text-sm px-5 py-2.5 rounded-xl disabled:opacity-50 shrink-0"
         >
           {loading ? 'Searching...' : 'Find Orders'}
         </button>
       </form>
 
-      {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+      {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
 
       {orders !== null && orders.length === 0 && !error && (
-        <div className="text-center py-16 border border-dashed border-brand-ink/15 mt-4">
-          <Package size={30} strokeWidth={1.25} className="mx-auto mb-2 text-brand-gold" />
-          <p className="text-sm text-brand-ink/50">No orders found for this number</p>
+        <div className="text-center py-16 text-brand-ink/40">
+          <Package size={36} className="mx-auto mb-2 text-brand-gold" />
+          <p className="text-sm">No orders found for this number</p>
         </div>
       )}
 
-      <div className="space-y-3 mt-6">
+      <div className="space-y-3 mt-4">
         {orders?.map((o) => (
-          <div key={o._id} className="border border-brand-ink/10 p-4 bg-white">
+          <div key={o._id} className="border border-brand-gold/25 rounded-2xl p-4">
             <div className="flex items-center justify-between mb-3">
-              <span className="text-xs font-semibold text-brand-ink/50 tracking-wide">#{o.orderNumber}</span>
+              <span className="text-xs font-semibold text-brand-ink/50">#{o.orderNumber}</span>
               <span
-                className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 ${
-                  STATUS_STYLES[o.status] || 'bg-gray-100 text-gray-700 border border-gray-200'
+                className={`text-[11px] font-bold px-2 py-0.5 rounded-full capitalize ${
+                  STATUS_STYLES[o.status] || 'bg-gray-100 text-gray-700'
                 }`}
               >
                 {o.status}
               </span>
             </div>
 
-            <div className="space-y-2 mb-3 divide-y divide-brand-ink/5">
+            <div className="space-y-2 mb-3">
               {o.items.map((it, i) => {
                 const reviewKey = `${o._id}-${it.product}`;
                 const alreadyReviewed = reviewedMap[o._id]?.has(String(it.product));
                 const canReview = o.status === 'delivered' && it.product && !it.isCombo;
 
                 return (
-                  <div key={i} className={i > 0 ? 'pt-2' : ''}>
+                  <div key={i}>
                     <div className="flex items-center gap-2">
-                      <div className="w-12 h-12 overflow-hidden bg-brand-cream shrink-0 relative border border-brand-ink/10">
+                      <div className="w-12 h-12 rounded-lg overflow-hidden bg-brand-cream shrink-0 relative border border-brand-gold/15">
                         {it.image && <Image src={it.image} alt={it.name} fill className="object-cover" />}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -239,14 +238,14 @@ export default function OrdersPage() {
                       </div>
                       {canReview && (
                         alreadyReviewed ? (
-                          <span className="flex items-center gap-1 text-[11px] text-brand-ink/50 shrink-0">
+                          <span className="flex items-center gap-1 text-[11px] text-brand-deepgreen shrink-0">
                             <CheckCircle2 size={13} /> Reviewed
                           </span>
                         ) : (
                           <button
                             type="button"
                             onClick={() => setOpenReview(openReview === reviewKey ? null : reviewKey)}
-                            className="flex items-center gap-1 text-[11px] font-semibold text-brand-gold shrink-0 uppercase tracking-wide"
+                            className="flex items-center gap-1 text-[11px] font-semibold text-brand-magenta shrink-0"
                           >
                             <Star size={13} /> Rate
                           </button>
@@ -266,16 +265,16 @@ export default function OrdersPage() {
               })}
             </div>
 
-            <div className="flex items-center justify-between text-sm mb-1 pt-2 border-t border-brand-ink/10">
+            <div className="flex items-center justify-between text-sm mb-1">
               <span className="text-brand-ink/60">
                 {o.items.length} item{o.items.length > 1 ? 's' : ''}
               </span>
-              <span className="font-bold text-brand-ink">{formatINR(o.total)}</span>
+              <span className="font-bold text-brand-magenta">{formatINR(o.total)}</span>
             </div>
 
             {o.courier?.trackingId && (
               <div className="flex items-center gap-1.5 text-[11px] text-brand-ink/50 mt-1">
-                <Truck size={12} className="text-brand-gold" />
+                <Truck size={12} className="text-brand-deepgreen" />
                 {o.courier.partner} · {o.courier.trackingId}
               </div>
             )}

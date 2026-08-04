@@ -13,7 +13,6 @@ export default function Navbar() {
   const [categories, setCategories] = useState([]);
   const [query, setQuery] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const router = useRouter();
   const { count } = useCart();
   const { wishlist } = useWishlist();
@@ -33,142 +32,217 @@ export default function Navbar() {
 
   return (
     <>
-      <CouponMarquee />
+      {/* Coupon marquee — crimson bar with gold text */}
+      {/* <CouponMarquee /> */}
 
-      <header className="sticky top-0 z-50 bg-white">
-        <div className="max-w-6xl mx-auto px-6">
-          {/* Main row */}
-          <div className="flex items-center justify-between h-16">
+      <header className="sticky top-0 z-50 bg-white shadow-sm" style={{ borderBottom: '3px solid #8B0000' }}>
+        {/* Top accent strip */}
+        <div
+          className="text-center text-xs py-1 font-sans tracking-widest"
+          style={{ background: '#8B0000', color: '#C9A84C' }}
+        >
+          Mohith Trends — Authentic Women's Fashion
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Main nav row */}
+          <div className="flex items-center justify-between gap-3 py-3">
             {/* Mobile menu toggle */}
             <button
-              className="md:hidden -ml-2 p-2 text-black/70"
+              className="md:hidden p-2 -ml-2"
               onClick={() => setMenuOpen((v) => !v)}
               aria-label="Menu"
+              style={{ color: '#8B0000' }}
             >
-              {menuOpen ? <X size={18} strokeWidth={1.25} /> : <Menu size={18} strokeWidth={1.25} />}
+              {menuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
 
-            {/* Brand */}
-            <Link href="/" className="flex items-center gap-3 shrink-0">
-              <div className="relative w-12 h-12 sm:w-14 sm:h-14">
-                <Image
-                  src="/logo.png"
-                  alt="Mohith Trends"
-                  fill
-                  className="object-contain"
-                  priority
-                />
+            {/* Brand / Logo */}
+            <Link href="/" className="flex items-center gap-2.5 shrink-0">
+              <div
+                className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden"
+                // style={{
+                //   border: '2.5px solid #8B0000',
+                //   outline: '1.5px solid #C9A84C',
+                //   outlineOffset: '2px',
+                // }}
+              >
+                <Image src="/logo.png" alt="SSRK Trending Collections" fill className="object-cover scale-125" />
               </div>
-              <span className="hidden sm:block font-serif text-base tracking-wide text-black">
-                Mohith Trends
-              </span>
+              <div className="hidden sm:flex flex-col leading-tight">
+                <span
+                  className="font-bold text-xl tracking-wide"
+                  style={{ color: '#8B0000', fontFamily: 'Georgia, serif' }}
+                >
+                  Mohith 
+                </span>
+                <span
+                  className="text-[10px] tracking-[2px] uppercase font-sans"
+                  style={{ color: '#5a5a5a' }}
+                >
+                  Trends
+                </span>
+              </div>
             </Link>
 
-            {/* Search — desktop, understated */}
+            {/* Search — desktop */}
             <form
               onSubmit={onSearch}
-              className="flex-1 max-w-xs hidden md:flex items-center gap-2 mx-8"
+              className="flex-1 max-w-lg hidden sm:flex items-center gap-2 rounded-full px-4 py-2"
+              style={{
+                background: '#fdf5f5',
+                border: '1.5px solid #8B0000',
+              }}
             >
-              <Search size={14} strokeWidth={1.25} className="text-black/30 shrink-0" />
+              <Search size={17} style={{ color: '#8B0000', flexShrink: 0 }} />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search"
-                className="bg-transparent outline-none w-full text-sm text-black placeholder:text-black/30 font-light"
+                placeholder="Search kurtis, nighties, innerwear..."
+                className="bg-transparent outline-none w-full text-sm font-sans"
+                style={{ color: '#333' }}
               />
             </form>
 
-            {/* Icons */}
+            {/* Nav icons */}
             <div className="flex items-center gap-1">
-              {/* Search — mobile toggle */}
-              <button
-                className="md:hidden flex items-center justify-center w-9 h-9 text-black/60"
-                onClick={() => setSearchOpen((v) => !v)}
-                aria-label="Search"
-              >
-                <Search size={17} strokeWidth={1.25} />
-              </button>
-
+              {/* Orders — desktop */}
               <Link
                 href="/orders"
-                className="hidden md:flex items-center justify-center w-9 h-9 text-black/60 hover:text-black transition-colors"
+                className="hidden md:flex items-center justify-center w-10 h-10 rounded-full border border-transparent transition-all"
+                style={{ color: '#8B0000' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#fdf0f0';
+                  e.currentTarget.style.borderColor = '#8B0000';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'transparent';
+                }}
                 aria-label="My Orders"
               >
-                <ClipboardList size={17} strokeWidth={1.25} />
+                <ClipboardList size={22} />
               </Link>
 
+              {/* Wishlist — desktop */}
               <Link
                 href="/wishlist"
-                className="hidden md:flex relative items-center justify-center w-9 h-9 text-black/60 hover:text-black transition-colors"
+                className="hidden md:flex relative items-center justify-center w-10 h-10 rounded-full border border-transparent transition-all"
+                style={{ color: '#8B0000' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#fdf0f0';
+                  e.currentTarget.style.borderColor = '#8B0000';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'transparent';
+                }}
                 aria-label="Wishlist"
               >
-                <Heart size={17} strokeWidth={1.25} />
+                <Heart size={22} />
                 {wishlistCount > 0 && (
-                  <span className="absolute top-1.5 right-1 w-1.5 h-1.5 rounded-full bg-[#C6A15B]" />
+                  <span
+                    className="absolute -top-0.5 -right-0.5 text-[9px] font-bold font-sans rounded-full w-[17px] h-[17px] flex items-center justify-center"
+                    style={{ background: '#C9A84C', color: '#8B0000', border: '1px solid #fff' }}
+                  >
+                    {wishlistCount}
+                  </span>
                 )}
               </Link>
 
+              {/* Cart — all sizes */}
               <Link
                 href="/cart"
-                className="relative flex items-center justify-center w-9 h-9 text-black/60 hover:text-black transition-colors"
+                className="relative flex items-center justify-center w-10 h-10 rounded-full border border-transparent transition-all"
+                style={{ color: '#8B0000' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#fdf0f0';
+                  e.currentTarget.style.borderColor = '#8B0000';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.borderColor = 'transparent';
+                }}
                 aria-label="Cart"
               >
-                <ShoppingBag size={18} strokeWidth={1.25} />
+                <ShoppingBag size={24} />
                 {count > 0 && (
-                  <span className="absolute top-1.5 right-1 w-1.5 h-1.5 rounded-full bg-[#C6A15B]" />
+                  <span
+                    className="absolute -top-0.5 -right-0.5 text-[9px] font-bold font-sans rounded-full w-[17px] h-[17px] flex items-center justify-center"
+                    style={{ background: '#C9A84C', color: '#8B0000', border: '1px solid #fff' }}
+                  >
+                    {count}
+                  </span>
                 )}
               </Link>
             </div>
           </div>
 
-          {/* Search — mobile, only when opened */}
-          {searchOpen && (
-            <form onSubmit={onSearch} className="md:hidden flex items-center gap-2 pb-3">
-              <Search size={14} strokeWidth={1.25} className="text-black/30 shrink-0" />
-              <input
-                autoFocus
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search"
-                className="bg-transparent outline-none w-full text-sm text-black placeholder:text-black/30 font-light"
-              />
-            </form>
-          )}
+          {/* Search — mobile */}
+          <form
+            onSubmit={onSearch}
+            className="flex sm:hidden items-center gap-2 rounded-full px-4 py-2 mb-3"
+            style={{ background: '#fdf5f5', border: '1.5px solid #8B0000' }}
+          >
+            <Search size={16} style={{ color: '#8B0000', flexShrink: 0 }} />
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search kurtis, nighties, innerwear..."
+              className="bg-transparent outline-none w-full text-sm font-sans"
+            />
+          </form>
 
-          {/* Categories — desktop */}
-          <nav className="hidden md:flex items-center gap-7 h-11 overflow-x-auto no-scrollbar">
-            {categories.map((c) => (
+          {/* Gold divider */}
+          <div
+            style={{
+              height: '2px',
+              background: 'linear-gradient(90deg, transparent, #C9A84C 20%, #C9A84C 80%, transparent)',
+            }}
+          />
+
+          {/* Category nav — desktop horizontal */}
+          <nav className="hidden md:flex items-center overflow-x-auto no-scrollbar">
+            {categories.map((c, i) => (
               <Link
                 key={c._id}
                 href={`/category/${c.slug}`}
-                className="text-[11px] tracking-[0.08em] uppercase whitespace-nowrap text-black/45 hover:text-black transition-colors"
+                className="px-4 py-2.5 text-sm font-sans font-medium whitespace-nowrap transition-all"
+                style={{ color: '#5a2020', borderBottom: '2.5px solid transparent' }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = '#8B0000';
+                  e.currentTarget.style.borderBottomColor = '#8B0000';
+                  e.currentTarget.style.background = '#fdf5f5';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = '#5a2020';
+                  e.currentTarget.style.borderBottomColor = 'transparent';
+                  e.currentTarget.style.background = 'transparent';
+                }}
               >
                 {c.name}
               </Link>
             ))}
           </nav>
 
-          {/* Mobile menu */}
+          {/* Mobile menu dropdown */}
           {menuOpen && (
-            <nav className="md:hidden flex flex-col gap-4 pt-1 pb-5">
+            <nav className="md:hidden flex flex-wrap gap-2 py-3">
               {categories.map((c) => (
                 <Link
                   key={c._id}
                   href={`/category/${c.slug}`}
                   onClick={() => setMenuOpen(false)}
-                  className="text-[11px] tracking-[0.08em] uppercase text-black/60"
+                  className="px-4 py-2 rounded-full text-sm font-medium font-sans transition-all"
+                  style={{
+                    background: '#fdf5f5',
+                    color: '#8B0000',
+                    border: '1px solid #8B0000',
+                  }}
                 >
                   {c.name}
                 </Link>
               ))}
-              <div className="flex gap-6 pt-2 mt-1 border-t border-black/10">
-                <Link href="/orders" className="text-[11px] tracking-[0.08em] uppercase text-black/60">
-                  Orders
-                </Link>
-                <Link href="/wishlist" className="text-[11px] tracking-[0.08em] uppercase text-black/60">
-                  Wishlist {wishlistCount > 0 && `(${wishlistCount})`}
-                </Link>
-              </div>
             </nav>
           )}
         </div>

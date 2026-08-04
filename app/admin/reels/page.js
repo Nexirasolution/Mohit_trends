@@ -4,13 +4,6 @@ import { useEffect, useRef, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Plus, Trash2, X, Upload, Loader2, Video } from 'lucide-react';
 
-// Mohith Trends theme tokens — keep in sync with other admin pages until centralized in tailwind.config.js
-const GOLD = '#B08D3F';
-const INK = '#1A1A1A';
-const INK_MUTED = '#6B6B66';
-const HAIRLINE = '#E8E4DA';
-const PAPER = '#FDFCFA';
-
 const emptyForm = { title: '', videoUrl: '', thumbnail: '', instagramLink: '', product: '', sortOrder: 0 };
 
 function UploadSlot({ value, accept, folder, placeholder, icon: Icon, preview: PreviewComp, onChange }) {
@@ -38,26 +31,23 @@ function UploadSlot({ value, accept, folder, placeholder, icon: Icon, preview: P
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1">
       {/* Click area */}
       <div
         onClick={() => !uploading && fileRef.current?.click()}
-        className="w-full h-28 flex flex-col items-center justify-center cursor-pointer transition-colors overflow-hidden relative"
-        style={{ border: `1px dashed ${HAIRLINE}`, background: PAPER }}
-        onMouseEnter={(e) => (e.currentTarget.style.borderColor = GOLD)}
-        onMouseLeave={(e) => (e.currentTarget.style.borderColor = HAIRLINE)}
+        className="w-full h-28 border-2 border-dashed rounded-lg flex flex-col items-center justify-center cursor-pointer hover:border-brand-magenta transition-colors overflow-hidden relative bg-brand-cream/40"
       >
         {value ? (
           PreviewComp ? <PreviewComp url={value} /> : <img src={value} alt="" className="w-full h-full object-cover" />
         ) : (
-          <div className="flex flex-col items-center gap-1 text-xs" style={{ color: INK_MUTED }}>
-            <Icon size={20} />
+          <div className="flex flex-col items-center gap-1 text-brand-ink/40 text-xs">
+            <Icon size={22} />
             <span>{placeholder}</span>
           </div>
         )}
         {uploading && (
-          <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(253,252,250,0.8)' }}>
-            <Loader2 size={20} className="animate-spin" style={{ color: GOLD }} />
+          <div className="absolute inset-0 bg-white/70 flex items-center justify-center">
+            <Loader2 size={22} className="animate-spin text-brand-magenta" />
           </div>
         )}
       </div>
@@ -66,8 +56,7 @@ function UploadSlot({ value, accept, folder, placeholder, icon: Icon, preview: P
       {/* Manual URL fallback */}
       <input
         placeholder={`Or paste URL — ${placeholder}`}
-        className="w-full px-1 py-1.5 text-xs outline-none bg-transparent"
-        style={{ borderBottom: `1px solid ${HAIRLINE}`, color: INK_MUTED }}
+        className="w-full border rounded-lg px-3 py-2 text-xs text-brand-ink/60"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -112,42 +101,25 @@ export default function AdminReelsPage() {
     load();
   }
 
-  const inputStyle = {
-    borderBottom: `1px solid ${HAIRLINE}`,
-    color: INK,
-    background: 'transparent',
-  };
-
   return (
-    <div style={{ background: PAPER }}>
-      <div className="flex items-center justify-between mb-6">
-        <h1
-          className="text-2xl tracking-tight"
-          style={{ color: INK, fontFamily: 'Georgia, "Times New Roman", serif' }}
-        >
-          Shop by Reels
-        </h1>
-        <button
-          onClick={() => setShowForm(true)}
-          className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 transition-colors"
-          style={{ background: INK, color: PAPER }}
-        >
-          <Plus size={15} /> Add Reel
+    <div>
+      <div className="flex items-center justify-between mb-5">
+        <h1 className="font-display text-2xl font-bold text-brand-magenta">Shop by Reels</h1>
+        <button onClick={() => setShowForm(true)} className="btn-primary flex items-center gap-1 text-sm">
+          <Plus size={16} /> Add Reel
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={submit} className="mb-8 pb-8 space-y-4" style={{ borderBottom: `1px solid ${HAIRLINE}` }}>
-          <div className="flex justify-between items-center">
-            <h2 className="text-[11px] uppercase tracking-wide" style={{ color: INK_MUTED }}>New Reel</h2>
-            <button type="button" onClick={closeForm} style={{ color: INK_MUTED }} className="hover:opacity-70">
-              <X size={17} />
-            </button>
+        <form onSubmit={submit} className="card-soft p-5 mb-6 space-y-3">
+          <div className="flex justify-between">
+            <h2 className="font-semibold">New Reel</h2>
+            <button type="button" onClick={closeForm}><X size={18} /></button>
           </div>
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <p className="text-xs font-medium mb-1.5" style={{ color: INK_MUTED }}>Video * (.mp4, .mov)</p>
+              <p className="text-xs font-medium text-brand-ink/60 mb-1">Video * (.mp4, .mov)</p>
               <UploadSlot
                 value={form.videoUrl}
                 accept="video/*"
@@ -159,7 +131,7 @@ export default function AdminReelsPage() {
               />
             </div>
             <div>
-              <p className="text-xs font-medium mb-1.5" style={{ color: INK_MUTED }}>Thumbnail image</p>
+              <p className="text-xs font-medium text-brand-ink/60 mb-1">Thumbnail image</p>
               <UploadSlot
                 value={form.thumbnail}
                 accept="image/*"
@@ -173,14 +145,12 @@ export default function AdminReelsPage() {
 
           <input
             placeholder="Instagram reel link"
-            className="w-full px-1 py-2 text-sm outline-none"
-            style={inputStyle}
+            className="w-full border rounded-lg px-3 py-2 text-sm"
             value={form.instagramLink}
             onChange={(e) => setForm({ ...form, instagramLink: e.target.value })}
           />
           <select
-            className="w-full px-1 py-2 text-sm outline-none bg-transparent"
-            style={{ borderBottom: `1px solid ${HAIRLINE}`, color: INK }}
+            className="w-full border rounded-lg px-3 py-2 text-sm"
             value={form.product}
             onChange={(e) => setForm({ ...form, product: e.target.value })}
           >
@@ -188,19 +158,14 @@ export default function AdminReelsPage() {
             {products.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
           </select>
 
-          <button
-            className="text-sm font-medium px-4 py-2 transition-colors"
-            style={{ background: INK, color: PAPER }}
-          >
-            Create
-          </button>
+          <button className="btn-primary text-sm">Create</button>
         </form>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-5">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {reels.map((r) => (
-          <div key={r._id} className="overflow-hidden">
-            <div className="aspect-[9/16] overflow-hidden" style={{ background: HAIRLINE }}>
+          <div key={r._id} className="card-soft overflow-hidden">
+            <div className="aspect-[9/16] bg-brand-cream overflow-hidden">
               {r.thumbnail
                 ? <img src={r.thumbnail} alt={r.title} className="w-full h-full object-cover" />
                 : r.videoUrl
@@ -209,11 +174,9 @@ export default function AdminReelsPage() {
                   : null
               }
             </div>
-            <div className="pt-2 flex items-center justify-between">
-              <p className="text-xs line-clamp-1" style={{ color: INK }}>{r.product?.name || r.title || 'Reel'}</p>
-              <button onClick={() => remove(r._id)} style={{ color: INK_MUTED }} className="hover:opacity-70">
-                <Trash2 size={13} />
-              </button>
+            <div className="p-2 flex items-center justify-between">
+              <p className="text-xs line-clamp-1">{r.product?.name || r.title || 'Reel'}</p>
+              <button onClick={() => remove(r._id)} className="text-brand-magenta"><Trash2 size={14} /></button>
             </div>
           </div>
         ))}

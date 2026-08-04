@@ -7,28 +7,41 @@ import toast from 'react-hot-toast';
 import { useCart, cartKey } from '@/components/CartContext';
 import { formatINR } from '@/lib/utils';
 
-// Mohith Trends brand tokens
-// Ink   : #0A0A0A
-// Gold  : #C6A15B
-// Ivory : #FAF9F6
+// SSRK Brand Colors
+// Crimson : #8B0000
+// Gold    : #C9A84C
+// Cream   : #fdf5f5
 
 const inputStyle = {
   width: '100%',
-  border: '1px solid #E5E2DC',
-  borderRadius: '2px',
-  padding: '11px 12px',
+  border: '1.5px solid #e8d5d5',
+  borderRadius: '8px',
+  padding: '10px 12px',
   fontSize: '14px',
-  fontFamily: 'inherit',
-  color: '#0A0A0A',
+  fontFamily: 'sans-serif',
+  color: '#1a1a1a',
   background: '#fff',
   outline: 'none',
   transition: 'border-color 0.15s',
 };
 
-function focusGold(e) { e.target.style.borderColor = '#C6A15B'; }
-function blurDefault(e) { e.target.style.borderColor = '#E5E2DC'; }
+const cardStyle = {
+  background: '#fff',
+  borderRadius: '12px',
+  border: '1.5px solid #e8d5d5',
+  padding: '20px',
+  boxShadow: '0 2px 8px rgba(139,0,0,0.06)',
+};
 
-function BrandInput({ placeholder, type = 'text', value, onChange, autoComplete, inputMode, maxLength }) {
+const sectionHeadStyle = {
+  fontSize: '15px',
+  fontWeight: '700',
+  color: '#8B0000',
+  fontFamily: 'Georgia, serif',
+  marginBottom: '12px',
+};
+
+function SSRKInput({ placeholder, type = 'text', value, onChange, autoComplete, inputMode, maxLength }) {
   return (
     <input
       type={type}
@@ -39,18 +52,9 @@ function BrandInput({ placeholder, type = 'text', value, onChange, autoComplete,
       value={value}
       onChange={onChange}
       style={inputStyle}
-      onFocus={focusGold}
-      onBlur={blurDefault}
+      onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+      onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
     />
-  );
-}
-
-function SectionHead({ children }) {
-  return (
-    <div className="mb-5">
-      <p className="text-[11px] tracking-[0.2em] uppercase text-black/40 font-medium">{children}</p>
-      <div className="h-px w-full bg-black/10 mt-3" />
-    </div>
   );
 }
 
@@ -200,7 +204,7 @@ export default function CheckoutPage() {
           name: 'Mohith Trends',
           order_id: orderData.order.id,
           prefill: { name: form.name, contact: form.phone, email: form.email },
-          theme: { color: '#0A0A0A' },
+          theme: { color: '#8B0000' },
           handler: async function (response) {
             const finalRes = await fetch('/api/orders', {
               method: 'POST',
@@ -254,39 +258,51 @@ export default function CheckoutPage() {
   const placeOrderDisabled = submitting || shippingLoading || checkingStock || shipping === null;
 
   return (
-    <div className="max-w-4xl mx-auto px-6 py-10 sm:py-14">
+    <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
 
       {/* Page heading */}
-      <div className="mb-10 text-center">
-        <h1 className="font-serif text-[1.75rem] text-black">Checkout</h1>
-        <div className="flex items-center justify-center gap-3 mt-2">
-          <span className="h-px w-8 bg-[#C6A15B]" />
-          <span className="text-[#C6A15B] text-xs">✦</span>
-          <span className="h-px w-8 bg-[#C6A15B]" />
+      <div className="mb-6">
+        <h1 style={{ color: '#8B0000', fontFamily: 'Georgia, serif', fontSize: '24px', fontWeight: '700', letterSpacing: '0.5px' }}>
+          Checkout
+        </h1>
+        <div className="flex items-center gap-2 mt-1">
+          <div style={{ height: '1px', width: '40px', background: '#C9A84C' }} />
+          <span style={{ color: '#C9A84C', fontSize: '12px' }}>✦</span>
+          <div style={{ height: '1px', width: '40px', background: '#C9A84C' }} />
         </div>
       </div>
 
       {/* Free shipping nudge */}
       {freeShippingAbove !== null && shipping !== null && shipping > 0 && (
-        <div className="flex items-center gap-2 px-4 py-3 mb-8 text-xs border border-black/10 text-black/60">
-          <span className="text-[#C6A15B]">✦</span>
-          Add <strong className="text-black font-medium">{formatINR(freeShippingAbove - discountedSubtotal)}</strong>&nbsp;more to get&nbsp;
-          <strong className="text-black font-medium">free shipping</strong>
+        <div
+          className="flex items-center gap-2 px-4 py-2.5 mb-4 text-xs"
+          style={{
+            background: '#fdf5f5',
+            border: '1.5px solid #C9A84C',
+            borderRadius: '8px',
+            color: '#5a2020',
+            fontFamily: 'sans-serif',
+          }}
+        >
+          <span style={{ color: '#C9A84C' }}>✦</span>
+          Add <strong style={{ color: '#8B0000' }}>{formatINR(freeShippingAbove - discountedSubtotal)}</strong> more to get{' '}
+          <strong style={{ color: '#2e7d32' }}>free shipping!</strong>
         </div>
       )}
 
-      <div className="flex flex-col gap-10 sm:grid sm:grid-cols-2 sm:gap-16">
+      <div className="flex flex-col gap-6 sm:grid sm:grid-cols-2 sm:gap-8">
 
         {/* Shipping Details */}
-        <div>
-          <SectionHead>Shipping Details</SectionHead>
+        <div style={cardStyle}>
+          <p style={sectionHeadStyle}>Shipping Details</p>
+          <div style={{ height: '1px', background: '#C9A84C', opacity: 0.4, marginBottom: '16px' }} />
           <div className="space-y-3">
-            <BrandInput placeholder="Full Name *" autoComplete="name" value={form.name} onChange={(e) => update('name', e.target.value)} />
-            <BrandInput placeholder="Phone Number *" type="tel" inputMode="numeric" autoComplete="tel" value={form.phone} onChange={(e) => update('phone', e.target.value)} />
-            <BrandInput placeholder="Email (optional)" type="email" autoComplete="email" value={form.email} onChange={(e) => update('email', e.target.value)} />
-            <BrandInput placeholder="Address Line 1 *" autoComplete="address-line1" value={form.line1} onChange={(e) => update('line1', e.target.value)} />
-            <BrandInput placeholder="Address Line 2" autoComplete="address-line2" value={form.line2} onChange={(e) => update('line2', e.target.value)} />
+            <SSRKInput placeholder="Full Name *" autoComplete="name" value={form.name} onChange={(e) => update('name', e.target.value)} />
+            <SSRKInput placeholder="Phone Number *" type="tel" inputMode="numeric" autoComplete="tel" value={form.phone} onChange={(e) => update('phone', e.target.value)} />
+            <SSRKInput placeholder="Email (optional)" type="email" autoComplete="email" value={form.email} onChange={(e) => update('email', e.target.value)} />
+            <SSRKInput placeholder="Address Line 1 *" autoComplete="address-line1" value={form.line1} onChange={(e) => update('line1', e.target.value)} />
+            <SSRKInput placeholder="Address Line 2" autoComplete="address-line2" value={form.line2} onChange={(e) => update('line2', e.target.value)} />
             <div className="grid grid-cols-2 gap-3">
               <input
                 placeholder="City *"
@@ -294,8 +310,8 @@ export default function CheckoutPage() {
                 value={form.city}
                 onChange={(e) => update('city', e.target.value)}
                 style={{ ...inputStyle, width: 'auto' }}
-                onFocus={focusGold}
-                onBlur={blurDefault}
+                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
               />
               <input
                 placeholder="State"
@@ -303,8 +319,8 @@ export default function CheckoutPage() {
                 value={form.state}
                 onChange={(e) => update('state', e.target.value)}
                 style={{ ...inputStyle, width: 'auto' }}
-                onFocus={focusGold}
-                onBlur={blurDefault}
+                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -316,102 +332,118 @@ export default function CheckoutPage() {
                 value={form.pincode}
                 onChange={(e) => update('pincode', e.target.value)}
                 style={{ ...inputStyle, width: 'auto' }}
-                onFocus={focusGold}
-                onBlur={blurDefault}
+                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
               />
               <input
                 placeholder="Landmark"
                 value={form.landmark}
                 onChange={(e) => update('landmark', e.target.value)}
                 style={{ ...inputStyle, width: 'auto' }}
-                onFocus={focusGold}
-                onBlur={blurDefault}
+                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
               />
             </div>
           </div>
         </div>
 
         {/* Right column */}
-        <div className="flex flex-col gap-9">
+        <div className="flex flex-col gap-4">
 
           {/* Order Summary */}
-          <div>
-            <SectionHead>Order Summary</SectionHead>
+          <div style={cardStyle}>
+            <p style={sectionHeadStyle}>Order Summary</p>
+            <div style={{ height: '1px', background: '#C9A84C', opacity: 0.4, marginBottom: '12px' }} />
 
-            <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+            <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
               {items.map((i, idx) => (
-                <div key={idx} className="flex justify-between text-sm py-1 gap-2 text-black/70 font-light">
+                <div key={idx} className="flex justify-between text-sm py-1 gap-2" style={{ color: '#5a2020', fontFamily: 'sans-serif' }}>
                   <span className="truncate">{i.name} ({i.color}/{i.size}) ×{i.qty}</span>
-                  <span className="shrink-0 text-black">{formatINR(i.price * i.qty)}</span>
+                  <span className="shrink-0" style={{ fontWeight: '600' }}>{formatINR(i.price * i.qty)}</span>
                 </div>
               ))}
             </div>
 
             {/* Coupon */}
-            <div className="flex gap-2 mt-4">
+            <div className="flex gap-2 mt-3">
               <input
                 placeholder="Coupon code"
                 value={coupon}
                 onChange={(e) => setCoupon(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && applyCoupon()}
                 style={{ ...inputStyle, flex: 1, width: 'auto' }}
-                onFocus={focusGold}
-                onBlur={blurDefault}
+                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
               />
               <button
                 onClick={applyCoupon}
-                className="px-5 text-xs tracking-widest uppercase shrink-0 border border-black text-black hover:bg-black hover:text-white transition-colors"
+                className="px-4 text-sm font-semibold shrink-0 transition-all"
+                style={{
+                  background: '#fff',
+                  color: '#8B0000',
+                  border: '1.5px solid #8B0000',
+                  borderRadius: '8px',
+                  fontFamily: 'sans-serif',
+                  cursor: 'pointer',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#8B0000'; e.currentTarget.style.color = '#fff'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#8B0000'; }}
               >
                 Apply
               </button>
             </div>
 
-            <div className="h-px w-full bg-black/10 my-5" />
+            {/* Gold divider */}
+            <div style={{ height: '1px', background: '#C9A84C', opacity: 0.3, margin: '12px 0' }} />
 
             {/* Price breakdown */}
-            <div className="space-y-2 text-sm text-black/60 font-light">
-              <div className="flex justify-between">
+            <div className="space-y-1.5 text-sm" style={{ fontFamily: 'sans-serif' }}>
+              <div className="flex justify-between" style={{ color: '#5a2020' }}>
                 <span>Subtotal</span>
                 <span>{formatINR(subtotal)}</span>
               </div>
               {discount > 0 && (
-                <div className="flex justify-between text-black">
+                <div className="flex justify-between" style={{ color: '#2e7d32', fontWeight: '600' }}>
                   <span>Discount</span>
                   <span>−{formatINR(discount)}</span>
                 </div>
               )}
-              <div className="flex justify-between">
+              <div className="flex justify-between" style={{ color: '#5a2020' }}>
                 <span>Shipping</span>
                 <span>
                   {shippingLoading
-                    ? <span className="text-black/30">Calculating…</span>
+                    ? <span style={{ color: '#a07070' }}>Calculating…</span>
                     : shipping === 0
-                      ? <span className="text-black">Free</span>
+                      ? <span style={{ color: '#2e7d32', fontWeight: '600' }}>Free</span>
                       : shipping !== null
                         ? formatINR(shipping)
-                        : <span className="text-black/30">—</span>
+                        : <span style={{ color: '#a07070' }}>—</span>
                   }
                 </span>
               </div>
             </div>
 
-            <div className="flex justify-between items-baseline mt-4 pt-4 border-t border-black/10">
-              <span className="text-sm text-black/50 tracking-wide">Total</span>
-              <span className="font-serif text-xl text-black">
+            <div
+              className="flex justify-between font-bold mt-3 pt-3"
+              style={{ borderTop: '1.5px solid #C9A84C', fontSize: '16px' }}
+            >
+              <span style={{ color: '#1a1a1a', fontFamily: 'sans-serif' }}>Total</span>
+              <span style={{ color: '#8B0000', fontFamily: 'Georgia, serif' }}>
                 {total !== null ? formatINR(total) : '—'}
               </span>
             </div>
           </div>
 
           {/* Payment Method */}
-          <div>
-            <SectionHead>Payment Method</SectionHead>
-            <label className="flex items-center gap-3 text-sm cursor-pointer text-black/70 font-light">
+          <div style={cardStyle}>
+            <p style={sectionHeadStyle}>Payment Method</p>
+            <div style={{ height: '1px', background: '#C9A84C', opacity: 0.4, marginBottom: '12px' }} />
+            <label className="flex items-center gap-3 text-sm cursor-pointer" style={{ color: '#5a2020', fontFamily: 'sans-serif' }}>
               <input
                 type="radio"
                 checked={paymentMethod === 'razorpay'}
                 onChange={() => setPaymentMethod('razorpay')}
-                style={{ accentColor: '#0A0A0A', width: '15px', height: '15px' }}
+                style={{ accentColor: '#8B0000', width: '16px', height: '16px' }}
               />
               Pay Online (Cards / UPI / Netbanking)
             </label>
@@ -421,16 +453,23 @@ export default function CheckoutPage() {
           <button
             onClick={placeOrder}
             disabled={placeOrderDisabled}
-            className="w-full py-4 text-xs tracking-[0.2em] uppercase transition-colors"
+            className="w-full py-3 font-bold text-sm sm:text-base transition-all"
             style={{
-              background: placeOrderDisabled ? '#00000055' : '#0A0A0A',
+              background: placeOrderDisabled ? '#b05050' : '#8B0000',
               color: '#fff',
+              border: '2px solid #C9A84C',
+              borderRadius: '8px',
+              fontFamily: 'Georgia, serif',
+              fontSize: '15px',
+              letterSpacing: '0.5px',
               cursor: placeOrderDisabled ? 'not-allowed' : 'pointer',
               opacity: placeOrderDisabled ? 0.6 : 1,
             }}
+            onMouseEnter={(e) => { if (!placeOrderDisabled) e.currentTarget.style.background = '#6e0000'; }}
+            onMouseLeave={(e) => { if (!placeOrderDisabled) e.currentTarget.style.background = '#8B0000'; }}
           >
             {submitting
-              ? (checkingStock ? 'Checking stock…' : 'Placing order…')
+              ? (checkingStock ? 'Checking stock…' : 'Placing Order…')
               : shippingLoading
                 ? 'Calculating shipping…'
                 : total !== null

@@ -26,26 +26,36 @@ export default function Pagination({ currentPage, totalPages, basePath }) {
 
   const pageNumbers = getPageNumbers(currentPage, totalPages);
 
-  const base =
-    'inline-flex items-center justify-center min-w-9 h-9 text-xs tracking-wide border transition-colors';
-
-  const linkClass = (isActive) =>
-    isActive
-      ? `${base} bg-black text-white border-black`
-      : `${base} text-black/60 border-black/15 hover:border-black hover:text-black`;
+  const linkStyle = (isActive) => ({
+    fontFamily: 'system-ui, sans-serif',
+    fontSize: 13,
+    minWidth: 36,
+    height: 36,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 2,
+    color: isActive ? '#FBF7F0' : '#2A211C',
+    background: isActive ? '#9E3A1C' : 'transparent',
+    border: isActive ? '1px solid #9E3A1C' : '1px solid #E4D3BF',
+  });
 
   return (
     <nav
       aria-label="Product pagination"
-      className="mt-16 flex items-center justify-center gap-2 flex-wrap"
+      className="mt-12 flex items-center justify-center gap-2 flex-wrap"
     >
       {/* Prev */}
       {currentPage > 1 ? (
-        <Link href={`${basePath}?page=${currentPage - 1}`} className={linkClass(false)} aria-label="Previous page">
+        <Link
+          href={`${basePath}?page=${currentPage - 1}`}
+          style={linkStyle(false)}
+          aria-label="Previous page"
+        >
           ‹
         </Link>
       ) : (
-        <span className={`${base} text-black/25 border-black/10 cursor-not-allowed`} aria-hidden="true">
+        <span style={{ ...linkStyle(false), opacity: 0.35, cursor: 'not-allowed' }} aria-hidden="true">
           ‹
         </span>
       )}
@@ -53,14 +63,17 @@ export default function Pagination({ currentPage, totalPages, basePath }) {
       {/* Page numbers */}
       {pageNumbers.map((p, idx) =>
         p === '...' ? (
-          <span key={`ellipsis-${idx}`} className="text-xs text-black/30 px-1">
+          <span
+            key={`ellipsis-${idx}`}
+            style={{ fontFamily: 'system-ui, sans-serif', fontSize: 13, color: '#8A7B6C', padding: '0 4px' }}
+          >
             …
           </span>
         ) : (
           <Link
             key={p}
             href={`${basePath}?page=${p}`}
-            className={linkClass(p === currentPage)}
+            style={linkStyle(p === currentPage)}
             aria-current={p === currentPage ? 'page' : undefined}
           >
             {p}
@@ -70,11 +83,15 @@ export default function Pagination({ currentPage, totalPages, basePath }) {
 
       {/* Next */}
       {currentPage < totalPages ? (
-        <Link href={`${basePath}?page=${currentPage + 1}`} className={linkClass(false)} aria-label="Next page">
+        <Link
+          href={`${basePath}?page=${currentPage + 1}`}
+          style={linkStyle(false)}
+          aria-label="Next page"
+        >
           ›
         </Link>
       ) : (
-        <span className={`${base} text-black/25 border-black/10 cursor-not-allowed`} aria-hidden="true">
+        <span style={{ ...linkStyle(false), opacity: 0.35, cursor: 'not-allowed' }} aria-hidden="true">
           ›
         </span>
       )}

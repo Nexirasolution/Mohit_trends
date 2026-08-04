@@ -2,20 +2,33 @@
 
 export default function PrintButton({ label = 'Print / Save as PDF' }) {
   return (
-    <div className="text-center mt-8 print:hidden">
+    <div className="text-center mt-6 print:hidden">
       <button
         onClick={() => window.print()}
-        className="text-xs tracking-[0.2em] uppercase px-8 py-3.5 border border-black/70 text-black bg-transparent transition-colors"
+        style={{
+          background: '#8B0000',
+          color: '#fff',
+          border: '2px solid #C9A84C',
+          borderRadius: '6px',
+          padding: '10px 28px',
+          fontSize: '14px',
+          fontFamily: 'Georgia, serif',
+          fontWeight: 'bold',
+          letterSpacing: '0.5px',
+          cursor: 'pointer',
+          transition: 'background 0.2s, color 0.2s',
+          boxShadow: '0 2px 6px rgba(139,0,0,0.15)',
+        }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = '#0A0A0A';
-          e.currentTarget.style.color = '#fff';
+          e.currentTarget.style.background = '#C9A84C';
+          e.currentTarget.style.color = '#8B0000';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'transparent';
-          e.currentTarget.style.color = '#0A0A0A';
+          e.currentTarget.style.background = '#8B0000';
+          e.currentTarget.style.color = '#fff';
         }}
       >
-        {label}
+        🖨️ {label}
       </button>
     </div>
   );

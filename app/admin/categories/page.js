@@ -84,38 +84,28 @@ export default function AdminCategoriesPage() {
     if (res.ok) { toast.success('Deleted'); load(); }
   }
 
-  const inputClass =
-    'w-full border border-black/15 px-3 py-2.5 text-sm text-black placeholder:text-black/35 outline-none focus:border-black transition-colors bg-white';
-
   return (
     <div>
-      <div className="flex items-center justify-between mb-8 pb-5 border-b border-black/10">
-        <h1 className="font-serif text-2xl text-black">Categories</h1>
-        <button
-          onClick={startNew}
-          className="flex items-center gap-2 text-xs tracking-[0.15em] uppercase bg-black text-white px-5 py-3 hover:bg-black/85 transition-colors"
-        >
-          <Plus size={14} strokeWidth={1.5} /> Add Category
+      <div className="flex items-center justify-between mb-5">
+        <h1 className="font-display text-2xl font-bold text-brand-magenta">Categories</h1>
+        <button onClick={startNew} className="btn-primary flex items-center gap-1 text-sm">
+          <Plus size={16} /> Add Category
         </button>
       </div>
 
       {showForm && (
-        <form onSubmit={submit} className="border border-black/10 p-6 mb-8 space-y-4">
-          <div className="flex justify-between items-center pb-4 border-b border-black/10">
-            <h2 className="text-[11px] tracking-[0.2em] uppercase text-black/50">
-              {editingId ? 'Edit Category' : 'New Category'}
-            </h2>
-            <button type="button" onClick={closeForm} className="text-black/40 hover:text-black transition-colors">
-              <X size={16} strokeWidth={1.5} />
-            </button>
+        <form onSubmit={submit} className="card-soft p-5 mb-6 space-y-3">
+          <div className="flex justify-between">
+            <h2 className="font-semibold">{editingId ? 'Edit Category' : 'New Category'}</h2>
+            <button type="button" onClick={closeForm}><X size={18} /></button>
           </div>
 
           {/* Image upload — circular preview to match category icon style */}
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-[#FAF9F6] overflow-hidden shrink-0 border border-dashed border-black/20 flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-brand-cream overflow-hidden shrink-0 border-2 border-dashed border-brand-ink/20 flex items-center justify-center">
               {preview
                 ? <img src={preview} alt="preview" className="w-full h-full object-cover" />
-                : <Upload size={16} strokeWidth={1.25} className="text-black/30" />
+                : <Upload size={18} className="text-brand-ink/30" />
               }
             </div>
             <div className="flex-1">
@@ -123,48 +113,40 @@ export default function AdminCategoriesPage() {
                 type="button"
                 disabled={uploading}
                 onClick={() => fileRef.current?.click()}
-                className="flex items-center gap-2 text-xs tracking-wide border border-black/20 px-3 py-2 hover:border-black transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 text-sm border rounded-lg px-3 py-2 hover:border-brand-magenta transition-colors disabled:opacity-50"
               >
                 {uploading
-                  ? <><Loader2 size={13} strokeWidth={1.5} className="animate-spin" /> Uploading…</>
-                  : <><Upload size={13} strokeWidth={1.5} /> {preview ? 'Change image' : 'Choose image'}</>
+                  ? <><Loader2 size={14} className="animate-spin" /> Uploading…</>
+                  : <><Upload size={14} /> {preview ? 'Change image' : 'Choose image'}</>
                 }
               </button>
-              <p className="text-xs text-black/40 font-light mt-1.5">Shown as circular icon on homepage</p>
+              <p className="text-xs text-brand-ink/40 mt-1">Shown as circular icon on homepage</p>
             </div>
           </div>
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
 
-          <input required placeholder="Category name (e.g. Umbrella Kurtis)" className={inputClass} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-          <input placeholder="Slug (auto if blank)" className={inputClass} value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} />
-          <input placeholder="Available sizes, comma separated (S, M, L, XL)" className={inputClass} value={form.sizes} onChange={(e) => setForm({ ...form, sizes: e.target.value })} />
-          <textarea placeholder="Description" className={inputClass} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-
-          <button
-            className="text-xs tracking-[0.15em] uppercase bg-black text-white px-6 py-3 hover:bg-black/85 transition-colors disabled:opacity-40"
-            disabled={uploading}
-          >
+          <input required placeholder="Category name (e.g. Umbrella Kurtis)" className="w-full border rounded-lg px-3 py-2 text-sm" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+          <input placeholder="Slug (auto if blank)" className="w-full border rounded-lg px-3 py-2 text-sm" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} />
+          <input placeholder="Available sizes, comma separated (S, M, L, XL)" className="w-full border rounded-lg px-3 py-2 text-sm" value={form.sizes} onChange={(e) => setForm({ ...form, sizes: e.target.value })} />
+          <textarea placeholder="Description" className="w-full border rounded-lg px-3 py-2 text-sm" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          <button className="btn-primary text-sm" disabled={uploading}>
             {editingId ? 'Update' : 'Create'}
           </button>
         </form>
       )}
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {categories.map((c) => (
-          <div key={c._id} className="border border-black/10 p-4 flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-[#FAF9F6] overflow-hidden shrink-0">
+          <div key={c._id} className="card-soft p-4 flex items-center gap-3">
+            <div className="w-12 h-12 rounded-full bg-brand-cream overflow-hidden shrink-0">
               {c.image && <img src={c.image} alt={c.name} className="w-full h-full object-cover" />}
             </div>
             <div className="flex-1">
-              <p className="text-sm text-black">{c.name}</p>
-              <p className="text-xs text-black/40 font-light mt-0.5">/{c.slug}</p>
+              <p className="font-medium">{c.name}</p>
+              <p className="text-xs text-brand-ink/50">/{c.slug}</p>
             </div>
-            <button onClick={() => startEdit(c)} className="text-black/40 hover:text-black transition-colors p-1">
-              <Pencil size={15} strokeWidth={1.5} />
-            </button>
-            <button onClick={() => remove(c._id)} className="text-black/40 hover:text-black transition-colors p-1">
-              <Trash2 size={15} strokeWidth={1.5} />
-            </button>
+            <button onClick={() => startEdit(c)} className="text-brand-magenta p-1"><Pencil size={16} /></button>
+            <button onClick={() => remove(c._id)} className="text-brand-magenta p-1"><Trash2 size={16} /></button>
           </div>
         ))}
       </div>

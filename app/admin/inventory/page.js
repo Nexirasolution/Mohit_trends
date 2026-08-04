@@ -4,14 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Save, Search, X, ChevronDown, ChevronRight } from 'lucide-react';
 
-// Mohith Trends theme tokens — swap these if you later centralize them in tailwind.config.js
-const GOLD = '#B08D3F';       // primary accent (logo gold)
-const GOLD_SOFT = '#C9A85C';  // lighter gold for hovers / secondary accents
-const INK = '#1A1A1A';        // near-black (logo black)
-const INK_MUTED = '#6B6B66';  // muted text
-const HAIRLINE = '#E8E4DA';   // faint warm-gray divider, replaces heavy borders
-const PAPER = '#FDFCFA';      // warm off-white background
-
 export default function AdminInventoryPage() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -86,6 +78,7 @@ export default function AdminInventoryPage() {
       list = list.filter((p) => {
         const pCatId = catId(p.category);
         if (pCatId === categoryFilter) return true;
+        // also match if selected filter is a parent category and product belongs to a child of it
         const pCat = catMap[pCatId];
         return parentId(pCat) === categoryFilter;
       });
@@ -94,7 +87,7 @@ export default function AdminInventoryPage() {
     return list;
   }, [products, search, categoryFilter, catMap]);
 
-  // --- Category product counts (based on ALL products, not filtered) ---
+  // --- Category product counts (for summary cards, based on ALL products, not filtered) ---
   const categoryCounts = useMemo(() => {
     const direct = {};
     categories.forEach((c) => { direct[c._id] = 0; });
@@ -151,19 +144,16 @@ export default function AdminInventoryPage() {
 
   function ProductStockTable({ list }) {
     return (
-      <table className="w-full text-sm mb-1">
+      <table className="w-full text-sm mb-2">
         <thead>
-          <tr
-            className="text-left text-[11px] uppercase tracking-wide"
-            style={{ color: INK_MUTED, borderBottom: `1px solid ${HAIRLINE}` }}
-          >
-            <th className="py-2 pr-2 font-medium">Product</th>
-            <th className="py-2 pr-2 font-medium">SKU</th>
-            <th className="py-2 pr-2 font-medium">Color</th>
-            <th className="py-2 pr-2 font-medium">Size</th>
-            <th className="py-2 pr-2 font-medium">Size SKU</th>
-            <th className="py-2 pr-2 font-medium">Stock</th>
-            <th className="py-2"></th>
+          <tr className="text-left border-b border-brand-ink/10 text-brand-ink/40 text-xs">
+            <th className="p-2">Product</th>
+            <th className="p-2">Product SKU</th>
+            <th className="p-2">Color</th>
+            <th className="p-2">Size</th>
+            <th className="p-2">Size SKU</th>
+            <th className="p-2">Stock</th>
+            <th className="p-2"></th>
           </tr>
         </thead>
         <tbody>
@@ -172,34 +162,24 @@ export default function AdminInventoryPage() {
               v.sizes.map((s) => {
                 const key = editKey(p._id, v._id, s.size);
                 const value = edits[key] !== undefined ? edits[key] : s.stock;
-                const low = Number(value) <= 5;
                 return (
-                  <tr key={key} style={{ borderBottom: `1px solid ${HAIRLINE}` }}>
-                    <td className="py-2 pr-2" style={{ color: INK }}>{p.name}</td>
-                    <td className="py-2 pr-2 text-xs" style={{ color: INK_MUTED }}>{p.sku || '—'}</td>
-                    <td className="py-2 pr-2" style={{ color: INK }}>{v.color}</td>
-                    <td className="py-2 pr-2" style={{ color: INK }}>{s.size}</td>
-                    <td className="py-2 pr-2 text-xs" style={{ color: INK_MUTED }}>{s.sku || '—'}</td>
-                    <td className="py-2 pr-2">
+                  <tr key={key} className="border-b border-brand-ink/5">
+                    <td className="p-2">{p.name}</td>
+                    <td className="p-2 text-xs text-brand-ink/50">{p.sku || '—'}</td>
+                    <td className="p-2">{v.color}</td>
+                    <td className="p-2">{s.size}</td>
+                    <td className="p-2 text-xs text-brand-ink/50">{s.sku || '—'}</td>
+                    <td className="p-2">
                       <input
                         type="number"
-                        className="w-16 bg-transparent px-1 py-1 text-sm outline-none focus:border-b"
-                        style={{
-                          borderBottom: `1px solid ${low ? GOLD : HAIRLINE}`,
-                          color: low ? GOLD : INK,
-                        }}
+                        className={`w-20 border rounded-lg px-2 py-1 text-sm ${value <= 5 ? 'border-brand-magenta text-brand-magenta' : ''}`}
                         value={value}
                         onChange={(e) => setStock(p._id, v._id, s.size, e.target.value)}
                       />
                     </td>
-                    <td className="py-2">
-                      <button
-                        onClick={() => saveRow(p, v, s)}
-                        className="opacity-60 hover:opacity-100 transition-opacity"
-                        style={{ color: GOLD }}
-                        aria-label="Save"
-                      >
-                        <Save size={15} />
+                    <td className="p-2">
+                      <button onClick={() => saveRow(p, v, s)} className="text-brand-magenta">
+                        <Save size={16} />
                       </button>
                     </td>
                   </tr>
@@ -213,32 +193,22 @@ export default function AdminInventoryPage() {
   }
 
   return (
-    <div style={{ background: PAPER, minHeight: '100%' }} className="px-1">
-      <h1
-        className="text-2xl font-semibold mb-6 tracking-tight"
-        style={{ color: INK, fontFamily: 'Georgia, "Times New Roman", serif' }}
-      >
-        Inventory
-      </h1>
+    <div>
+      <h1 className="font-display text-2xl font-bold text-brand-magenta mb-5">Inventory</h1>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 mb-5">
+      <div className="flex flex-wrap gap-3 mb-4">
         <div className="relative flex-1 min-w-[220px]">
-          <Search size={15} className="absolute left-0 top-1/2 -translate-y-1/2" style={{ color: INK_MUTED }} />
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-ink/40" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by product name or SKU..."
-            className="w-full pl-6 pr-6 py-2 text-sm bg-transparent outline-none"
-            style={{ borderBottom: `1px solid ${HAIRLINE}`, color: INK }}
+            className="w-full pl-9 pr-8 py-2 text-sm rounded-lg border border-brand-ink/10 outline-none"
           />
           {search && (
-            <button
-              onClick={() => setSearch('')}
-              className="absolute right-0 top-1/2 -translate-y-1/2"
-              style={{ color: INK_MUTED }}
-            >
-              <X size={13} />
+            <button onClick={() => setSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-brand-ink/40">
+              <X size={14} />
             </button>
           )}
         </div>
@@ -246,8 +216,7 @@ export default function AdminInventoryPage() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="px-2 py-2 text-sm bg-transparent outline-none"
-          style={{ borderBottom: `1px solid ${HAIRLINE}`, color: INK }}
+          className="px-3 py-2 text-sm rounded-lg border border-brand-ink/10 outline-none"
         >
           <option value="all">All Categories</option>
           {categories.filter((c) => !c.parent).map((parent) => (
@@ -263,29 +232,29 @@ export default function AdminInventoryPage() {
         </select>
       </div>
 
-      {/* Category summary — plain text row, no card chrome */}
+      {/* Category summary cards */}
       {!loading && (
-        <div
-          className="flex flex-wrap gap-x-6 gap-y-1 mb-8 pb-4 text-xs"
-          style={{ borderBottom: `1px solid ${HAIRLINE}` }}
-        >
+        <div className="flex flex-wrap gap-2 mb-6">
           {categories
             .filter((c) => !c.parent)
             .map((parent) => (
-              <span key={parent._id}>
-                <span className="font-semibold" style={{ color: GOLD }}>{parent.name}</span>
-                <span style={{ color: INK_MUTED }}> · {categoryCounts.total[parent._id] || 0}</span>
-              </span>
+              <div
+                key={parent._id}
+                className="px-3 py-2 rounded-lg text-xs border border-brand-ink/10 bg-white"
+              >
+                <span className="font-semibold text-brand-magenta">{parent.name}</span>
+                <span className="text-brand-ink/50"> — {categoryCounts.total[parent._id] || 0} products</span>
+              </div>
             ))}
         </div>
       )}
 
       {loading ? (
-        <p style={{ color: INK_MUTED }}>Loading...</p>
+        <p className="text-brand-ink/50">Loading...</p>
       ) : grouped.length === 0 ? (
-        <p className="text-center py-10" style={{ color: INK_MUTED }}>No products match your filters.</p>
+        <p className="text-center text-brand-ink/40 py-10">No products match your filters.</p>
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-4">
           {grouped.map(({ parent, directProducts, childGroups }) => {
             const isCollapsed = collapsed[parent._id];
             const parentStock =
@@ -295,31 +264,25 @@ export default function AdminInventoryPage() {
               directProducts.length + childGroups.reduce((sum, g) => sum + g.products.length, 0);
 
             return (
-              <div key={parent._id} style={{ borderBottom: `1px solid ${HAIRLINE}` }}>
+              <div key={parent._id} className="card-soft">
                 <button
                   onClick={() => toggleCollapse(parent._id)}
-                  className="w-full flex items-center justify-between py-3"
+                  className="w-full flex items-center justify-between p-3"
                 >
-                  <span className="flex items-center gap-2 font-semibold" style={{ color: INK }}>
-                    {isCollapsed ? (
-                      <ChevronRight size={15} style={{ color: GOLD }} />
-                    ) : (
-                      <ChevronDown size={15} style={{ color: GOLD }} />
-                    )}
+                  <span className="flex items-center gap-2 font-display font-bold text-brand-magenta">
+                    {isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
                     {parent.name}
                   </span>
-                  <span className="text-xs" style={{ color: INK_MUTED }}>
-                    {parentProductCount} products · {parentStock} units
+                  <span className="text-xs text-brand-ink/50">
+                    {parentProductCount} products &middot; {parentStock} units in stock
                   </span>
                 </button>
 
                 {!isCollapsed && (
-                  <div className="pb-4 pl-6">
+                  <div className="px-3 pb-3">
                     {directProducts.length > 0 && (
-                      <div className="mb-4">
-                        <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: INK_MUTED }}>
-                          Uncategorized within {parent.name}
-                        </p>
+                      <div className="mb-3">
+                        <p className="text-xs font-semibold text-brand-ink/40 mb-1">Uncategorized within {parent.name}</p>
                         <ProductStockTable list={directProducts} />
                       </div>
                     )}
@@ -327,11 +290,11 @@ export default function AdminInventoryPage() {
                     {childGroups.map(({ category, products: childProducts }) => {
                       const childStock = childProducts.reduce((s, p) => s + productStock(p), 0);
                       return (
-                        <div key={category._id} className="mb-5">
+                        <div key={category._id} className="mb-4">
                           <div className="flex items-center justify-between mb-1">
-                            <p className="text-sm font-medium" style={{ color: GOLD_SOFT }}>{category.name}</p>
-                            <p className="text-xs" style={{ color: INK_MUTED }}>
-                              {childProducts.length} products · {childStock} units
+                            <p className="text-sm font-semibold text-brand-ink/70">{category.name}</p>
+                            <p className="text-xs text-brand-ink/40">
+                              {childProducts.length} products &middot; {childStock} units in stock
                             </p>
                           </div>
                           <ProductStockTable list={childProducts} />

@@ -5,24 +5,24 @@ import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
 import { Plus, Trash2, Upload, Loader2, X } from 'lucide-react';
 
-// Mohith Trends theme tokens — keep in sync with other admin pages until centralized in tailwind.config.js
-const GOLD = '#B08D3F';
-const INK = '#1A1A1A';
-const INK_MUTED = '#6B6B66';
-const HAIRLINE = '#E8E4DA';
-const PAPER = '#FDFCFA';
+// SSRK Brand Colors
+// Crimson : #8B0000
+// Gold    : #C9A84C
+// Cream   : #fdf5f5
 
 function emptyVariant() {
-  return { color: '', colorHex: '#1A1A1A', images: [''], price: '', compareAtPrice: '', sizes: [{ size: '', stock: 0, sku: '' }] };
+  return { color: '', colorHex: '#8B0000', images: [''], price: '', compareAtPrice: '', sizes: [{ size: '', stock: 0, sku: '' }] };
 }
 
-// Shared input style — underline, no border box
+// Shared input style
 const inputStyle = {
-  borderBottom: `1px solid ${HAIRLINE}`,
-  padding: '8px 2px',
+  border: '1.5px solid #e8d5d5',
+  borderRadius: '8px',
+  padding: '8px 12px',
   fontSize: '14px',
-  color: INK,
-  background: 'transparent',
+  fontFamily: 'sans-serif',
+  color: '#1a1a1a',
+  background: '#fff',
   width: '100%',
   outline: 'none',
   marginTop: '4px',
@@ -30,19 +30,26 @@ const inputStyle = {
 
 const labelStyle = {
   fontSize: '13px',
-  color: INK_MUTED,
+  fontWeight: '600',
+  color: '#8B0000',
+  fontFamily: 'sans-serif',
 };
 
-const sectionHeadStyle = {
-  fontSize: '11px',
-  textTransform: 'uppercase',
-  letterSpacing: '0.05em',
-  color: INK_MUTED,
+const cardStyle = {
+  background: '#fff',
+  border: '1.5px solid #e8d5d5',
+  borderRadius: '12px',
+  padding: '20px',
   marginBottom: '16px',
 };
 
-function focusGold(e) { e.target.style.borderColor = GOLD; }
-function blurHairline(e) { e.target.style.borderColor = HAIRLINE; }
+const sectionHeadStyle = {
+  fontSize: '15px',
+  fontWeight: '700',
+  color: '#8B0000',
+  fontFamily: 'Georgia, serif',
+  marginBottom: '12px',
+};
 
 function ImageSlot({ value, onChange, onRemove, showRemove }) {
   const [uploading, setUploading] = useState(false);
@@ -68,33 +75,32 @@ function ImageSlot({ value, onChange, onRemove, showRemove }) {
   }
 
   return (
-    <div className="flex items-center gap-3 mb-2">
+    <div className="flex items-center gap-2 mb-2">
       <div
         onClick={() => !uploading && fileRef.current?.click()}
         className="shrink-0 overflow-hidden relative"
         style={{
-          width: '44px',
-          height: '44px',
-          border: `1px dashed ${HAIRLINE}`,
-          background: PAPER,
+          width: '48px',
+          height: '48px',
+          borderRadius: '8px',
+          border: '2px dashed #C9A84C',
+          background: '#fdf5f5',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           cursor: 'pointer',
         }}
-        onMouseEnter={(e) => (e.currentTarget.style.borderColor = GOLD)}
-        onMouseLeave={(e) => (e.currentTarget.style.borderColor = HAIRLINE)}
       >
         {value ? (
           <img src={value} alt="" className="w-full h-full object-cover" />
         ) : uploading ? (
-          <Loader2 size={15} className="animate-spin" style={{ color: GOLD }} />
+          <Loader2 size={16} className="animate-spin" style={{ color: '#8B0000' }} />
         ) : (
-          <Upload size={13} style={{ color: INK_MUTED }} />
+          <Upload size={14} style={{ color: '#C9A84C' }} />
         )}
         {uploading && value && (
-          <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(253,252,250,0.8)' }}>
-            <Loader2 size={13} className="animate-spin" style={{ color: GOLD }} />
+          <div className="absolute inset-0 flex items-center justify-center" style={{ background: 'rgba(255,255,255,0.7)' }}>
+            <Loader2 size={14} className="animate-spin" style={{ color: '#8B0000' }} />
           </div>
         )}
       </div>
@@ -105,12 +111,12 @@ function ImageSlot({ value, onChange, onRemove, showRemove }) {
         style={{ ...inputStyle, marginTop: 0, flex: 1 }}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        onFocus={focusGold}
-        onBlur={blurHairline}
+        onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+        onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
       />
 
       {showRemove && (
-        <button type="button" onClick={onRemove} style={{ color: INK_MUTED, flexShrink: 0 }} className="hover:opacity-70">
+        <button type="button" onClick={onRemove} style={{ color: '#C9A84C', flexShrink: 0 }}>
           <X size={15} />
         </button>
       )}
@@ -227,12 +233,13 @@ export default function ProductForm({ initial, productId }) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-8" style={{ background: PAPER }}>
+    <form onSubmit={submit} className="space-y-6">
 
-      {/* Basic Info */}
-      <div className="pb-8" style={{ borderBottom: `1px solid ${HAIRLINE}` }}>
+      {/* Basic Info Card */}
+      <div style={cardStyle}>
         <p style={sectionHeadStyle}>Product Details</p>
-        <div className="grid sm:grid-cols-2 gap-5">
+        <div style={{ height: '1px', background: '#C9A84C', opacity: 0.4, marginBottom: '16px' }} />
+        <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <label style={labelStyle}>Product Name *</label>
             <input
@@ -240,8 +247,8 @@ export default function ProductForm({ initial, productId }) {
               style={inputStyle}
               value={form.name}
               onChange={(e) => update('name', e.target.value)}
-              onFocus={focusGold}
-              onBlur={blurHairline}
+              onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+              onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
             />
           </div>
           <div>
@@ -249,7 +256,7 @@ export default function ProductForm({ initial, productId }) {
             <input
               disabled
               readOnly
-              style={{ ...inputStyle, color: INK_MUTED, cursor: 'not-allowed', borderBottomStyle: 'dashed' }}
+              style={{ ...inputStyle, background: '#f5f0f0', color: '#8a8a8a', cursor: 'not-allowed' }}
               value={form.sku || 'Auto-generated from category on save'}
               title="SKU is generated automatically from the product's category"
             />
@@ -261,8 +268,8 @@ export default function ProductForm({ initial, productId }) {
               style={inputStyle}
               value={form.category?._id || form.category}
               onChange={(e) => update('category', e.target.value)}
-              onFocus={focusGold}
-              onBlur={blurHairline}
+              onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+              onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
             >
               <option value="">Select category</option>
               {categories.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
@@ -274,8 +281,8 @@ export default function ProductForm({ initial, productId }) {
               style={inputStyle}
               value={form.fabric}
               onChange={(e) => update('fabric', e.target.value)}
-              onFocus={focusGold}
-              onBlur={blurHairline}
+              onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+              onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
             />
           </div>
           <div>
@@ -284,8 +291,8 @@ export default function ProductForm({ initial, productId }) {
               style={inputStyle}
               value={Array.isArray(form.tags) ? form.tags.join(', ') : ''}
               onChange={(e) => update('tags', e.target.value.split(',').map((t) => t.trim()).filter(Boolean))}
-              onFocus={focusGold}
-              onBlur={blurHairline}
+              onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+              onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
             />
           </div>
           <div className="sm:col-span-2">
@@ -295,13 +302,13 @@ export default function ProductForm({ initial, productId }) {
               rows={3}
               value={form.description}
               onChange={(e) => update('description', e.target.value)}
-              onFocus={focusGold}
-              onBlur={blurHairline}
+              onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+              onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
             />
           </div>
 
           {/* Toggles */}
-          <div className="sm:col-span-2 flex flex-wrap gap-5 pt-2">
+          <div className="sm:col-span-2 flex flex-wrap gap-4">
             {[
               ['isBestSeller', 'Bestseller'],
               ['isTopSeller', 'Top Seller'],
@@ -312,13 +319,13 @@ export default function ProductForm({ initial, productId }) {
               <label
                 key={key}
                 className="flex items-center gap-2 text-sm cursor-pointer"
-                style={{ color: INK }}
+                style={{ color: '#5a2020', fontFamily: 'sans-serif' }}
               >
                 <input
                   type="checkbox"
                   checked={!!form[key]}
                   onChange={(e) => update(key, e.target.checked)}
-                  style={{ accentColor: GOLD, width: '15px', height: '15px' }}
+                  style={{ accentColor: '#8B0000', width: '15px', height: '15px' }}
                 />
                 {label}
               </label>
@@ -329,155 +336,178 @@ export default function ProductForm({ initial, productId }) {
 
       {/* Variants Section */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <p style={{ ...sectionHeadStyle, marginBottom: 0 }}>Variants</p>
+        <div className="flex items-center justify-between mb-3">
+          <h2 style={{ ...sectionHeadStyle, marginBottom: 0 }}>Variants</h2>
           <button
             type="button"
             onClick={addVariant}
-            className="flex items-center gap-1.5 text-sm font-medium px-4 py-2 transition-colors"
-            style={{ border: `1px solid ${GOLD}`, color: GOLD, cursor: 'pointer' }}
+            className="flex items-center gap-1 text-sm font-semibold px-4 py-2 transition-all"
+            style={{
+              background: '#fff',
+              color: '#8B0000',
+              border: '1.5px solid #8B0000',
+              borderRadius: '8px',
+              fontFamily: 'sans-serif',
+              cursor: 'pointer',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#8B0000';
+              e.currentTarget.style.color = '#fff';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = '#fff';
+              e.currentTarget.style.color = '#8B0000';
+            }}
           >
-            <Plus size={15} /> Add Variant
+            <Plus size={16} /> Add Variant
           </button>
         </div>
 
-        <div className="space-y-6">
-          {form.variants.map((v, vIdx) => (
-            <div key={vIdx} className="p-5" style={{ border: `1px solid ${HAIRLINE}` }}>
-              {/* Variant header */}
-              <div className="flex justify-between items-center mb-4 pb-3" style={{ borderBottom: `1px solid ${HAIRLINE}` }}>
-                <span style={{ fontSize: '13px', color: INK, fontFamily: 'Georgia, serif' }}>
-                  Variant {vIdx + 1}
-                </span>
-                {form.variants.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeVariant(vIdx)}
-                    style={{ color: INK_MUTED, cursor: 'pointer' }}
-                    className="hover:opacity-70"
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                )}
-              </div>
-
-              <div className="grid sm:grid-cols-4 gap-4 mb-4">
-                <input
-                  placeholder="Color name (e.g. Green)"
-                  style={inputStyle}
-                  value={v.color}
-                  onChange={(e) => updateVariant(vIdx, 'color', e.target.value)}
-                  onFocus={focusGold}
-                  onBlur={blurHairline}
-                />
-                <input
-                  type="color"
-                  style={{ ...inputStyle, padding: '2px', height: '36px', border: `1px solid ${HAIRLINE}` }}
-                  value={v.colorHex}
-                  onChange={(e) => updateVariant(vIdx, 'colorHex', e.target.value)}
-                />
-                <input
-                  placeholder="Price ₹"
-                  type="number"
-                  style={inputStyle}
-                  value={v.price}
-                  onChange={(e) => updateVariant(vIdx, 'price', e.target.value)}
-                  onFocus={focusGold}
-                  onBlur={blurHairline}
-                />
-                <input
-                  placeholder="Compare-at price ₹"
-                  type="number"
-                  style={inputStyle}
-                  value={v.compareAtPrice}
-                  onChange={(e) => updateVariant(vIdx, 'compareAtPrice', e.target.value)}
-                  onFocus={focusGold}
-                  onBlur={blurHairline}
-                />
-              </div>
-
-              <p style={{ fontSize: '12px', color: INK_MUTED, marginBottom: '10px' }}>
-                Images for this colour — click thumbnail to upload
-              </p>
-              {v.images.map((img, imgIdx) => (
-                <ImageSlot
-                  key={imgIdx}
-                  value={img}
-                  onChange={(url) => updateVariantImage(vIdx, imgIdx, url)}
-                  onRemove={() => removeVariantImage(vIdx, imgIdx)}
-                  showRemove={v.images.length > 1}
-                />
-              ))}
-              <button
-                type="button"
-                onClick={() => addVariantImage(vIdx)}
-                style={{ fontSize: '12px', color: GOLD, fontWeight: 500, marginBottom: '16px', cursor: 'pointer' }}
-              >
-                + Add another image
-              </button>
-
-              <p style={{ fontSize: '12px', color: INK_MUTED, marginBottom: '8px' }}>
-                Sizes &amp; Stock
-              </p>
-              {v.sizes.map((s, sIdx) => (
-                <div key={sIdx} className="flex gap-3 mb-2 items-center">
-                  <input
-                    placeholder="Size (e.g. M, 38, Free Size)"
-                    style={{ ...inputStyle, width: '140px', marginTop: 0 }}
-                    value={s.size}
-                    onChange={(e) => updateSize(vIdx, sIdx, 'size', e.target.value)}
-                    onFocus={focusGold}
-                    onBlur={blurHairline}
-                  />
-                  <input
-                    type="number"
-                    placeholder="Stock"
-                    style={{ ...inputStyle, width: '90px', marginTop: 0 }}
-                    value={s.stock}
-                    onChange={(e) => updateSize(vIdx, sIdx, 'stock', e.target.value)}
-                    onFocus={focusGold}
-                    onBlur={blurHairline}
-                  />
-                  <input
-                    placeholder="SKU (optional)"
-                    style={{ ...inputStyle, flex: 1, marginTop: 0 }}
-                    value={s.sku}
-                    onChange={(e) => updateSize(vIdx, sIdx, 'sku', e.target.value)}
-                    onFocus={focusGold}
-                    onBlur={blurHairline}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeSize(vIdx, sIdx)}
-                    style={{ color: INK_MUTED, cursor: 'pointer', flexShrink: 0 }}
-                    className="hover:opacity-70"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
-              ))}
-              <button
-                type="button"
-                onClick={() => addSize(vIdx)}
-                style={{ fontSize: '12px', color: GOLD, fontWeight: 500, cursor: 'pointer' }}
-              >
-                + Add size
-              </button>
+        {form.variants.map((v, vIdx) => (
+          <div key={vIdx} style={cardStyle}>
+            {/* Variant header */}
+            <div
+              className="flex justify-between items-center mb-3 pb-2"
+              style={{ borderBottom: '1px solid #C9A84C', opacity: 1 }}
+            >
+              <span style={{ fontWeight: '700', fontSize: '13px', color: '#8B0000', fontFamily: 'Georgia, serif' }}>
+                Variant {vIdx + 1}
+              </span>
+              {form.variants.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => removeVariant(vIdx)}
+                  style={{ color: '#8B0000', cursor: 'pointer' }}
+                >
+                  <Trash2 size={16} />
+                </button>
+              )}
             </div>
-          ))}
-        </div>
+
+            <div className="grid sm:grid-cols-4 gap-3 mb-3">
+              <input
+                placeholder="Color name (e.g. Green)"
+                style={inputStyle}
+                value={v.color}
+                onChange={(e) => updateVariant(vIdx, 'color', e.target.value)}
+                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
+              />
+              <input
+                type="color"
+                style={{ ...inputStyle, padding: '4px', height: '40px' }}
+                value={v.colorHex}
+                onChange={(e) => updateVariant(vIdx, 'colorHex', e.target.value)}
+              />
+              <input
+                placeholder="Price ₹"
+                type="number"
+                style={inputStyle}
+                value={v.price}
+                onChange={(e) => updateVariant(vIdx, 'price', e.target.value)}
+                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
+              />
+              <input
+                placeholder="Compare-at price ₹"
+                type="number"
+                style={inputStyle}
+                value={v.compareAtPrice}
+                onChange={(e) => updateVariant(vIdx, 'compareAtPrice', e.target.value)}
+                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
+              />
+            </div>
+
+            <p style={{ fontSize: '12px', color: '#C9A84C', fontFamily: 'sans-serif', marginBottom: '8px', fontWeight: '600' }}>
+              Images for this colour — click thumbnail to upload
+            </p>
+            {v.images.map((img, imgIdx) => (
+              <ImageSlot
+                key={imgIdx}
+                value={img}
+                onChange={(url) => updateVariantImage(vIdx, imgIdx, url)}
+                onRemove={() => removeVariantImage(vIdx, imgIdx)}
+                showRemove={v.images.length > 1}
+              />
+            ))}
+            <button
+              type="button"
+              onClick={() => addVariantImage(vIdx)}
+              style={{ fontSize: '12px', color: '#8B0000', fontFamily: 'sans-serif', fontWeight: '600', marginBottom: '12px', cursor: 'pointer' }}
+            >
+              + Add another image
+            </button>
+
+            <p style={{ fontSize: '12px', color: '#C9A84C', fontFamily: 'sans-serif', fontWeight: '600', marginBottom: '6px' }}>
+              Sizes &amp; Stock
+            </p>
+            {v.sizes.map((s, sIdx) => (
+              <div key={sIdx} className="flex gap-2 mb-2 items-center">
+                <input
+                  placeholder="Size (e.g. M, 38, Free Size)"
+                  style={{ ...inputStyle, width: '140px', marginTop: 0 }}
+                  value={s.size}
+                  onChange={(e) => updateSize(vIdx, sIdx, 'size', e.target.value)}
+                  onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                  onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
+                />
+                <input
+                  type="number"
+                  placeholder="Stock"
+                  style={{ ...inputStyle, width: '90px', marginTop: 0 }}
+                  value={s.stock}
+                  onChange={(e) => updateSize(vIdx, sIdx, 'stock', e.target.value)}
+                  onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                  onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
+                />
+                <input
+                  placeholder="SKU (optional)"
+                  style={{ ...inputStyle, flex: 1, marginTop: 0 }}
+                  value={s.sku}
+                  onChange={(e) => updateSize(vIdx, sIdx, 'sku', e.target.value)}
+                  onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                  onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeSize(vIdx, sIdx)}
+                  style={{ color: '#8B0000', cursor: 'pointer', flexShrink: 0 }}
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => addSize(vIdx)}
+              style={{ fontSize: '12px', color: '#8B0000', fontFamily: 'sans-serif', fontWeight: '600', cursor: 'pointer' }}
+            >
+              + Add size
+            </button>
+          </div>
+        ))}
       </div>
 
       {/* Submit button */}
       <button
         disabled={saving}
-        className="w-full sm:w-auto px-8 py-3 text-sm font-medium transition-colors"
+        className="w-full sm:w-auto px-8 py-3 font-bold text-sm transition-all"
         style={{
-          background: INK,
-          color: PAPER,
-          letterSpacing: '0.02em',
+          background: saving ? '#b05050' : '#8B0000',
+          color: '#fff',
+          border: '2px solid #C9A84C',
+          borderRadius: '8px',
+          fontFamily: 'Georgia, serif',
+          fontSize: '14px',
+          letterSpacing: '0.5px',
           cursor: saving ? 'not-allowed' : 'pointer',
-          opacity: saving ? 0.6 : 1,
+        }}
+        onMouseEnter={(e) => {
+          if (!saving) e.currentTarget.style.background = '#6e0000';
+        }}
+        onMouseLeave={(e) => {
+          if (!saving) e.currentTarget.style.background = '#8B0000';
         }}
       >
         {saving ? 'Saving...' : productId ? 'Update Product' : 'Create Product'}
