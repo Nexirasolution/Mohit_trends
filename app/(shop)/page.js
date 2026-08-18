@@ -42,30 +42,44 @@ export default async function HomePage() {
       {/* Banner */}
       <BannerCarousel banners={JSON.parse(JSON.stringify(banners))} />
 
-      {/* Shop by Category */}
-      {plainCategories?.length > 0 && (
-        <section className="max-w-6xl mx-auto px-4 pt-14 pb-6">
-          <h2 className="text-lg font-semibold tracking-tight text-neutral-900 mb-6 text-center">
-            Shop by Category
-          </h2>
-          <div className="flex gap-6 overflow-x-auto no-scrollbar pb-1 justify-center flex-wrap sm:flex-nowrap">
-            {plainCategories.map((c) => (
-              <Link key={c._id} href={`/category/${c.slug}`} className="flex flex-col items-center gap-2.5 shrink-0 group">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-pink-50 border border-pink-100 group-hover:border-pink-400 transition-colors duration-200">
-                  {c.image
-                    ? <img src={c.image} alt={c.name} className="w-full h-full object-cover" />
-                    : <div className="w-full h-full bg-pink-50" />
-                  }
-                </div>
-                <span className="text-[11px] font-medium text-neutral-500 group-hover:text-pink-600 transition-colors text-center max-w-[76px] leading-tight">
-                  {c.name}
-                </span>
-              </Link>
-            ))}
+      
+{/* Shop by Category */}
+{plainCategories?.length > 0 && (
+  <section className="max-w-6xl mx-auto px-4 pt-14 pb-6">
+    <h2 className="text-lg font-semibold tracking-tight text-neutral-900 mb-6 text-center">
+      Shop by Category
+    </h2>
+    <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4">
+      {plainCategories.map((c) => (
+        <Link
+          key={c._id}
+          href={`/category/${c.slug}`}
+          className="group rounded-lg overflow-hidden border-2 border-pink-100 hover:border-pink-400 transition-colors bg-white"
+        >
+          {/* Image */}
+          <div className="relative w-full aspect-square overflow-hidden bg-neutral-50">
+            {c.image ? (
+              <img
+                src={c.image}
+                alt={c.name}
+                className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            ) : (
+              <div className="w-full h-full bg-pink-50" />
+            )}
           </div>
-        </section>
-      )}
 
+          {/* Label */}
+          <div className="px-1.5 py-1.5 text-center border-t border-pink-100">
+            <span className="text-[10.5px] font-medium text-neutral-800 leading-tight line-clamp-2">
+              {c.name}
+            </span>
+          </div>
+        </Link>
+      ))}
+    </div>
+  </section>
+)}
       {/* Product tabs — Bestsellers / Top Sellers / New Arrivals */}
       <ProductTabs
         bestSellers={JSON.parse(JSON.stringify(bestSellers))}

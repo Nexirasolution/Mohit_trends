@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Fraunces, Inter } from 'next/font/google';
@@ -36,7 +37,12 @@ export default function ProductPage() {
   const [activeSize, setActiveSize] = useState('');
   const [qty, setQty] = useState(1);
   const [wished, setWished] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { addItem } = useCart();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     fetch(`/api/products/${slug}`)
@@ -449,12 +455,14 @@ export default function ProductPage() {
         )}
       </div>
 
-      {/* Sticky mobile buy bar — keeps price + primary action reachable
-          while the description/reviews scroll underneath it */}
-      {data?.product && (
+      {/* Sticky mobile buy bar — portaled directly to <body> so no ancestor
+          (layout wrapper, motion/animation container, transform, overflow-hidden,
+          etc.) can break its fixed positioning. This is what makes it reliably
+          show up on mobile regardless of what wraps this page. */}
+      {mounted && data?.product && createPortal(
         <div
-          className="sm:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-3"
-          style={{ background: PAPER, borderTop: `1px solid ${BLUSH_LINE}` }}
+          className="sm:hidden fixed bottom-0 left-0 right-0 flex items-center gap-3 px-4 py-3"
+          style={{ background: PAPER, borderTop: `1px solid ${BLUSH_LINE}`, zIndex: 9999 }}
         >
           <div className="shrink-0">
             <p className={`${display.className} text-lg leading-none`} style={{ color: INK, fontWeight: 500 }}>
@@ -482,7 +490,8 @@ export default function ProductPage() {
           >
             <Zap size={15} fill={PAPER} /> {sizeOutOfStock ? 'Sold out' : 'Buy now'}
           </button>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
