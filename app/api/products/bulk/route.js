@@ -4,18 +4,21 @@ import Product from '@/models/Product';
 import Category from '@/models/Category';
 import slugify from 'slugify';
 import { requireAdmin } from '@/lib/apiAuth';
-import { generateSku } from '@/lib/sku';
 
 // POST /api/products/bulk
 // body: {
-//   category, titlePrefix, description, fabric,
+//   category, skuPrefix, description, fabric,
 //   price, compareAtPrice, sizes: [{ size, stock }],
 //   images: [url, url, ...], tags
 // }
-// Creates ONE product per image. Title = PREFIX + zero-padded number
-// (continuing from the highest existing number for that prefix in that
-// category, so repeated bulk uploads don't collide). SKU is generated
-// per-product via the existing generateSku(category) helper.
+// Creates ONE product per image.
+// - Title = auto-derived from the CATEGORY name + zero-padded number,
+//   e.g. category "Silk Sarees" -> SILKSAREES001, SILKSAREES002...
+//   (continues from the highest existing number for that title-code in
+//   that category, so repeated bulk uploads don't collide)
+// - SKU = admin-typed short code + zero-padded number, e.g. "MT" -> MT001, MT002...
+//   (continues from the highest existing SKU with that code, globally,
+//   since SKU is a global-unique field)
 export const POST = requireAdmin(async (req) => {
   try {
     await dbConnect();
@@ -23,7 +26,7 @@ export const POST = requireAdmin(async (req) => {
 
     const {
       category,
-      titlePrefix,
+      skuPrefix,
       description = '',
       fabric = '',
       price,
@@ -36,8 +39,8 @@ export const POST = requireAdmin(async (req) => {
     if (!category) {
       return NextResponse.json({ error: 'Category is required' }, { status: 400 });
     }
-    if (!titlePrefix?.trim()) {
-      return NextResponse.json({ error: 'Title prefix is required' }, { status: 400 });
+    if (!skuPrefix?.trim()) {
+      return NextResponse.json({ error: 'SKU code is required' }, { status: 400 });
     }
     if (!Array.isArray(images) || images.length === 0) {
       return NextResponse.json({ error: 'At least one image is required' }, { status: 400 });
@@ -55,33 +58,59 @@ export const POST = requireAdmin(async (req) => {
     const cat = await Category.findById(category);
     if (!cat) return NextResponse.json({ error: 'Category not found' }, { status: 404 });
 
-    // Sanitize prefix -> letters/numbers only, e.g. "Maroon Top" input isn't
-    // expected here; the admin types a short code like "MT".
-    const prefix = titlePrefix.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (!prefix) {
-      return NextResponse.json({ error: 'Title prefix must contain letters/numbers' }, { status: 400 });
+    // --- Title code: auto-derived from the category name ---
+    const titleCode = (cat.name || 'PRODUCT')
+      .trim()
+      .toUpperCase()
+      .replace(/[^A-Z0-9]/g, '');
+    if (!titleCode) {
+      return NextResponse.json(
+        { error: 'Category name must contain letters/numbers to generate a title' },
+        { status: 400 }
+      );
     }
 
-    // Continue numbering from the highest existing PREFIX### in this category
-    const existing = await Product.find({
+    // --- SKU code: admin-typed short code, e.g. "MT" ---
+    const skuCode = skuPrefix.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+    if (!skuCode) {
+      return NextResponse.json({ error: 'SKU code must contain letters/numbers' }, { status: 400 });
+    }
+
+    // Continue title numbering from the highest existing TITLECODE### in this category
+    const existingTitles = await Product.find({
       category: cat._id,
-      name: { $regex: `^${prefix}\\d+$`, $options: 'i' },
+      name: { $regex: `^${titleCode}\\d+$`, $options: 'i' },
     }).select('name');
 
-    let maxNum = 0;
-    const numRe = new RegExp(`^${prefix}(\\d+)$`, 'i');
-    for (const p of existing) {
-      const match = p.name.match(numRe);
-      if (match) maxNum = Math.max(maxNum, parseInt(match[1], 10));
+    let maxTitleNum = 0;
+    const titleNumRe = new RegExp(`^${titleCode}(\\d+)$`, 'i');
+    for (const p of existingTitles) {
+      const match = p.name.match(titleNumRe);
+      if (match) maxTitleNum = Math.max(maxTitleNum, parseInt(match[1], 10));
+    }
+
+    // Continue SKU numbering from the highest existing SKUCODE### (global, SKU is unique across all products)
+    const existingSkus = await Product.find({
+      sku: { $regex: `^${skuCode}\\d+$`, $options: 'i' },
+    }).select('sku');
+
+    let maxSkuNum = 0;
+    const skuNumRe = new RegExp(`^${skuCode}(\\d+)$`, 'i');
+    for (const p of existingSkus) {
+      const match = p.sku?.match(skuNumRe);
+      if (match) maxSkuNum = Math.max(maxSkuNum, parseInt(match[1], 10));
     }
 
     const created = [];
     const errors = [];
 
     for (let i = 0; i < images.length; i++) {
-      const num = maxNum + i + 1;
-      const name = `${prefix}${String(num).padStart(3, '0')}`; // e.g. MT001
+      const titleNum = maxTitleNum + i + 1;
+      const name = `${titleCode}${String(titleNum).padStart(3, '0')}`; // e.g. SILKSAREES001
       const slug = slugify(name, { lower: true });
+
+      const skuNum = maxSkuNum + i + 1;
+      const sku = `${skuCode}${String(skuNum).padStart(3, '0')}`; // e.g. MT001
 
       try {
         const slugTaken = await Product.findOne({ slug });
@@ -90,7 +119,11 @@ export const POST = requireAdmin(async (req) => {
           continue;
         }
 
-        const sku = await generateSku(cat._id);
+        const skuTaken = await Product.findOne({ sku });
+        if (skuTaken) {
+          errors.push({ name, error: `Generated SKU ${sku} already exists — skipped` });
+          continue;
+        }
 
         const variant = {
           color: '',

@@ -11,7 +11,7 @@ export default function BulkAddProductsPage() {
   const [category, setCategory] = useState('');
   const [categorySizes, setCategorySizes] = useState([]);
 
-  const [titlePrefix, setTitlePrefix] = useState('');
+  const [skuPrefix, setSkuPrefix] = useState(''); // short code used to build SKUs, e.g. "MT" -> MT001
   const [description, setDescription] = useState('');
   const [fabric, setFabric] = useState('');
   const [price, setPrice] = useState('');
@@ -34,6 +34,13 @@ export default function BulkAddProductsPage() {
       .then((d) => setCategories(d.categories || []))
       .catch(() => toast.error('Failed to load categories'));
   }, []);
+
+  const selectedCategory = categories.find((c) => c._id === category);
+  // Preview of what the auto-generated title prefix will look like, purely cosmetic
+  const titlePreview = (selectedCategory?.name || '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '') || 'CATEGORY';
 
   useEffect(() => {
     const cat = categories.find((c) => c._id === category);
@@ -84,7 +91,7 @@ export default function BulkAddProductsPage() {
     setResult(null);
 
     if (!category) return toast.error('Select a category');
-    if (!titlePrefix.trim()) return toast.error('Enter a title prefix (e.g. MT)');
+    if (!skuPrefix.trim()) return toast.error('Enter a SKU code (e.g. MT)');
     if (!price || Number(price) <= 0) return toast.error('Enter a valid price');
     if (files.length === 0) return toast.error('Add at least one image');
 
@@ -119,7 +126,7 @@ export default function BulkAddProductsPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           category,
-          titlePrefix,
+          skuPrefix,
           description,
           fabric,
           price: Number(price),
@@ -157,7 +164,7 @@ export default function BulkAddProductsPage() {
       <h1 className="font-display text-2xl font-bold text-brand-magenta mb-1">Bulk Add Products</h1>
       <p className="text-sm text-brand-ink/50 mb-6">
         One category, description, and fabric applied to every product. Each image you upload becomes
-        its own product — titles and SKUs are generated automatically.
+        its own product — titles are generated automatically from the category, and SKUs from the code below.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
@@ -175,19 +182,24 @@ export default function BulkAddProductsPage() {
                 <option key={c._id} value={c._id}>{c.name}</option>
               ))}
             </select>
+            {category && (
+              <p className="text-xs text-brand-ink/40 mt-1">
+                Titles auto-generate as {titlePreview}001, {titlePreview}002...
+              </p>
+            )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Title prefix</label>
+            <label className="block text-sm font-medium mb-1">SKU code</label>
             <input
-              value={titlePrefix}
-              onChange={(e) => setTitlePrefix(e.target.value)}
+              value={skuPrefix}
+              onChange={(e) => setSkuPrefix(e.target.value)}
               placeholder="e.g. MT"
               className="w-full px-3 py-2 text-sm rounded-lg border border-brand-ink/10 outline-none"
               required
             />
             <p className="text-xs text-brand-ink/40 mt-1">
-              Titles auto-generate as {titlePrefix ? titlePrefix.toUpperCase() : 'MT'}001, {titlePrefix ? titlePrefix.toUpperCase() : 'MT'}002...
+              SKUs auto-generate as {skuPrefix ? skuPrefix.toUpperCase() : 'MT'}001, {skuPrefix ? skuPrefix.toUpperCase() : 'MT'}002...
             </p>
           </div>
         </div>
