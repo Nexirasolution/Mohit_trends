@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
-import { Plus, Pencil, Trash2, Search, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, X, UploadCloud } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
 
 export default function AdminProductsPage() {
@@ -77,9 +77,13 @@ export default function AdminProductsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-5">
-        <h1 className="font-display text-2xl font-bold text-brand-magenta">Products</h1>
-        <Link href="/admin/products/new" className="btn-primary flex items-center gap-1 text-sm"><Plus size={16} /> Add Product</Link>
+      <div className="flex gap-2 mb-4">
+        <Link href="/admin/products/bulk" className="btn-secondary flex items-center gap-1 text-sm">
+          <UploadCloud size={16} /> Bulk Add
+        </Link>
+        <Link href="/admin/products/new" className="btn-primary flex items-center gap-1 text-sm">
+          <Plus size={16} /> Add Product
+        </Link>
       </div>
 
       {/* Filters */}
