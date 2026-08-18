@@ -71,7 +71,13 @@ export default async function HomePage() {
 
           {/* Label */}
           <div className="px-1.5 py-1.5 text-center border-t border-pink-100">
-            <span className="text-[10.5px] font-medium text-neutral-800 leading-tight line-clamp-2">
+            <span
+              className="text-[10.5px] font-bold font-serif tracking-wide text-neutral-900 leading-tight line-clamp-2"
+              style={{
+                WebkitTextStroke: "0.4px #ec4899", // pink outline around text
+                textShadow: "0 0 1px rgba(236,72,153,0.4)",
+              }}
+            >
               {c.name}
             </span>
           </div>
