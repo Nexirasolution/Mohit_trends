@@ -4,7 +4,6 @@ import { dbConnect } from '@/lib/mongodb';
 import Product from '@/models/Product';
 import Review from '@/models/Review';
 import { requireAdmin } from '@/lib/apiAuth';
-import { generateSku } from '@/lib/sku';
 
 function getFilter(id) {
   return mongoose.isValidObjectId(id) ? { _id: id } : { slug: id };
@@ -41,13 +40,10 @@ export const PUT = requireAdmin(async (req, { params }) => {
   const current = await Product.findOne(getFilter(params.id)).select('_id category sku');
   if (!current) return NextResponse.json({ error: 'Product not found' }, { status: 404 });
 
-  // SKU is auto-managed: only regenerate it if the category actually changed.
+  // SKU is auto-managed and permanently locked after creation — it is never
+  // regenerated or overwritten on update, even if the category changes.
   // Any sku value the client sends is ignored.
-  if (body.category && String(body.category) !== String(current.category)) {
-    body.sku = await generateSku(body.category);
-  } else {
-    delete body.sku;
-  }
+  delete body.sku;
 
   if (body.variants?.length) {
     body.basePrice = Math.min(...body.variants.map((v) => v.price));
