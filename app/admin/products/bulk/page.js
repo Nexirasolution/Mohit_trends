@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import toast from 'react-hot-toast';
-import { X, UploadCloud, Loader2, Plus } from 'lucide-react';
+import { X, UploadCloud, Loader2 } from 'lucide-react';
 
 export default function BulkAddProductsPage() {
   const router = useRouter();
@@ -18,21 +18,13 @@ export default function BulkAddProductsPage() {
   const [compareAtPrice, setCompareAtPrice] = useState('');
   const [stockBySize, setStockBySize] = useState({}); // { S: 10, M: 10, ... }
 
-  // Fallback for categories that have no predefined sizes configured
-  const [manualSizeName, setManualSizeName] = useState('');
-  const [manualSizeStock, setManualSizeStock] = useState('');
-  const [manualSizes, setManualSizes] = useState([]); // [{ size, stock }]
-
   const [files, setFiles] = useState([]); // File[]
   const [previews, setPreviews] = useState([]); // objectURL[]
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState(null);
 
   useEffect(() => {
-    fetch('/api/categories')
-      .then((r) => r.json())
-      .then((d) => setCategories(d.categories || []))
-      .catch(() => toast.error('Failed to load categories'));
+    fetch('/api/categories').then((r) => r.json()).then((d) => setCategories(d.categories || []));
   }, []);
 
   useEffect(() => {
@@ -40,9 +32,6 @@ export default function BulkAddProductsPage() {
     const sizes = cat?.sizes || [];
     setCategorySizes(sizes);
     setStockBySize(Object.fromEntries(sizes.map((s) => [s, ''])));
-    setManualSizes([]);
-    setManualSizeName('');
-    setManualSizeStock('');
   }, [category, categories]);
 
   function handleFilesChange(e) {
@@ -55,19 +44,6 @@ export default function BulkAddProductsPage() {
   function removeImage(idx) {
     setFiles((prev) => prev.filter((_, i) => i !== idx));
     setPreviews((prev) => prev.filter((_, i) => i !== idx));
-  }
-
-  function addManualSize() {
-    const name = manualSizeName.trim().toUpperCase();
-    if (!name) return toast.error('Enter a size name (e.g. S, M, Free Size)');
-    if (manualSizes.some((s) => s.size === name)) return toast.error('That size is already added');
-    setManualSizes((prev) => [...prev, { size: name, stock: manualSizeStock || '0' }]);
-    setManualSizeName('');
-    setManualSizeStock('');
-  }
-
-  function removeManualSize(name) {
-    setManualSizes((prev) => prev.filter((s) => s.size !== name));
   }
 
   async function uploadImage(file) {
@@ -88,21 +64,10 @@ export default function BulkAddProductsPage() {
     if (!price || Number(price) <= 0) return toast.error('Enter a valid price');
     if (files.length === 0) return toast.error('Add at least one image');
 
-    // Combine predefined-size stock and manually-added sizes
-    const fromPredefined = Object.entries(stockBySize)
+    const sizes = Object.entries(stockBySize)
       .filter(([, stock]) => stock !== '')
       .map(([size, stock]) => ({ size, stock: Number(stock) }));
-
-    const fromManual = manualSizes.map((s) => ({ size: s.size, stock: Number(s.stock) || 0 }));
-
-    const sizes = [...fromPredefined, ...fromManual];
-
-    if (sizes.length === 0) {
-      if (categorySizes.length === 0) {
-        return toast.error('This category has no sizes configured — add a size manually below, or set sizes on the category first.');
-      }
-      return toast.error('Enter stock for at least one size');
-    }
+    if (sizes.length === 0) return toast.error('Enter stock for at least one size');
 
     setSubmitting(true);
     try {
@@ -129,14 +94,8 @@ export default function BulkAddProductsPage() {
         }),
       });
 
-      let data;
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error(`Server returned an unexpected response (status ${res.status})`);
-      }
-
-      if (!res.ok) throw new Error(data.error || `Bulk upload failed (status ${res.status})`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Bulk upload failed');
 
       setResult(data);
       if (data.createdCount > 0) {
@@ -233,7 +192,6 @@ export default function BulkAddProductsPage() {
           />
         </div>
 
-        {/* Predefined sizes from the category */}
         {categorySizes.length > 0 && (
           <div>
             <label className="block text-sm font-medium mb-2">Stock per size (applies to every product)</label>
@@ -252,62 +210,6 @@ export default function BulkAddProductsPage() {
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Fallback: category has no sizes configured, let admin add sizes manually for this batch */}
-        {category && categorySizes.length === 0 && (
-          <div className="border border-brand-gold/40 bg-brand-gold/5 rounded-lg p-3">
-            <p className="text-sm font-medium mb-1">No sizes configured for this category</p>
-            <p className="text-xs text-brand-ink/50 mb-3">
-              Add sizes here for this batch, or go to Categories and set sizes so this shows automatically next time.
-            </p>
-
-            <div className="flex flex-wrap items-end gap-2 mb-3">
-              <div>
-                <label className="block text-xs text-brand-ink/50 mb-1">Size</label>
-                <input
-                  value={manualSizeName}
-                  onChange={(e) => setManualSizeName(e.target.value)}
-                  placeholder="e.g. S, Free Size"
-                  className="w-32 px-2 py-1.5 text-sm rounded-lg border border-brand-ink/10 outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-brand-ink/50 mb-1">Stock</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={manualSizeStock}
-                  onChange={(e) => setManualSizeStock(e.target.value)}
-                  placeholder="0"
-                  className="w-24 px-2 py-1.5 text-sm rounded-lg border border-brand-ink/10 outline-none"
-                />
-              </div>
-              <button
-                type="button"
-                onClick={addManualSize}
-                className="flex items-center gap-1 text-sm border rounded-lg px-3 py-1.5 hover:border-brand-magenta transition-colors"
-              >
-                <Plus size={14} /> Add
-              </button>
-            </div>
-
-            {manualSizes.length > 0 && (
-              <div className="flex flex-wrap gap-2">
-                {manualSizes.map((s) => (
-                  <span
-                    key={s.size}
-                    className="flex items-center gap-1 text-xs bg-white border border-brand-ink/10 rounded-full px-2 py-1"
-                  >
-                    {s.size}: {s.stock}
-                    <button type="button" onClick={() => removeManualSize(s.size)}>
-                      <X size={12} />
-                    </button>
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
         )}
 
