@@ -3,13 +3,29 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { Star, ShoppingBag, Zap, Heart, Share2, ChevronLeft, ChevronRight, Tag, Truck, RotateCcw, Shield } from 'lucide-react';
+import { Fraunces, Inter } from 'next/font/google';
+import { Star, ShoppingBag, Zap, Heart, Share2, ChevronLeft, ChevronRight, Tag } from 'lucide-react';
 import { formatINR } from '@/lib/utils';
 import { getSizeStock } from '@/lib/stock';
 import { useCart } from '@/components/CartContext';
 import ColorSizeSelector from '@/components/ColorSizeSelector';
 import ProductCard from '@/components/ProductCard';
 import toast from 'react-hot-toast';
+
+// Typography — a deliberate pairing instead of system defaults: Fraunces
+// (a warm, slightly editorial serif with real personality in italics/weight)
+// for anything read as a headline, Inter for everything functional/UI.
+const display = Fraunces({ subsets: ['latin'], weight: ['400', '500'], style: ['normal', 'italic'], variable: '--font-display' });
+const body = Inter({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-body' });
+
+// Design tokens — shared across the site's white/pink design system
+const INK = '#241B21';
+const INK_SOFT = '#A9808C';
+const ROSE = '#E24C6B';
+const BLUSH = '#FDE7EC';
+const BLUSH_LINE = '#F6C9D3';
+const PAPER = '#FFFFFF';
+const NEUTRAL = '#C7BDC1';
 
 export default function ProductPage() {
   const { slug } = useParams();
@@ -33,9 +49,9 @@ export default function ProductPage() {
 
   if (!data?.product) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-brand-ink/40">
-          <div className="w-8 h-8 border-2 border-brand-magenta border-t-transparent rounded-full animate-spin" />
+      <div className={`${body.className} min-h-screen flex items-center justify-center`} style={{ background: PAPER }}>
+        <div className="flex flex-col items-center gap-3" style={{ color: INK_SOFT }}>
+          <div className="w-7 h-7 border-2 rounded-full animate-spin" style={{ borderColor: BLUSH_LINE, borderTopColor: ROSE }} />
           <p className="text-sm">Loading product…</p>
         </div>
       </div>
@@ -73,7 +89,6 @@ export default function ProductPage() {
   function handleSizeChange(size) {
     setActiveSize(size);
     const stock = getSizeStock(activeVariant, size);
-    // Clamp qty to whatever this size actually has in stock.
     setQty((q) => (stock > 0 ? Math.min(q, stock) : 1));
   }
 
@@ -127,223 +142,346 @@ export default function ProductPage() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-4 sm:py-8">
-      <div className="grid sm:grid-cols-2 gap-6 sm:gap-10">
+    <div className={`${body.className} ${display.variable}`} style={{ background: PAPER }}>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 sm:pt-12 pb-24 sm:pb-16">
 
-        {/* ── Images ── */}
-        <div>
-          {/* Main image */}
-          <div className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden bg-brand-cream shadow-sm">
-            {images[activeImage] && (
-              <Image
-                src={images[activeImage]}
-                alt={product.name}
-                fill
-                sizes="(max-width:640px) 100vw, 50vw"
-                className="object-cover"
-                priority
-              />
-            )}
+        {/* Asymmetric layout: gallery takes more room and stays put while
+            details scroll past it on desktop — an editorial reading order
+            rather than two matched columns. */}
+        <div className="grid sm:grid-cols-12 gap-8 sm:gap-12">
 
-            {/* Discount badge */}
-            {discount > 0 && (
-              <div className="absolute top-3 left-3 bg-brand-magenta text-white text-xs font-bold px-2.5 py-1 rounded-full">
-                {discount}% OFF
+          {/* ── Gallery ── */}
+          <div className="sm:col-span-7 sm:sticky sm:top-6 sm:self-start">
+            <div className="flex gap-3 sm:gap-4">
+
+              {/* Signature element: category name run vertically along the
+                  spine of the image, like a garment tag or a magazine folio */}
+              <div className="hidden sm:flex items-center shrink-0 w-5">
+                <span
+                  className="text-[11px] font-medium uppercase whitespace-nowrap"
+                  style={{
+                    color: ROSE,
+                    letterSpacing: '0.22em',
+                    writingMode: 'vertical-rl',
+                    transform: 'rotate(180deg)',
+                  }}
+                >
+                  {product.category?.name}
+                </span>
               </div>
-            )}
 
-            {/* Wish + Share */}
-            <div className="absolute top-3 right-3 flex flex-col gap-2">
-              <button
-                onClick={() => { setWished((w) => !w); toast.success(wished ? 'Removed from wishlist' : 'Added to wishlist'); }}
-                className="w-9 h-9 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow"
-              >
-                <Heart size={17} className={wished ? 'fill-brand-magenta text-brand-magenta' : 'text-brand-ink/50'} />
-              </button>
-              <button
-                onClick={handleShare}
-                className="w-9 h-9 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow"
-              >
-                <Share2 size={16} className="text-brand-ink/50" />
-              </button>
+              <div className="flex-1 min-w-0">
+                <div className="relative w-full aspect-[3/4] rounded-lg overflow-hidden" style={{ background: BLUSH }}>
+                  {images[activeImage] && (
+                    <Image
+                      src={images[activeImage]}
+                      alt={product.name}
+                      fill
+                      sizes="(max-width:640px) 100vw, 58vw"
+                      className="object-cover"
+                      priority
+                    />
+                  )}
+
+                  {discount > 0 && (
+                    <div
+                      className="absolute top-3 left-3 text-[10px] font-semibold uppercase tracking-wider"
+                      style={{ color: PAPER, background: ROSE, padding: '4px 9px', borderRadius: '3px' }}
+                    >
+                      {discount}% off
+                    </div>
+                  )}
+
+                  <div className="absolute top-3 right-3 flex flex-col gap-3">
+                    <button
+                      onClick={() => { setWished((w) => !w); toast.success(wished ? 'Removed from wishlist' : 'Added to wishlist'); }}
+                      className="w-8 h-8 flex items-center justify-center active:scale-90 transition-transform"
+                      aria-label="Toggle wishlist"
+                    >
+                      <Heart
+                        size={18}
+                        style={{
+                          fill: wished ? ROSE : 'rgba(255,255,255,0.85)',
+                          color: wished ? ROSE : INK,
+                          filter: 'drop-shadow(0 1px 2px rgba(36,27,33,0.25))',
+                        }}
+                      />
+                    </button>
+                    <button
+                      onClick={handleShare}
+                      className="w-8 h-8 flex items-center justify-center active:scale-90 transition-transform"
+                      aria-label="Share"
+                    >
+                      <Share2 size={16} style={{ color: INK, filter: 'drop-shadow(0 1px 2px rgba(36,27,33,0.25))' }} />
+                    </button>
+                  </div>
+
+                  {images.length > 1 && (
+                    <>
+                      <button
+                        onClick={prevImage}
+                        className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
+                        style={{ background: PAPER, color: ROSE, border: `1px solid ${BLUSH_LINE}` }}
+                        aria-label="Previous image"
+                      >
+                        <ChevronLeft size={16} strokeWidth={1.75} />
+                      </button>
+                      <button
+                        onClick={nextImage}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center"
+                        style={{ background: PAPER, color: ROSE, border: `1px solid ${BLUSH_LINE}` }}
+                        aria-label="Next image"
+                      >
+                        <ChevronRight size={16} strokeWidth={1.75} />
+                      </button>
+                    </>
+                  )}
+
+                  {images.length > 1 && (
+                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
+                      {images.map((_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => setActiveImage(i)}
+                          className="rounded-full transition-all"
+                          style={{
+                            height: '3px',
+                            width: i === activeImage ? '20px' : '8px',
+                            background: i === activeImage ? ROSE : 'rgba(255,255,255,0.75)',
+                          }}
+                          aria-label={`Go to image ${i + 1}`}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {images.length > 1 && (
+                  <div className="flex gap-3 mt-3 overflow-x-auto no-scrollbar">
+                    {images.map((img, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setActiveImage(i)}
+                        className="relative w-14 h-[70px] rounded-md overflow-hidden shrink-0 transition-opacity"
+                        style={{
+                          opacity: i === activeImage ? 1 : 0.5,
+                          boxShadow: i === activeImage ? `0 0 0 1.5px ${ROSE}` : 'none',
+                        }}
+                      >
+                        <Image src={img} alt="" fill className="object-cover" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
+          </div>
 
-            {/* Prev / Next arrows */}
-            {images.length > 1 && (
-              <>
-                <button onClick={prevImage} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center shadow">
-                  <ChevronLeft size={18} />
-                </button>
-                <button onClick={nextImage} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center shadow">
-                  <ChevronRight size={18} />
-                </button>
-              </>
-            )}
+          {/* ── Details ── */}
+          <div className="sm:col-span-5 flex flex-col">
+            <h1
+              className={`${display.className} text-[28px] sm:text-4xl leading-[1.08]`}
+              style={{ color: INK, fontWeight: 400, letterSpacing: '-0.01em' }}
+            >
+              {product.name}
+            </h1>
 
-            {/* Dot indicators */}
-            {images.length > 1 && (
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-                {images.map((_, i) => (
-                  <button key={i} onClick={() => setActiveImage(i)}
-                    className={`rounded-full transition-all ${i === activeImage ? 'w-4 h-1.5 bg-brand-magenta' : 'w-1.5 h-1.5 bg-white/60'}`}
+            <div className="flex items-center gap-2 mt-3">
+              <div className="flex items-center gap-0.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    size={13}
+                    strokeWidth={1.5}
+                    style={
+                      i < Math.round(product.rating)
+                        ? { fill: ROSE, color: ROSE }
+                        : { fill: 'none', color: BLUSH_LINE }
+                    }
                   />
                 ))}
               </div>
-            )}
-          </div>
-
-          {/* Thumbnails */}
-          {images.length > 1 && (
-            <div className="flex gap-2 mt-3 overflow-x-auto no-scrollbar">
-              {images.map((img, i) => (
-                <button key={i} onClick={() => setActiveImage(i)}
-                  className={`relative w-16 h-20 rounded-xl overflow-hidden border-2 shrink-0 transition-all ${i === activeImage ? 'border-brand-magenta' : 'border-transparent opacity-60'}`}
-                >
-                  <Image src={img} alt="" fill className="object-cover" />
-                </button>
-              ))}
+              <span className="text-sm" style={{ color: INK_SOFT }}>({product.reviewCount} reviews)</span>
             </div>
-          )}
-        </div>
 
-        {/* ── Details ── */}
-        <div className="flex flex-col">
-          <p className="text-xs font-semibold text-brand-magenta uppercase tracking-widest">{product.category?.name}</p>
-          <h1 className="font-display text-2xl sm:text-3xl font-bold text-brand-ink mt-1 leading-tight">{product.name}</h1>
-
-          {/* Rating */}
-          <div className="flex items-center gap-2 mt-2">
-            <div className="flex items-center gap-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} size={14} className={i < Math.round(product.rating) ? 'fill-brand-gold text-brand-gold' : 'text-brand-ink/20'} />
-              ))}
-            </div>
-            <span className="text-sm text-brand-ink/50">({product.reviewCount} reviews)</span>
-          </div>
-
-          {/* Price */}
-          <div className="mt-4 bg-brand-cream rounded-xl p-4">
-            <div className="flex items-end gap-3">
-              <span className="text-3xl font-bold text-brand-magenta">{formatINR(activeVariant?.price)}</span>
-              {activeVariant?.compareAtPrice > activeVariant?.price && (
-                <span className="text-brand-ink/40 line-through text-lg mb-0.5">{formatINR(activeVariant.compareAtPrice)}</span>
+            <div className="mt-5">
+              <div className="flex items-end gap-3">
+                <span className={`${display.className} text-[30px]`} style={{ color: INK, fontWeight: 500 }}>
+                  {formatINR(activeVariant?.price)}
+                </span>
+                {activeVariant?.compareAtPrice > activeVariant?.price && (
+                  <span className="line-through text-lg mb-0.5" style={{ color: NEUTRAL }}>
+                    {formatINR(activeVariant.compareAtPrice)}
+                  </span>
+                )}
+              </div>
+              {discount > 0 && (
+                <div className="flex items-center gap-1.5 mt-1.5">
+                  <Tag size={12} style={{ color: ROSE }} />
+                  <p className="text-xs font-medium" style={{ color: ROSE }}>
+                    You save {formatINR(activeVariant.compareAtPrice - activeVariant.price)}
+                  </p>
+                </div>
               )}
             </div>
-            {discount > 0 && (
-              <div className="flex items-center gap-1.5 mt-1">
-                <Tag size={12} className="text-brand-deepgreen" />
-                <p className="text-brand-deepgreen text-xs font-semibold">You save {formatINR(activeVariant.compareAtPrice - activeVariant.price)}!</p>
-              </div>
+
+            {/* Meta — small definition-list rhythm instead of an inline sentence */}
+            {product.fabric && (
+              <dl className="flex gap-2 mt-4 text-sm">
+                <dt style={{ color: INK_SOFT }}>Fabric</dt>
+                <dd className="font-medium" style={{ color: INK }}>{product.fabric}</dd>
+              </dl>
             )}
-          </div>
 
-          {product.fabric && (
-            <p className="text-sm text-brand-ink/60 mt-3">Fabric: <span className="font-medium text-brand-ink">{product.fabric}</span></p>
-          )}
+            <div className="mt-6">
+              <ColorSizeSelector
+                variants={product.variants}
+                activeVariant={activeVariant}
+                onColorChange={handleColorChange}
+                activeSize={activeSize}
+                onSizeChange={handleSizeChange}
+                categoryType={product.category?.type}
+              />
+            </div>
 
-          {/* Color + Size */}
-          <div className="mt-5">
-            <ColorSizeSelector
-  variants={product.variants}
-  activeVariant={activeVariant}
-  onColorChange={handleColorChange}
-  activeSize={activeSize}
-  onSizeChange={handleSizeChange}
-  categoryType={product.category?.type}   // NEW
-/>
-          </div>
+            <div className="flex items-center gap-3 mt-6">
+              <p className="text-sm font-medium" style={{ color: INK_SOFT }}>Qty</p>
+              <div className="flex items-center" style={{ border: `1px solid ${BLUSH_LINE}`, borderRadius: '6px' }}>
+                <button
+                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  className="w-8 h-8 flex items-center justify-center text-base font-medium"
+                  style={{ color: INK }}
+                >
+                  −
+                </button>
+                <span className="w-7 text-center text-sm font-semibold" style={{ color: INK }}>{qty}</span>
+                <button
+                  onClick={() => setQty((q) => (selectedSizeStock > 0 ? Math.min(selectedSizeStock, q + 1) : q + 1))}
+                  disabled={!!activeSize && qty >= selectedSizeStock}
+                  className="w-8 h-8 flex items-center justify-center text-base font-medium disabled:opacity-30 disabled:cursor-not-allowed"
+                  style={{ color: INK }}
+                >
+                  +
+                </button>
+              </div>
+              {!!activeSize && selectedSizeStock > 0 && selectedSizeStock <= 5 && (
+                <span className="text-xs font-semibold" style={{ color: ROSE }}>Only {selectedSizeStock} left</span>
+              )}
+              {sizeOutOfStock && (
+                <span className="text-xs font-semibold" style={{ color: INK_SOFT }}>Out of stock</span>
+              )}
+            </div>
 
-          {/* Qty */}
-          <div className="flex items-center gap-3 mt-5">
-            <p className="text-sm font-medium text-brand-ink/70">Qty:</p>
-            <div className="flex items-center border border-brand-ink/15 rounded-full">
-              <button onClick={() => setQty((q) => Math.max(1, q - 1))} className="w-9 h-9 flex items-center justify-center text-lg font-medium">−</button>
-              <span className="w-8 text-center text-sm font-semibold">{qty}</span>
+            {/* CTAs — hidden on mobile in favor of the sticky bar below,
+                shown inline on desktop where there's no fixed footer */}
+            <div className="hidden sm:flex flex-col gap-2.5 mt-7">
               <button
-                onClick={() => setQty((q) => (selectedSizeStock > 0 ? Math.min(selectedSizeStock, q + 1) : q + 1))}
-                disabled={!!activeSize && qty >= selectedSizeStock}
-                className="w-9 h-9 flex items-center justify-center text-lg font-medium disabled:opacity-30 disabled:cursor-not-allowed"
+                onClick={handleBuyNow}
+                disabled={sizeOutOfStock}
+                className="w-full flex items-center justify-center gap-2 font-semibold py-3.5 rounded-md transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                style={{ background: ROSE, color: PAPER }}
               >
-                +
+                <Zap size={17} fill={PAPER} /> {sizeOutOfStock ? 'Out of Stock' : 'Buy Now'}
+              </button>
+              <button
+                onClick={handleAddToCart}
+                disabled={sizeOutOfStock}
+                className="w-full flex items-center justify-center gap-2 font-medium py-3 rounded-md transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
+                style={{ border: `1px solid ${ROSE}`, color: ROSE, background: PAPER }}
+              >
+                <ShoppingBag size={16} /> {sizeOutOfStock ? 'Out of Stock' : 'Add to Cart'}
               </button>
             </div>
-            {!!activeSize && selectedSizeStock > 0 && selectedSizeStock <= 5 && (
-              <span className="text-xs font-semibold text-brand-magenta">Only {selectedSizeStock} left!</span>
-            )}
-            {sizeOutOfStock && (
-              <span className="text-xs font-semibold text-red-600">Out of stock</span>
-            )}
-          </div>
 
-          {/* CTAs */}
-          <div className="flex flex-col gap-3 mt-6">
-            <button
-              onClick={handleBuyNow}
-              disabled={sizeOutOfStock}
-              className="w-full flex items-center justify-center gap-2 bg-brand-magenta hover:bg-brand-magenta/90 active:scale-95 text-white font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-brand-magenta/25 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
-            >
-              <Zap size={18} fill="white" /> {sizeOutOfStock ? 'Out of Stock' : 'Buy Now'}
-            </button>
-            <button
-              onClick={handleAddToCart}
-              disabled={sizeOutOfStock}
-              className="w-full flex items-center justify-center gap-2 border-2 border-brand-magenta text-brand-magenta font-semibold py-3 rounded-xl hover:bg-brand-magenta/5 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100"
-            >
-              <ShoppingBag size={17} /> {sizeOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-            </button>
-          </div>
-
-          {/* Trust badges */}
-          {/* <div className="grid grid-cols-3 gap-2 mt-5">
-            {[
-              [Truck, 'Free Delivery'],
-              [RotateCcw, '7-Day Returns'],
-              [Shield, '100% Genuine'],
-            ].map(([Icon, label]) => (
-              <div key={label} className="flex flex-col items-center gap-1 bg-brand-cream/60 rounded-xl py-3 px-1 text-center">
-                <Icon size={18} className="text-brand-magenta" />
-                <p className="text-xs text-brand-ink/60 leading-tight">{label}</p>
+            {product.description && (
+              <div className="mt-7 text-sm leading-relaxed pt-6" style={{ color: INK_SOFT, borderTop: `1px solid ${BLUSH_LINE}` }}>
+                <h3 className={`${display.className} text-base mb-2`} style={{ color: INK, fontWeight: 500 }}>
+                  Description
+                </h3>
+                <p>{product.description}</p>
               </div>
-            ))}
-          </div> */}
+            )}
 
-          {/* Description */}
-          {product.description && (
-            <div className="mt-6 text-sm text-brand-ink/70 leading-relaxed border-t pt-5">
-              <h3 className="font-semibold text-brand-ink mb-2">Description</h3>
-              <p>{product.description}</p>
-            </div>
-          )}
+            {/* Spacer so content never sits under the mobile sticky bar */}
+            <div className="h-4 sm:h-0" />
+          </div>
         </div>
+
+        {/* Reviews */}
+        {reviews?.length > 0 && (
+          <div className="mt-16 sm:mt-24">
+            <h2 className={`${display.className} text-xl sm:text-2xl mb-6`} style={{ color: INK, fontWeight: 400 }}>
+              Customer Reviews
+            </h2>
+            <div className="grid sm:grid-cols-2 gap-x-10 gap-y-7">
+              {reviews.map((r) => (
+                <div key={r._id} className="pt-5" style={{ borderTop: `1px solid ${BLUSH_LINE}` }}>
+                  <div className="flex items-center gap-0.5 mb-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        size={12}
+                        strokeWidth={1.5}
+                        style={i < r.rating ? { fill: ROSE, color: ROSE } : { fill: 'none', color: BLUSH_LINE }}
+                      />
+                    ))}
+                  </div>
+                  <p className={`${display.className} text-sm leading-relaxed`} style={{ color: INK }}>
+                    {r.comment}
+                  </p>
+                  <p className="text-xs font-semibold mt-3" style={{ color: INK_SOFT }}>{r.customerName}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Related */}
+        {related?.length > 0 && (
+          <div className="mt-16 sm:mt-24">
+            <h2 className={`${display.className} text-xl sm:text-2xl mb-6`} style={{ color: INK, fontWeight: 400 }}>
+              You may also like
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-5 gap-y-8">
+              {related.map((p) => <ProductCard key={p._id} product={p} />)}
+            </div>
+          </div>
+        )}
       </div>
 
-      {/* Reviews */}
-      {reviews?.length > 0 && (
-        <div className="mt-14">
-          <h2 className="font-display text-xl font-bold text-brand-ink mb-5">Customer Reviews</h2>
-          <div className="grid sm:grid-cols-2 gap-4">
-            {reviews.map((r) => (
-              <div key={r._id} className="card-soft p-4 rounded-xl">
-                <div className="flex items-center gap-1 mb-2">
-                  {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={13} className={i < r.rating ? 'fill-brand-gold text-brand-gold' : 'text-brand-ink/20'} />
-                  ))}
-                </div>
-                <p className="text-sm text-brand-ink/80 leading-relaxed">{r.comment}</p>
-                <p className="text-xs font-semibold text-brand-magenta mt-3">— {r.customerName}</p>
-              </div>
-            ))}
+      {/* Sticky mobile buy bar — keeps price + primary action reachable
+          while the description/reviews scroll underneath it */}
+      {data?.product && (
+        <div
+          className="sm:hidden fixed bottom-0 left-0 right-0 z-40 flex items-center gap-3 px-4 py-3"
+          style={{ background: PAPER, borderTop: `1px solid ${BLUSH_LINE}` }}
+        >
+          <div className="shrink-0">
+            <p className={`${display.className} text-lg leading-none`} style={{ color: INK, fontWeight: 500 }}>
+              {formatINR(activeVariant?.price)}
+            </p>
+            {activeVariant?.compareAtPrice > activeVariant?.price && (
+              <p className="text-[11px] line-through leading-none mt-1" style={{ color: NEUTRAL }}>
+                {formatINR(activeVariant.compareAtPrice)}
+              </p>
+            )}
           </div>
-        </div>
-      )}
-
-      {/* Related */}
-      {related?.length > 0 && (
-        <div className="mt-14">
-          <h2 className="font-display text-xl font-bold text-brand-ink mb-5">You may also like</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            {related.map((p) => <ProductCard key={p._id} product={p} />)}
-          </div>
+          <button
+            onClick={handleAddToCart}
+            disabled={sizeOutOfStock}
+            className="flex-1 flex items-center justify-center gap-1.5 font-medium py-2.5 rounded-md text-sm disabled:opacity-50"
+            style={{ border: `1px solid ${ROSE}`, color: ROSE, background: PAPER }}
+          >
+            <ShoppingBag size={15} /> Cart
+          </button>
+          <button
+            onClick={handleBuyNow}
+            disabled={sizeOutOfStock}
+            className="flex-1 flex items-center justify-center gap-1.5 font-semibold py-2.5 rounded-md text-sm disabled:opacity-50"
+            style={{ background: ROSE, color: PAPER }}
+          >
+            <Zap size={15} fill={PAPER} /> {sizeOutOfStock ? 'Sold out' : 'Buy now'}
+          </button>
         </div>
       )}
     </div>

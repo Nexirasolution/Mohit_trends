@@ -11,34 +11,18 @@ export default function ReelsSection({ reels }) {
     <section className="max-w-7xl mx-auto px-4 py-10">
       {/* Section heading */}
       <div className="text-center mb-6">
-        <p
-          className="text-xs font-bold uppercase tracking-widest mb-1"
-          style={{ color: '#C9A84C', fontFamily: 'sans-serif' }}
-        >
+        <p className="text-xs font-semibold uppercase tracking-widest mb-1 text-pink-500">
           Watch &amp; Shop
         </p>
-        <h2
-          className="text-2xl sm:text-3xl font-bold mb-2"
-          style={{ color: '#8B0000', fontFamily: 'Georgia, serif', letterSpacing: '0.5px' }}
-        >
+        <h2 className="text-2xl sm:text-3xl font-semibold tracking-tight mb-3 text-neutral-900">
           Shop by Reels
         </h2>
-
-        {/* Gold ornament divider */}
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <div style={{ height: '1px', width: '50px', background: '#C9A84C' }} />
-          <span style={{ color: '#C9A84C', fontSize: '14px' }}>✦</span>
-          <div style={{ height: '1px', width: '50px', background: '#C9A84C' }} />
-        </div>
 
         <a
           href="https://instagram.com/ssrkcollections"
           target="_blank"
           rel="noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm font-semibold transition-colors"
-          style={{ color: '#8B0000', fontFamily: 'sans-serif' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = '#C9A84C')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = '#8B0000')}
+          className="inline-flex items-center gap-1.5 text-sm font-medium text-pink-600 hover:text-pink-700 transition-colors"
         >
           <Instagram size={15} /> Follow us on Instagram
         </a>
@@ -49,13 +33,7 @@ export default function ReelsSection({ reels }) {
         {reels.map((reel) => (
           <div
             key={reel._id}
-            className="relative min-w-[145px] sm:min-w-[175px] aspect-[9/16] shrink-0 group"
-            style={{
-              borderRadius: '14px',
-              overflow: 'hidden',
-              border: '2px solid #C9A84C',
-              boxShadow: '0 2px 10px rgba(139,0,0,0.15)',
-            }}
+            className="relative min-w-[145px] sm:min-w-[175px] aspect-[9/16] shrink-0 group rounded-xl overflow-hidden border border-neutral-100"
           >
             <Image
               src={reel.thumbnail || '/placeholder.png'}
@@ -65,7 +43,7 @@ export default function ReelsSection({ reels }) {
             />
 
             {/* Gradient overlay */}
-            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(80,0,0,0.75) 0%, rgba(0,0,0,0.1) 50%, rgba(139,0,0,0.2) 100%)' }} />
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.05) 55%, transparent 100%)' }} />
 
             {/* Play button */}
             <a
@@ -75,49 +53,22 @@ export default function ReelsSection({ reels }) {
               className="absolute inset-0 flex items-center justify-center"
               onClick={(e) => e.stopPropagation()}
             >
-              <div
-                className="w-10 h-10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform"
-                style={{
-                  background: 'rgba(255,255,255,0.92)',
-                  border: '2px solid #C9A84C',
-                  boxShadow: '0 2px 8px rgba(139,0,0,0.25)',
-                }}
-              >
-                <Play size={16} fill="#8B0000" color="#8B0000" className="ml-0.5" />
+              <div className="w-10 h-10 rounded-full flex items-center justify-center bg-white/95 group-hover:scale-110 transition-transform">
+                <Play size={16} fill="#DB2777" color="#DB2777" className="ml-0.5" />
               </div>
             </a>
 
             {/* Bottom info + CTA */}
             <div className="absolute bottom-0 inset-x-0 p-2.5">
               {reel.product?.name && (
-                <p
-                  className="text-[11px] font-medium line-clamp-1 mb-1.5"
-                  style={{ color: '#fff', fontFamily: 'Georgia, serif' }}
-                >
+                <p className="text-[11px] font-medium line-clamp-1 mb-1.5 text-white">
                   {reel.product.name}
                 </p>
               )}
               {reel.product?.slug && (
                 <Link
                   href={`/product/${reel.product.slug}`}
-                  className="flex items-center justify-center gap-1 w-full text-[11px] font-bold py-1.5 transition-all"
-                  style={{
-                    background: '#C9A84C',
-                    color: '#8B0000',
-                    borderRadius: '7px',
-                    fontFamily: 'sans-serif',
-                    border: '1px solid #8B0000',
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = '#8B0000';
-                    e.currentTarget.style.color = '#fff';
-                    e.currentTarget.style.borderColor = '#C9A84C';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = '#C9A84C';
-                    e.currentTarget.style.color = '#8B0000';
-                    e.currentTarget.style.borderColor = '#8B0000';
-                  }}
+                  className="flex items-center justify-center gap-1 w-full text-[11px] font-medium py-1.5 rounded-lg transition-colors bg-white text-pink-600 hover:bg-pink-50"
                 >
                   <ShoppingBag size={11} /> Shop Now
                 </Link>

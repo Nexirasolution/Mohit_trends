@@ -16,32 +16,30 @@ export default function OrderSuccessPage() {
       .then((d) => setOrder(d.order));
   }, [id]);
 
-  if (!order) return <div className="max-w-xl mx-auto px-4 py-20 text-center text-[#2B1B14]/50">Loading...</div>;
+  if (!order) return <div className="max-w-xl mx-auto px-4 py-20 text-center text-neutral-400">Loading...</div>;
 
   return (
     <div className="max-w-xl mx-auto px-4 py-16 text-center">
-      <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#1F6B3B]/10 border-2 border-[#1F6B3B]/30 mb-4">
-        <CheckCircle2 size={48} className="text-[#1F6B3B]" />
+      <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-50 border border-green-200 mb-4">
+        <CheckCircle2 size={48} className="text-green-600" />
       </div>
 
-      <h1 className="font-display text-2xl font-bold text-[#8B1A3D]">Order Placed Successfully!</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Order Placed Successfully!</h1>
 
-      <div className="h-px w-20 bg-gradient-to-r from-transparent via-[#D4AF37] to-transparent mx-auto mt-3 mb-3" />
-
-      <p className="text-[#2B1B14]/60 mt-2">Order Number: <strong className="text-[#2B1B14]">{order.orderNumber}</strong></p>
-      <p className="text-[#2B1B14]/60">Total: <strong className="text-[#2B1B14]">{formatINR(order.total)}</strong></p>
-      <p className="text-sm text-[#2B1B14]/50 mt-1">We'll send updates to {order.customer?.phone}</p>
+      <p className="text-neutral-500 mt-4">Order Number: <strong className="text-neutral-900">{order.orderNumber}</strong></p>
+      <p className="text-neutral-500">Total: <strong className="text-neutral-900">{formatINR(order.total)}</strong></p>
+      <p className="text-sm text-neutral-400 mt-1">We'll send updates to {order.customer?.phone}</p>
 
       <div className="flex flex-col sm:flex-row gap-3 justify-center mt-8">
         <Link
           href={`/invoice/${order._id}`}
-          className="px-5 py-2.5 rounded-xl border-2 border-[#8B1A3D] text-[#8B1A3D] font-semibold text-sm hover:bg-[#8B1A3D]/5 transition-colors"
+          className="px-5 py-2.5 rounded-full border border-pink-600 text-pink-600 font-medium text-sm hover:bg-pink-50 transition-colors"
         >
           View Invoice
         </Link>
         <Link
           href="/"
-          className="px-5 py-2.5 rounded-xl bg-[#8B1A3D] text-white font-semibold text-sm hover:bg-[#71152F] transition-colors"
+          className="px-5 py-2.5 rounded-full bg-pink-600 text-white font-medium text-sm hover:bg-pink-700 transition-colors"
         >
           Continue Shopping
         </Link>

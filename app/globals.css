@@ -3,15 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --font-display: 'Playfair Display', serif;
+  --font-display: 'Poppins', sans-serif;
   --font-body: 'Poppins', sans-serif;
 
-  /* SSRK Brand Colors */
-  --ssrk-crimson: #8B0000;
-  --ssrk-crimson-dark: #6e0000;
-  --ssrk-gold: #C9A84C;
-  --ssrk-cream: #fdf5f5;
-  --ssrk-ink: #1a1a1a;
+  /* Brand Colors — white + pink minimalist */
+  --brand-pink: #DB2777;
+  --brand-pink-dark: #BE185D;
+  --brand-pink-light: #FDF2F8;
+  --brand-border: #FCE7F3;
+  --brand-ink: #171717;
 }
 
 html {
@@ -19,61 +19,59 @@ html {
 }
 
 body {
-  background: var(--ssrk-cream);
-  color: var(--ssrk-ink);
+  background: #fff;
+  color: var(--brand-ink);
 }
 
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Scrollbar — gold thumb on cream track */
+/* Scrollbar — pink thumb on white track */
 ::-webkit-scrollbar {
   height: 6px;
   width: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #f5e8e8;
+  background: #fafafa;
 }
 ::-webkit-scrollbar-thumb {
-  background: #C9A84C99;
+  background: #DB277799;
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #C9A84C;
+  background: #DB2777;
 }
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* Primary button — solid crimson with gold border */
+/* Primary button — solid pink, pill-shaped */
 .btn-primary {
-  background: var(--ssrk-crimson);
+  background: var(--brand-pink);
   color: #fff;
-  font-weight: 600;
-  border-radius: 8px;
+  font-weight: 500;
+  border-radius: 9999px;
   padding: 0.7rem 1.6rem;
-  border: 2px solid var(--ssrk-gold);
+  border: none;
   font-family: var(--font-body);
-  transition: background 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 4px 14px -4px rgba(139,0,0,0.3);
+  transition: background 0.15s ease;
   cursor: pointer;
 }
 .btn-primary:hover {
-  background: var(--ssrk-crimson-dark);
-  box-shadow: 0 6px 18px -4px rgba(139,0,0,0.4);
+  background: var(--brand-pink-dark);
 }
 .btn-primary:disabled {
-  opacity: 0.55;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* Outline button — crimson border, flips on hover */
+/* Outline button — pink border, flips on hover */
 .btn-outline {
-  border: 1.5px solid var(--ssrk-crimson);
-  color: var(--ssrk-crimson);
-  font-weight: 600;
-  border-radius: 8px;
+  border: 1.5px solid var(--brand-pink);
+  color: var(--brand-pink);
+  font-weight: 500;
+  border-radius: 9999px;
   padding: 0.65rem 1.5rem;
   background: #fff;
   font-family: var(--font-body);
@@ -81,51 +79,50 @@ body {
   cursor: pointer;
 }
 .btn-outline:hover {
-  background: var(--ssrk-crimson);
+  background: var(--brand-pink);
   color: #fff;
 }
 
-/* Gold accent button (e.g. secondary CTA) */
+/* Soft secondary button (blush fill) */
 .btn-gold {
-  background: var(--ssrk-gold);
-  color: var(--ssrk-crimson);
-  font-weight: 700;
-  border-radius: 8px;
+  background: var(--brand-pink-light);
+  color: var(--brand-pink-dark);
+  font-weight: 600;
+  border-radius: 9999px;
   padding: 0.7rem 1.6rem;
-  border: 1.5px solid var(--ssrk-crimson);
+  border: 1px solid var(--brand-border);
   font-family: var(--font-body);
   transition: background 0.15s ease;
   cursor: pointer;
 }
 .btn-gold:hover {
-  background: #b8923e;
-  color: #fff;
+  background: var(--brand-border);
 }
 
 /* Section title */
 .section-title {
   font-family: var(--font-display);
-  color: var(--ssrk-crimson);
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  color: var(--brand-ink);
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 /* Card */
 .card-soft {
   background: #fff;
   border-radius: 12px;
-  border: 1.5px solid #e8d5d5;
-  box-shadow: 0 2px 10px -4px rgba(139,0,0,0.08);
+  border: 1px solid #f0f0f0;
+  box-shadow: none;
+  transition: border-color 0.15s ease;
 }
 .card-soft:hover {
-  border-color: var(--ssrk-gold);
-  box-shadow: 0 4px 16px -4px rgba(139,0,0,0.13);
+  border-color: var(--brand-border);
 }
 
-/* Gold ornament divider — use as <div class="gold-divider"> */
+/* Subtle divider — use as <div class="gold-divider"> */
 .gold-divider {
   height: 1px;
-  background: linear-gradient(90deg, transparent, var(--ssrk-gold), transparent);
+  background: #f0f0f0;
   margin: 0.75rem 0;
 }
 

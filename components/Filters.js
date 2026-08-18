@@ -9,10 +9,8 @@ export default function Filters({ sort, onSortChange }) {
 
   const handleChange = (value) => {
     if (typeof onSortChange === 'function') {
-      // CategoryPage: client-side state, no URL involved
       onSortChange(value);
     } else {
-      // ProductsPage: server component, drive via URL params
       const params = new URLSearchParams(searchParams.toString());
       params.set('sort', value);
       params.set('page', '1');
@@ -21,27 +19,18 @@ export default function Filters({ sort, onSortChange }) {
   };
 
   return (
-    <div
-      className="flex items-center justify-end py-3 px-4"
-      style={{ background: '#FAF7F2', borderBottom: '1.5px solid #EDE0C4' }}
-    >
+    <div className="flex items-center justify-end py-3 px-4 bg-white border-b border-neutral-100">
       {/* Sort */}
       <div className="flex items-center gap-2 shrink-0">
-        <span
-          className="text-[11px] font-bold tracking-wide uppercase"
-          style={{ color: '#9A7A5A' }}
-        >
+        <span className="text-[11px] font-semibold tracking-wide uppercase text-neutral-400">
           Sort
         </span>
         <select
           value={sort}
           onChange={(e) => handleChange(e.target.value)}
-          className="text-[11.5px] font-semibold rounded-full px-3 py-1 outline-none border-[1.5px] transition-colors"
+          className="text-[11.5px] font-medium rounded-full px-3 py-1 outline-none border border-neutral-200 text-neutral-700 bg-white transition-colors focus:border-pink-300"
           style={{
-            background: '#fff',
-            borderColor: '#DDD0B8',
-            color: '#5a3a2a',
-            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%238B1A1A' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23DB2777' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`,
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'right 10px center',
             paddingRight: '28px',

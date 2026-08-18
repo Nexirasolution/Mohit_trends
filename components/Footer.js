@@ -1,7 +1,20 @@
 import Link from 'next/link';
 import { Instagram, MessageCircle, MapPin } from 'lucide-react';
+import { Fraunces, Inter } from 'next/font/google';
 import { dbConnect } from '@/lib/mongodb';
 import Category from '@/models/Category';
+
+// Typography — same pairing as the rest of the site: Fraunces for anything
+// read as a headline, Inter for functional/UI text.
+const display = Fraunces({ subsets: ['latin'], weight: ['400', '500'], variable: '--font-display' });
+const body = Inter({ subsets: ['latin'], weight: ['400', '500', '600'], variable: '--font-body' });
+
+// Design tokens — attractive medium pink footer, inverted from the rest of the (white) site
+const PINK = '#E23A70';        // background — vibrant, not too dark
+const ACCENT = '#FFD6E6';      // soft light pink accent — wordmark, dot, credit
+const WHITE = '#FFFFFF';
+const WHITE_SOFT = 'rgba(255,255,255,0.78)';
+const LINE = 'rgba(255,255,255,0.25)';
 
 async function getCategories() {
   await dbConnect();
@@ -14,67 +27,45 @@ export default async function Footer() {
   const categories = await getCategories();
 
   return (
-    <footer className="mt-12" style={{ background: '#6B1212' }}>
+    <footer className={`${body.className} mt-16`} style={{ background: PINK }}>
+      <div className="max-w-7xl mx-auto px-4 py-14 grid grid-cols-1 sm:grid-cols-12 gap-10 sm:gap-8">
 
-      {/* Gold top border */}
-      <div style={{ borderTop: '3px solid #C9A84C' }} />
-
-      <div className="max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 sm:grid-cols-3 gap-8">
-
-        {/* Brand column */}
-        <div>
-          <h3
-            className="font-bold mb-0.5 leading-tight"
-            style={{ fontSize: 22, color: '#FFE08A', fontFamily: 'serif', letterSpacing: '0.5px' }}
-          >
-           Mohith 
+        {/* Brand column — given more room than the other two, so it reads
+            as the anchor rather than a third equal column */}
+        <div className="sm:col-span-5">
+          <h3 className={`${display.className} text-2xl leading-tight`} style={{ color: WHITE, fontWeight: 500 }}>
+            Mohith
           </h3>
-          <p
-            className="font-semibold mb-3"
-            style={{ fontSize: 10, color: '#C9A84C', letterSpacing: '2px', textTransform: 'uppercase' }}
-          >
+          <p className="text-[10px] font-semibold tracking-[2px] uppercase mb-4" style={{ color: ACCENT }}>
             Trends
           </p>
 
-          {/* Gold rule */}
-          <div className="mb-3 rounded" style={{ width: 36, height: 1.5, background: '#C9A84C' }} />
-
-          <p className="flex items-start gap-1.5 text-xs" style={{ color: 'rgba(255,255,255,0.8)' }}>
-            <MapPin size={13} className="shrink-0 mt-0.5" style={{ color: '#C9A84C' }} />
+          <p className="flex items-start gap-1.5 text-xs" style={{ color: WHITE_SOFT }}>
+            <MapPin size={13} className="shrink-0 mt-0.5" style={{ color: ACCENT }} />
             Thirupathi
           </p>
 
-          <span
-            className="inline-block mt-2.5 text-[9px] font-bold tracking-widest uppercase px-2.5 py-1 rounded-full"
-            style={{
-              background: 'rgba(201,168,76,0.18)',
-              border: '1px solid rgba(201,168,76,0.4)',
-              color: '#C9A84C',
-            }}
-          >
-            ✦ Online Sales Only
-          </span>
+          {/* Status tag — a small dot + text instead of a pill badge */}
+          <p className="inline-flex items-center gap-1.5 mt-4 text-[10px] font-semibold tracking-widest uppercase" style={{ color: WHITE_SOFT }}>
+            <span className="w-1.5 h-1.5 rounded-full" style={{ background: ACCENT }} />
+            Online sales only
+          </p>
         </div>
 
         {/* Shop links */}
-        <div>
-          <h4
-            className="font-extrabold mb-3 flex items-center gap-2"
-            style={{ fontSize: 11, color: '#C9A84C', letterSpacing: '1.5px', textTransform: 'uppercase' }}
-          >
+        <div className="sm:col-span-3">
+          <h4 className="font-semibold mb-4 text-[11px] tracking-widest uppercase" style={{ color: WHITE_SOFT }}>
             Shop
-            <span className="flex-1 h-px" style={{ background: 'rgba(201,168,76,0.3)' }} />
           </h4>
-          <ul className="space-y-2">
+          <ul className="space-y-2.5">
             {categories.map((cat) => (
               <li key={cat.slug}>
                 <Link
                   href={`/category/${cat.slug}`}
-                  className="flex items-center gap-1.5 text-[12.5px] transition-colors"
-                  style={{ color: 'rgba(255,255,255,0.78)' }}
+                  className="text-[13px] transition-colors"
+                  style={{ color: WHITE }}
                 >
-                  <span style={{ color: '#C9A84C', fontWeight: 700, fontSize: 14 }}>›</span>
-                  {cat.name}
+                  <span className="hover:opacity-70 transition-opacity">{cat.name}</span>
                 </Link>
               </li>
             ))}
@@ -82,66 +73,60 @@ export default async function Footer() {
         </div>
 
         {/* Contact */}
-        <div>
-          <h4
-            className="font-extrabold mb-3 flex items-center gap-2"
-            style={{ fontSize: 11, color: '#C9A84C', letterSpacing: '1.5px', textTransform: 'uppercase' }}
-          >
+        <div className="sm:col-span-4">
+          <h4 className="font-semibold mb-4 text-[11px] tracking-widest uppercase" style={{ color: WHITE_SOFT }}>
             Connect
-            <span className="flex-1 h-px" style={{ background: 'rgba(201,168,76,0.3)' }} />
           </h4>
 
-          <div className="flex gap-2 mb-3">
+          {/* Social — outline circles on the dark field */}
+          <div className="flex gap-2 mb-5">
             {[
               { href: 'https://instagram.com/mohittrends', label: 'Instagram', Icon: Instagram },
               { href: `https://wa.me/${whatsapp}`, label: 'WhatsApp', Icon: MessageCircle },
             ].map(({ href, label, Icon }) => (
-              
-               <a key={label}
+              <a
+                key={label}
                 href={href}
                 target="_blank"
                 rel="noreferrer"
                 aria-label={label}
-                className="flex items-center justify-center rounded-full transition-colors"
-                style={{
-                  width: 36, height: 36,
-                  background: 'rgba(201,168,76,0.15)',
-                  border: '1.5px solid rgba(201,168,76,0.4)',
-                  color: '#C9A84C',
-                }}
+                className="flex items-center justify-center w-9 h-9 rounded-full transition-opacity hover:opacity-75"
+                style={{ background: 'transparent', border: `1px solid ${LINE}`, color: WHITE }}
               >
-                <Icon size={16} />
+                <Icon size={16} strokeWidth={1.75} />
               </a>
             ))}
           </div>
 
-          <div className="text-xs space-y-1" style={{ color: 'rgba(255,255,255,0.78)', lineHeight: 1.7 }}>
-            <p><span style={{ color: '#FFE08A', fontWeight: 700 }}>WhatsApp</span><br />
-              +91 93982 81672<br />+91 93982 81672</p>
-            <p className="mt-2"><span style={{ color: '#FFE08A', fontWeight: 700 }}>Email</span><br />
-              mohithtrends@gmail.com</p>
+          <div className="text-xs space-y-3 leading-relaxed" style={{ color: WHITE_SOFT }}>
+            <p>
+              <span className="font-semibold" style={{ color: WHITE }}>WhatsApp</span><br />
+              +91 93982 81672
+            </p>
+            <p>
+              <span className="font-semibold" style={{ color: WHITE }}>Email</span><br />
+              mohithtrends@gmail.com
+            </p>
           </div>
         </div>
       </div>
 
       {/* Bottom bar */}
-      <div style={{ borderTop: '1px solid rgba(201,168,76,0.25)', background: '#5a1010' }}>
-        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <p className="text-[11px]" style={{ color: 'rgba(255,255,255,0.5)' }}>
+      <div style={{ borderTop: `1px solid ${LINE}` }}>
+        <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p className="text-[11px]" style={{ color: WHITE_SOFT }}>
             © {new Date().getFullYear()} Mohith Trends. All rights reserved.
           </p>
-          
-           <a href="https://www.nexirasolution.in"
+
+          <a
+            href="https://www.nexirasolution.in"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-1.5 text-[11px] transition-colors"
-            style={{ color: 'rgba(255,255,255,0.55)' }}
+            className="flex items-center gap-1.5 text-[11px] transition-opacity hover:opacity-75"
+            style={{ color: WHITE_SOFT }}
           >
-            Designed and Developed by
-            <span
-              className="font-extrabold text-[9px] tracking-widest uppercase px-2.5 py-1 rounded-full"
-              style={{ background: '#C9A84C', color: '#3a1a00' }}
-            >
+            Designed and developed by
+            <span className="font-semibold text-[10px] tracking-widest uppercase" style={{ color: ACCENT }}>
               Nexira Solution
             </span>
           </a>

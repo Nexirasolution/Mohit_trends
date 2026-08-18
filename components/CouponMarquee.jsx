@@ -20,54 +20,32 @@ export default function CouponMarquee() {
   const items = [...allItems, ...allItems];
 
   return (
-    <div
-      className="relative overflow-hidden py-1.5"
-      style={{
-        background: '#8B1A1A',
-        borderTop: '1.5px solid #C9A84C',
-        borderBottom: '1.5px solid #C9A84C',
-      }}
-    >
+    <div className="relative overflow-hidden py-1.5 bg-pink-600">
       {/* Fade edges */}
-      <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 z-10"
-        style={{ background: 'linear-gradient(to right, #8B1A1A, transparent)' }} />
-      <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10"
-        style={{ background: 'linear-gradient(to left, #8B1A1A, transparent)' }} />
+      <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-12 z-10" style={{ background: 'linear-gradient(to right, #DB2777, transparent)' }} />
+      <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-12 z-10" style={{ background: 'linear-gradient(to left, #DB2777, transparent)' }} />
 
       <div className="flex animate-marquee whitespace-nowrap w-max">
         {items.map((c, i) => (
-          <span key={i} className="inline-flex items-center gap-1.5 mx-7 text-[11.5px] font-bold text-white">
-
-            {/* Gold diamond separator between items */}
-            {i > 0 && (
-              <span className="mr-3" style={{ color: '#C9A84C', fontSize: 14 }}>✦</span>
-            )}
+          <span key={i} className="inline-flex items-center gap-1.5 mx-7 text-[11.5px] font-semibold text-white">
+            {i > 0 && <span className="mr-3 text-white/50">•</span>}
 
             {c.type === 'freeshipping' ? (
               <>
-                <Truck size={11} style={{ color: '#C9A84C' }} className="shrink-0" />
+                <Truck size={11} className="shrink-0 text-white/80" />
                 FREE SHIPPING on orders above ₹{c.minOrderValue}
               </>
             ) : (
               <>
-                <Tag size={11} style={{ color: '#C9A84C' }} className="shrink-0" />
+                <Tag size={11} className="shrink-0 text-white/80" />
                 Use{' '}
-                <span
-                  className="font-extrabold tracking-widest text-[10.5px] px-2 py-px rounded-full"
-                  style={{
-                    background: 'rgba(201,168,76,0.22)',
-                    border: '1px solid #C9A84C',
-                    color: '#FFE08A',
-                  }}
-                >
+                <span className="font-semibold tracking-widest text-[10.5px] px-2 py-px rounded-full bg-white/20 border border-white/40 text-white">
                   {c.code}
                 </span>
                 {' '}—{' '}
                 {c.type === 'percent' ? `${c.value}% OFF` : `₹${c.value} OFF`}
                 {c.minOrderValue > 0 && (
-                  <span style={{ color: 'rgba(255,255,255,0.6)', fontWeight: 500 }}>
-                    {' '}on orders above ₹{c.minOrderValue}
-                  </span>
+                  <span className="text-white/70 font-normal"> on orders above ₹{c.minOrderValue}</span>
                 )}
               </>
             )}

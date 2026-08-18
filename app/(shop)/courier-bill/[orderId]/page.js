@@ -12,28 +12,28 @@ export default async function CourierBillPage({ params }) {
   if (!order) return <div className="p-10 text-center">Shipping label not found.</div>;
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white text-[#2B1B14] border-2 border-[#8B1A3D]/25 m-6 rounded-xl2">
-      <div className="flex justify-between items-center border-b-2 border-dashed border-[#D4AF37]/50 pb-3 mb-3">
-        <h1 className="font-bold text-lg text-[#8B1A3D]">SHIPPING LABEL</h1>
-        <span className="text-xs font-mono bg-[#FBF6EC] border border-[#D4AF37]/40 px-2 py-1 rounded">{order.orderNumber}</span>
+    <div className="max-w-md mx-auto p-6 bg-white text-neutral-900 border border-pink-100 m-6 rounded-xl">
+      <div className="flex justify-between items-center border-b border-dashed border-neutral-200 pb-3 mb-3">
+        <h1 className="font-semibold text-lg text-pink-600">SHIPPING LABEL</h1>
+        <span className="text-xs font-mono bg-pink-50 border border-pink-100 px-2 py-1 rounded">{order.orderNumber}</span>
       </div>
 
-      <p className="text-xs text-[#8B1A3D] font-semibold tracking-wide mb-1">FROM</p>
+      <p className="text-xs text-pink-600 font-semibold tracking-wide mb-1">FROM</p>
       <p className="text-sm font-semibold">{settings?.storeName || 'Mohith Trends'}</p>
       <p className="text-sm">{settings?.address || 'Tamil Nadu'}</p>
 
-      <p className="text-xs text-[#8B1A3D] font-semibold tracking-wide mt-4 mb-1">TO</p>
+      <p className="text-xs text-pink-600 font-semibold tracking-wide mt-4 mb-1">TO</p>
       <p className="text-sm font-semibold">{order.customer?.name}</p>
       <p className="text-sm">{order.customer?.phone}</p>
       <p className="text-sm">{order.shippingAddress?.line1}, {order.shippingAddress?.line2}</p>
       <p className="text-sm">{order.shippingAddress?.city}, {order.shippingAddress?.state} - {order.shippingAddress?.pincode}</p>
-      {order.shippingAddress?.landmark && <p className="text-sm text-[#2B1B14]/60">Landmark: {order.shippingAddress.landmark}</p>}
+      {order.shippingAddress?.landmark && <p className="text-sm text-neutral-400">Landmark: {order.shippingAddress.landmark}</p>}
 
-      <div className="border-t-2 border-dashed border-[#D4AF37]/50 mt-4 pt-3 text-sm space-y-1">
+      <div className="border-t border-dashed border-neutral-200 mt-4 pt-3 text-sm space-y-1">
         <div className="flex justify-between"><span>Items</span><span className="font-semibold">{order.items.length}</span></div>
         <div className="flex justify-between">
           <span>Payment</span>
-          <span className={order.paymentMethod === 'cod' ? 'font-semibold text-[#1F6B3B]' : 'font-semibold'}>
+          <span className={order.paymentMethod === 'cod' ? 'font-semibold text-green-600' : 'font-semibold'}>
             {order.paymentMethod === 'cod' ? `COD - ₹${order.total}` : 'Prepaid'}
           </span>
         </div>

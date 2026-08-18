@@ -46,8 +46,8 @@ export default function WishlistPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 min-h-[60vh]">
-      <h1 className="font-display text-2xl font-bold text-brand-ink mb-1">My Wishlist</h1>
-      <p className="text-brand-ink/50 text-sm mb-6">
+      <h1 className="text-2xl font-semibold tracking-tight text-neutral-900 mb-1">My Wishlist</h1>
+      <p className="text-neutral-400 text-sm mb-6">
         {products.length > 0
           ? `${products.length} item${products.length > 1 ? 's' : ''} saved`
           : 'Items you save will show up here'}
@@ -56,18 +56,18 @@ export default function WishlistPage() {
       {loading && (
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="aspect-[3/4] rounded-2xl bg-brand-cream animate-pulse" />
+            <div key={i} className="aspect-[3/4] rounded-xl bg-pink-50 animate-pulse" />
           ))}
         </div>
       )}
 
       {!loading && products.length === 0 && (
-        <div className="text-center py-16 text-brand-ink/40">
-          <Heart size={36} className="mx-auto mb-2" />
+        <div className="text-center py-16 text-neutral-400">
+          <Heart size={36} className="mx-auto mb-2 text-pink-300" />
           <p className="text-sm mb-4">Your wishlist is empty</p>
           <Link
             href="/"
-            className="inline-block bg-brand-magenta text-white font-semibold text-sm px-5 py-2.5 rounded-full"
+            className="inline-block bg-pink-600 text-white font-medium text-sm px-5 py-2.5 rounded-full hover:bg-pink-700 transition-colors"
           >
             Start Shopping
           </Link>

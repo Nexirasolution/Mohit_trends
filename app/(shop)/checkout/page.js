@@ -7,39 +7,11 @@ import toast from 'react-hot-toast';
 import { useCart, cartKey } from '@/components/CartContext';
 import { formatINR } from '@/lib/utils';
 
-// SSRK Brand Colors
-// Crimson : #8B0000
-// Gold    : #C9A84C
-// Cream   : #fdf5f5
+const inputClass =
+  'w-full border border-neutral-200 rounded-lg px-3 py-2.5 text-sm text-neutral-900 bg-white outline-none transition-colors focus:border-pink-400';
 
-const inputStyle = {
-  width: '100%',
-  border: '1.5px solid #e8d5d5',
-  borderRadius: '8px',
-  padding: '10px 12px',
-  fontSize: '14px',
-  fontFamily: 'sans-serif',
-  color: '#1a1a1a',
-  background: '#fff',
-  outline: 'none',
-  transition: 'border-color 0.15s',
-};
-
-const cardStyle = {
-  background: '#fff',
-  borderRadius: '12px',
-  border: '1.5px solid #e8d5d5',
-  padding: '20px',
-  boxShadow: '0 2px 8px rgba(139,0,0,0.06)',
-};
-
-const sectionHeadStyle = {
-  fontSize: '15px',
-  fontWeight: '700',
-  color: '#8B0000',
-  fontFamily: 'Georgia, serif',
-  marginBottom: '12px',
-};
+const cardClass = 'bg-white rounded-xl border border-neutral-100 p-5';
+const sectionHeadClass = 'text-sm font-semibold text-neutral-900 mb-3';
 
 function SSRKInput({ placeholder, type = 'text', value, onChange, autoComplete, inputMode, maxLength }) {
   return (
@@ -51,9 +23,7 @@ function SSRKInput({ placeholder, type = 'text', value, onChange, autoComplete, 
       maxLength={maxLength}
       value={value}
       onChange={onChange}
-      style={inputStyle}
-      onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
-      onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
+      className={inputClass}
     />
   );
 }
@@ -116,12 +86,6 @@ export default function CheckoutPage() {
     else { setDiscount(0); toast.error(data.message); }
   }
 
-  /**
-   * Re-checks every cart line against live DB stock right before payment.
-   * Returns true if the cart is clean and it's safe to proceed; false if
-   * anything had to be removed/adjusted (caller should stop and let the
-   * shopper review the updated cart before retrying).
-   */
   async function validateStockBeforeOrder() {
     setCheckingStock(true);
     try {
@@ -204,7 +168,7 @@ export default function CheckoutPage() {
           name: 'Mohith Trends',
           order_id: orderData.order.id,
           prefill: { name: form.name, contact: form.phone, email: form.email },
-          theme: { color: '#8B0000' },
+          theme: { color: '#DB2777' },
           handler: async function (response) {
             const finalRes = await fetch('/api/orders', {
               method: 'POST',
@@ -223,8 +187,6 @@ export default function CheckoutPage() {
             const finalData = await finalRes.json();
             if (finalRes.ok) { clearCart(); router.push(`/order-success/${finalData.order._id}`); }
             else {
-              // Order creation itself failed (e.g. a server-side stock race
-              // lost the last unit between our check and now).
               toast.error(finalData.error || 'Could not save order');
             }
             setSubmitting(false);
@@ -263,40 +225,22 @@ export default function CheckoutPage() {
 
       {/* Page heading */}
       <div className="mb-6">
-        <h1 style={{ color: '#8B0000', fontFamily: 'Georgia, serif', fontSize: '24px', fontWeight: '700', letterSpacing: '0.5px' }}>
-          Checkout
-        </h1>
-        <div className="flex items-center gap-2 mt-1">
-          <div style={{ height: '1px', width: '40px', background: '#C9A84C' }} />
-          <span style={{ color: '#C9A84C', fontSize: '12px' }}>✦</span>
-          <div style={{ height: '1px', width: '40px', background: '#C9A84C' }} />
-        </div>
+        <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Checkout</h1>
       </div>
 
       {/* Free shipping nudge */}
       {freeShippingAbove !== null && shipping !== null && shipping > 0 && (
-        <div
-          className="flex items-center gap-2 px-4 py-2.5 mb-4 text-xs"
-          style={{
-            background: '#fdf5f5',
-            border: '1.5px solid #C9A84C',
-            borderRadius: '8px',
-            color: '#5a2020',
-            fontFamily: 'sans-serif',
-          }}
-        >
-          <span style={{ color: '#C9A84C' }}>✦</span>
-          Add <strong style={{ color: '#8B0000' }}>{formatINR(freeShippingAbove - discountedSubtotal)}</strong> more to get{' '}
-          <strong style={{ color: '#2e7d32' }}>free shipping!</strong>
+        <div className="flex items-center gap-2 px-4 py-2.5 mb-4 text-xs rounded-lg bg-pink-50 border border-pink-100 text-neutral-600">
+          Add <strong className="text-pink-600">{formatINR(freeShippingAbove - discountedSubtotal)}</strong> more to get{' '}
+          <strong className="text-green-600">free shipping!</strong>
         </div>
       )}
 
       <div className="flex flex-col gap-6 sm:grid sm:grid-cols-2 sm:gap-8">
 
         {/* Shipping Details */}
-        <div style={cardStyle}>
-          <p style={sectionHeadStyle}>Shipping Details</p>
-          <div style={{ height: '1px', background: '#C9A84C', opacity: 0.4, marginBottom: '16px' }} />
+        <div className={cardClass}>
+          <p className={sectionHeadClass}>Shipping Details</p>
           <div className="space-y-3">
             <SSRKInput placeholder="Full Name *" autoComplete="name" value={form.name} onChange={(e) => update('name', e.target.value)} />
             <SSRKInput placeholder="Phone Number *" type="tel" inputMode="numeric" autoComplete="tel" value={form.phone} onChange={(e) => update('phone', e.target.value)} />
@@ -309,18 +253,14 @@ export default function CheckoutPage() {
                 autoComplete="address-level2"
                 value={form.city}
                 onChange={(e) => update('city', e.target.value)}
-                style={{ ...inputStyle, width: 'auto' }}
-                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
-                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
+                className={inputClass}
               />
               <input
                 placeholder="State"
                 autoComplete="address-level1"
                 value={form.state}
                 onChange={(e) => update('state', e.target.value)}
-                style={{ ...inputStyle, width: 'auto' }}
-                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
-                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
+                className={inputClass}
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -331,17 +271,13 @@ export default function CheckoutPage() {
                 autoComplete="postal-code"
                 value={form.pincode}
                 onChange={(e) => update('pincode', e.target.value)}
-                style={{ ...inputStyle, width: 'auto' }}
-                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
-                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
+                className={inputClass}
               />
               <input
                 placeholder="Landmark"
                 value={form.landmark}
                 onChange={(e) => update('landmark', e.target.value)}
-                style={{ ...inputStyle, width: 'auto' }}
-                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
-                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
+                className={inputClass}
               />
             </div>
           </div>
@@ -351,15 +287,14 @@ export default function CheckoutPage() {
         <div className="flex flex-col gap-4">
 
           {/* Order Summary */}
-          <div style={cardStyle}>
-            <p style={sectionHeadStyle}>Order Summary</p>
-            <div style={{ height: '1px', background: '#C9A84C', opacity: 0.4, marginBottom: '12px' }} />
+          <div className={cardClass}>
+            <p className={sectionHeadClass}>Order Summary</p>
 
             <div className="space-y-1 max-h-48 overflow-y-auto pr-1">
               {items.map((i, idx) => (
-                <div key={idx} className="flex justify-between text-sm py-1 gap-2" style={{ color: '#5a2020', fontFamily: 'sans-serif' }}>
+                <div key={idx} className="flex justify-between text-sm py-1 gap-2 text-neutral-600">
                   <span className="truncate">{i.name} ({i.color}/{i.size}) ×{i.qty}</span>
-                  <span className="shrink-0" style={{ fontWeight: '600' }}>{formatINR(i.price * i.qty)}</span>
+                  <span className="shrink-0 font-medium text-neutral-900">{formatINR(i.price * i.qty)}</span>
                 </div>
               ))}
             </div>
@@ -371,79 +306,60 @@ export default function CheckoutPage() {
                 value={coupon}
                 onChange={(e) => setCoupon(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && applyCoupon()}
-                style={{ ...inputStyle, flex: 1, width: 'auto' }}
-                onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
-                onBlur={(e) => (e.target.style.borderColor = '#e8d5d5')}
+                className={`${inputClass} flex-1`}
               />
               <button
                 onClick={applyCoupon}
-                className="px-4 text-sm font-semibold shrink-0 transition-all"
-                style={{
-                  background: '#fff',
-                  color: '#8B0000',
-                  border: '1.5px solid #8B0000',
-                  borderRadius: '8px',
-                  fontFamily: 'sans-serif',
-                  cursor: 'pointer',
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#8B0000'; e.currentTarget.style.color = '#fff'; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = '#fff'; e.currentTarget.style.color = '#8B0000'; }}
+                className="px-4 text-sm font-medium shrink-0 rounded-lg border border-pink-600 text-pink-600 bg-white hover:bg-pink-600 hover:text-white transition-colors"
               >
                 Apply
               </button>
             </div>
 
-            {/* Gold divider */}
-            <div style={{ height: '1px', background: '#C9A84C', opacity: 0.3, margin: '12px 0' }} />
+            <div className="h-px bg-neutral-100 my-4" />
 
             {/* Price breakdown */}
-            <div className="space-y-1.5 text-sm" style={{ fontFamily: 'sans-serif' }}>
-              <div className="flex justify-between" style={{ color: '#5a2020' }}>
+            <div className="space-y-1.5 text-sm">
+              <div className="flex justify-between text-neutral-600">
                 <span>Subtotal</span>
                 <span>{formatINR(subtotal)}</span>
               </div>
               {discount > 0 && (
-                <div className="flex justify-between" style={{ color: '#2e7d32', fontWeight: '600' }}>
+                <div className="flex justify-between text-green-600 font-medium">
                   <span>Discount</span>
                   <span>−{formatINR(discount)}</span>
                 </div>
               )}
-              <div className="flex justify-between" style={{ color: '#5a2020' }}>
+              <div className="flex justify-between text-neutral-600">
                 <span>Shipping</span>
                 <span>
                   {shippingLoading
-                    ? <span style={{ color: '#a07070' }}>Calculating…</span>
+                    ? <span className="text-neutral-400">Calculating…</span>
                     : shipping === 0
-                      ? <span style={{ color: '#2e7d32', fontWeight: '600' }}>Free</span>
+                      ? <span className="text-green-600 font-medium">Free</span>
                       : shipping !== null
                         ? formatINR(shipping)
-                        : <span style={{ color: '#a07070' }}>—</span>
+                        : <span className="text-neutral-400">—</span>
                   }
                 </span>
               </div>
             </div>
 
-            <div
-              className="flex justify-between font-bold mt-3 pt-3"
-              style={{ borderTop: '1.5px solid #C9A84C', fontSize: '16px' }}
-            >
-              <span style={{ color: '#1a1a1a', fontFamily: 'sans-serif' }}>Total</span>
-              <span style={{ color: '#8B0000', fontFamily: 'Georgia, serif' }}>
-                {total !== null ? formatINR(total) : '—'}
-              </span>
+            <div className="flex justify-between font-semibold mt-3 pt-3 border-t border-neutral-100 text-base">
+              <span className="text-neutral-900">Total</span>
+              <span className="text-pink-600">{total !== null ? formatINR(total) : '—'}</span>
             </div>
           </div>
 
           {/* Payment Method */}
-          <div style={cardStyle}>
-            <p style={sectionHeadStyle}>Payment Method</p>
-            <div style={{ height: '1px', background: '#C9A84C', opacity: 0.4, marginBottom: '12px' }} />
-            <label className="flex items-center gap-3 text-sm cursor-pointer" style={{ color: '#5a2020', fontFamily: 'sans-serif' }}>
+          <div className={cardClass}>
+            <p className={sectionHeadClass}>Payment Method</p>
+            <label className="flex items-center gap-3 text-sm cursor-pointer text-neutral-700">
               <input
                 type="radio"
                 checked={paymentMethod === 'razorpay'}
                 onChange={() => setPaymentMethod('razorpay')}
-                style={{ accentColor: '#8B0000', width: '16px', height: '16px' }}
+                className="w-4 h-4 accent-pink-600"
               />
               Pay Online (Cards / UPI / Netbanking)
             </label>
@@ -453,20 +369,11 @@ export default function CheckoutPage() {
           <button
             onClick={placeOrder}
             disabled={placeOrderDisabled}
-            className="w-full py-3 font-bold text-sm sm:text-base transition-all"
-            style={{
-              background: placeOrderDisabled ? '#b05050' : '#8B0000',
-              color: '#fff',
-              border: '2px solid #C9A84C',
-              borderRadius: '8px',
-              fontFamily: 'Georgia, serif',
-              fontSize: '15px',
-              letterSpacing: '0.5px',
-              cursor: placeOrderDisabled ? 'not-allowed' : 'pointer',
-              opacity: placeOrderDisabled ? 0.6 : 1,
-            }}
-            onMouseEnter={(e) => { if (!placeOrderDisabled) e.currentTarget.style.background = '#6e0000'; }}
-            onMouseLeave={(e) => { if (!placeOrderDisabled) e.currentTarget.style.background = '#8B0000'; }}
+            className={`w-full py-3 font-medium text-sm sm:text-base rounded-full transition-colors ${
+              placeOrderDisabled
+                ? 'bg-pink-300 text-white cursor-not-allowed'
+                : 'bg-pink-600 text-white hover:bg-pink-700'
+            }`}
           >
             {submitting
               ? (checkingStock ? 'Checking stock…' : 'Placing Order…')

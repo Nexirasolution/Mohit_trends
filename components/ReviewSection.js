@@ -1,115 +1,138 @@
 'use client';
 
 import Image from 'next/image';
-import { Star, Quote } from 'lucide-react';
+import { Star } from 'lucide-react';
+
+// Design tokens
+const INK = '#241B21';
+const INK_SOFT = '#A9808C';
+const ROSE = '#E24C6B';
+const BLUSH = '#FDE7EC';
+const BLUSH_LINE = '#F6C9D3';
+const PAPER = '#FFFFFF';
 
 export default function ReviewSection({ reviews }) {
   if (!reviews?.length) return null;
 
   return (
-    <section style={{ background: '#fdf5f5', borderTop: '2px solid #C9A84C', borderBottom: '2px solid #C9A84C' }} className="py-10">
-      <div className="max-w-7xl mx-auto px-4">
+    <section style={{ background: PAPER }} className="py-16 sm:py-24">
+      <div className="max-w-6xl mx-auto px-6">
 
-        {/* Heading */}
-        <div className="text-center mb-6">
-          <p
-            className="text-xs font-bold uppercase tracking-widest mb-1"
-            style={{ color: '#C9A84C', fontFamily: 'sans-serif' }}
-          >
-            Real Customers
-          </p>
-          <h2
-            className="text-2xl sm:text-3xl font-bold mb-2"
-            style={{ color: '#8B0000', fontFamily: 'Georgia, serif', letterSpacing: '0.5px' }}
-          >
-            What They're Saying
-          </h2>
-          {/* Gold ornament divider */}
-          <div className="flex items-center justify-center gap-2">
-            <div style={{ height: '1px', width: '50px', background: '#C9A84C' }} />
-            <span style={{ color: '#C9A84C', fontSize: '14px' }}>✦</span>
-            <div style={{ height: '1px', width: '50px', background: '#C9A84C' }} />
-          </div>
-        </div>
-
-        {/* Review cards */}
-        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2">
-          {reviews.map((r) => (
-            <div
-              key={r._id}
-              className="min-w-[240px] max-w-[260px] shrink-0 bg-white p-4"
+        {/* Heading — off-center, editorial */}
+        <div className="mb-12 sm:mb-16 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <p
+              className="text-[11px] font-semibold uppercase mb-3"
+              style={{ color: ROSE, letterSpacing: '0.22em', fontFamily: 'system-ui, sans-serif' }}
+            >
+              Real Customers
+            </p>
+            <h2
+              className="text-4xl sm:text-5xl"
               style={{
-                borderRadius: '14px',
-                border: '1.5px solid #e8d5d5',
-                boxShadow: '0 2px 8px rgba(139,0,0,0.07)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = '#C9A84C';
-                e.currentTarget.style.boxShadow = '0 4px 14px rgba(139,0,0,0.12)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = '#e8d5d5';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(139,0,0,0.07)';
+                color: INK,
+                fontFamily: 'Georgia, "Times New Roman", serif',
+                fontWeight: 400,
+                letterSpacing: '-0.01em',
+                lineHeight: 1.05,
               }}
             >
-              {/* Quote icon */}
-              <Quote size={20} style={{ color: '#C9A84C', opacity: 0.5, marginBottom: '8px' }} />
+              What they're
+              <br />
+              saying
+            </h2>
+          </div>
+          <p
+            className="text-sm max-w-[220px] sm:text-right"
+            style={{ color: INK_SOFT, fontFamily: 'system-ui, sans-serif', lineHeight: 1.5 }}
+          >
+            A few words from people who've already ordered.
+          </p>
+        </div>
 
-              {/* Stars */}
-              <div className="flex items-center gap-0.5 mb-2">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    size={13}
-                    style={
-                      i < r.rating
-                        ? { fill: '#C9A84C', color: '#C9A84C' }
-                        : { color: '#ddd' }
-                    }
-                  />
-                ))}
-              </div>
+        {/* Staggered editorial grid — the signature layout */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-8 gap-y-10 sm:gap-y-0">
+          {reviews.map((r, i) => {
+            const col = i % 3;
+            // Stagger the middle column down and the last column up slightly for an offset rhythm
+            const offsetClass =
+              col === 1 ? 'sm:mt-12' : col === 2 ? 'sm:-mt-4' : '';
 
-              {/* Comment */}
-              <p
-                className="text-sm line-clamp-4 leading-relaxed"
-                style={{ color: '#4a2020', fontFamily: 'Georgia, serif' }}
-              >
-                {r.comment}
-              </p>
-
-              {/* Review image */}
-              {r.images?.[0] && (
-                <div
-                  className="relative w-full h-24 mt-3 overflow-hidden"
-                  style={{ borderRadius: '8px', border: '1px solid #C9A84C' }}
+            return (
+              <div key={r._id} className={`relative ${offsetClass}`}>
+                {/* Oversized watermark numeral — quiet signature, not a generic quote icon */}
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-6 -left-1 select-none pointer-events-none"
+                  style={{
+                    fontFamily: 'Georgia, serif',
+                    fontSize: '64px',
+                    color: BLUSH,
+                    fontWeight: 700,
+                    lineHeight: 1,
+                    zIndex: 0,
+                  }}
                 >
-                  <Image src={r.images[0]} alt="Review photo" fill className="object-cover" />
-                </div>
-              )}
+                  {String(i + 1).padStart(2, '0')}
+                </span>
 
-              {/* Footer */}
-              <div
-                className="mt-3 pt-3"
-                style={{ borderTop: '1px solid #e8d5d5' }}
-              >
-                <p
-                  className="text-xs font-bold"
-                  style={{ color: '#8B0000', fontFamily: 'Georgia, serif' }}
-                >
-                  — {r.customerName}
-                </p>
-                {r.product?.name && (
+                <div className="relative pt-9" style={{ zIndex: 1 }}>
+                  {/* Rating — minimal dot-scaled stars */}
+                  <div className="flex items-center gap-1 mb-3">
+                    {Array.from({ length: 5 }).map((_, s) => (
+                      <Star
+                        key={s}
+                        size={12}
+                        strokeWidth={1.5}
+                        style={
+                          s < r.rating
+                            ? { fill: ROSE, color: ROSE }
+                            : { fill: 'none', color: BLUSH_LINE }
+                        }
+                      />
+                    ))}
+                  </div>
+
+                  {/* Comment */}
                   <p
-                    className="text-[11px] mt-0.5 line-clamp-1"
-                    style={{ color: '#C9A84C', fontFamily: 'sans-serif' }}
+                    className="text-[15px] line-clamp-5 mb-5"
+                    style={{ color: INK, fontFamily: 'Georgia, serif', lineHeight: 1.6 }}
                   >
-                    {r.product.name}
+                    {r.comment}
                   </p>
-                )}
+
+                  {/* Review image — small, offset frame, not a full-width block */}
+                  {r.images?.[0] && (
+                    <div
+                      className="relative w-20 h-20 mb-5 overflow-hidden"
+                      style={{ borderRadius: '6px' }}
+                    >
+                      <Image src={r.images[0]} alt="Review photo" fill className="object-cover" />
+                    </div>
+                  )}
+
+                  {/* Divider — thin rose rule instead of a boxed card */}
+                  <div style={{ height: '1px', background: BLUSH_LINE }} className="mb-3 w-10" />
+
+                  {/* Footer */}
+                  <p
+                    className="text-[13px] font-semibold"
+                    style={{ color: INK, fontFamily: 'system-ui, sans-serif' }}
+                  >
+                    {r.customerName}
+                  </p>
+                  {r.product?.name && (
+                    <p
+                      className="text-[12px] mt-0.5 line-clamp-1"
+                      style={{ color: INK_SOFT, fontFamily: 'system-ui, sans-serif' }}
+                    >
+                      {r.product.name}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

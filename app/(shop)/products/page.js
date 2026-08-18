@@ -53,26 +53,12 @@ export default async function ProductsPage({ searchParams }) {
   const { products, total, pages } = await getAllProducts(page, sort);
 
   return (
-    <section className="max-w-6xl mx-auto px-5 py-16" style={{ background: '#FBF7F0' }}>
+    <section className="max-w-6xl mx-auto px-5 py-16 bg-white">
       <div className="mb-10 flex items-baseline justify-between flex-wrap gap-3">
-        <h1
-          style={{
-            fontFamily: 'Georgia, "Times New Roman", serif',
-            color: '#2A211C',
-            fontSize: 'clamp(28px, 4vw, 40px)',
-            letterSpacing: '0.01em',
-          }}
-        >
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-neutral-900">
           All Products
         </h1>
-        <span
-          style={{
-            fontFamily: 'system-ui, sans-serif',
-            fontSize: 12,
-            letterSpacing: '0.1em',
-            color: '#8A7B6C',
-          }}
-        >
+        <span className="text-xs tracking-wide text-neutral-400">
           {total} {total === 1 ? 'item' : 'items'}
         </span>
       </div>
@@ -80,12 +66,12 @@ export default async function ProductsPage({ searchParams }) {
       <Filters sort={sort} />
 
       {products.length === 0 ? (
-        <p style={{ color: '#8A7B6C', fontFamily: 'system-ui, sans-serif', fontSize: 14 }}>
+        <p className="text-neutral-400 text-sm">
           Nothing here yet — check back soon.
         </p>
       ) : (
         <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10 mt-6">
             {products.map((p) => (
               <ProductCard key={p._id} product={p} />
             ))}

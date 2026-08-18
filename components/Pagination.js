@@ -1,8 +1,7 @@
 import Link from 'next/link';
 
-// Builds the page list with ellipses, e.g. [1, '...', 4, 5, 6, '...', 12]
 function getPageNumbers(current, total) {
-  const delta = 1; // how many pages to show around the current page
+  const delta = 1;
   const range = [];
   const pages = [];
 
@@ -27,31 +26,25 @@ export default function Pagination({ currentPage, totalPages, basePath }) {
   const pageNumbers = getPageNumbers(currentPage, totalPages);
 
   const linkStyle = (isActive) => ({
-    fontFamily: 'system-ui, sans-serif',
+    fontFamily: 'inherit',
     fontSize: 13,
+    fontWeight: 500,
     minWidth: 36,
     height: 36,
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 2,
-    color: isActive ? '#FBF7F0' : '#2A211C',
-    background: isActive ? '#9E3A1C' : 'transparent',
-    border: isActive ? '1px solid #9E3A1C' : '1px solid #E4D3BF',
+    borderRadius: 9999,
+    color: isActive ? '#fff' : '#171717',
+    background: isActive ? '#DB2777' : 'transparent',
+    border: isActive ? '1px solid #DB2777' : '1px solid #e5e5e5',
   });
 
   return (
-    <nav
-      aria-label="Product pagination"
-      className="mt-12 flex items-center justify-center gap-2 flex-wrap"
-    >
+    <nav aria-label="Product pagination" className="mt-12 flex items-center justify-center gap-2 flex-wrap">
       {/* Prev */}
       {currentPage > 1 ? (
-        <Link
-          href={`${basePath}?page=${currentPage - 1}`}
-          style={linkStyle(false)}
-          aria-label="Previous page"
-        >
+        <Link href={`${basePath}?page=${currentPage - 1}`} style={linkStyle(false)} aria-label="Previous page">
           ‹
         </Link>
       ) : (
@@ -63,10 +56,7 @@ export default function Pagination({ currentPage, totalPages, basePath }) {
       {/* Page numbers */}
       {pageNumbers.map((p, idx) =>
         p === '...' ? (
-          <span
-            key={`ellipsis-${idx}`}
-            style={{ fontFamily: 'system-ui, sans-serif', fontSize: 13, color: '#8A7B6C', padding: '0 4px' }}
-          >
+          <span key={`ellipsis-${idx}`} className="text-sm text-neutral-300 px-1">
             …
           </span>
         ) : (
@@ -83,11 +73,7 @@ export default function Pagination({ currentPage, totalPages, basePath }) {
 
       {/* Next */}
       {currentPage < totalPages ? (
-        <Link
-          href={`${basePath}?page=${currentPage + 1}`}
-          style={linkStyle(false)}
-          aria-label="Next page"
-        >
+        <Link href={`${basePath}?page=${currentPage + 1}`} style={linkStyle(false)} aria-label="Next page">
           ›
         </Link>
       ) : (
