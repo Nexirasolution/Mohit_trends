@@ -39,7 +39,10 @@ const OrderSchema = new mongoose.Schema(
     total: Number,
     paymentMethod: { type: String, enum: ['razorpay', 'cod'], default: 'razorpay' },
     paymentStatus: { type: String, enum: ['pending', 'paid', 'failed', 'refunded'], default: 'pending' },
-    razorpayOrderId: String,
+    // unique + sparse: COD orders have no razorpayOrderId (many nulls allowed),
+    // but two orders can never share the same real Razorpay order id —
+    // this is what makes the webhook/client-path race safe.
+    razorpayOrderId: { type: String, unique: true, sparse: true },
     razorpayPaymentId: String,
     status: {
       type: String,

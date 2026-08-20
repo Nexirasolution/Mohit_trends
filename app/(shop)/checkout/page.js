@@ -148,15 +148,28 @@ export default function CheckoutPage() {
     }
 
     const orderItems = items.map((i) => ({
-      productId: i.productId, variantId: i.variantId, size: i.size, qty: i.qty
+      productId: i.productId,
+      variantId: i.variantId,
+      size: i.size,
+      qty: i.qty,
+      isCombo: i.isCombo || false,
+      comboId: i.comboId
     }));
 
     try {
       if (paymentMethod === 'razorpay') {
+        // Server recomputes and verifies the total from orderItems, and
+        // stashes the order payload so the webhook can create the order
+        // even if this tab closes before the handler below runs.
         const orderRes = await fetch('/api/payment/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: total })
+          body: JSON.stringify({
+            items: orderItems,
+            customer: { name: form.name, phone: form.phone, email: form.email },
+            shippingAddress: form,
+            couponCode: coupon
+          })
         });
         const orderData = await orderRes.json();
         if (!orderRes.ok) { toast.error(orderData.error || 'Payment gateway error'); setSubmitting(false); return; }
@@ -170,6 +183,9 @@ export default function CheckoutPage() {
           prefill: { name: form.name, contact: form.phone, email: form.email },
           theme: { color: '#DB2777' },
           handler: async function (response) {
+            // Fast path — if this fails or never runs, the webhook creates
+            // the same order server-side. /api/orders is idempotent on
+            // razorpayOrderId, so this is always safe to call.
             const finalRes = await fetch('/api/orders', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -185,9 +201,18 @@ export default function CheckoutPage() {
               })
             });
             const finalData = await finalRes.json();
-            if (finalRes.ok) { clearCart(); router.push(`/order-success/${finalData.order._id}`); }
-            else {
-              toast.error(finalData.error || 'Could not save order');
+            if (finalRes.ok) {
+              clearCart();
+              router.push(`/order-success/${finalData.order._id}`);
+            } else {
+              // Payment already succeeded on Razorpay's side regardless —
+              // the webhook will still create the order in the background.
+              toast.error(
+                `Payment received — confirming your order. If it doesn't appear shortly, contact support with payment ID ${response.razorpay_payment_id}.`,
+                { duration: 8000 }
+              );
+              clearCart();
+              router.push('/');
             }
             setSubmitting(false);
           },
@@ -223,12 +248,10 @@ export default function CheckoutPage() {
     <div className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
       <Script src="https://checkout.razorpay.com/v1/checkout.js" strategy="afterInteractive" />
 
-      {/* Page heading */}
       <div className="mb-6">
         <h1 className="text-2xl font-semibold tracking-tight text-neutral-900">Checkout</h1>
       </div>
 
-      {/* Free shipping nudge */}
       {freeShippingAbove !== null && shipping !== null && shipping > 0 && (
         <div className="flex items-center gap-2 px-4 py-2.5 mb-4 text-xs rounded-lg bg-pink-50 border border-pink-100 text-neutral-600">
           Add <strong className="text-pink-600">{formatINR(freeShippingAbove - discountedSubtotal)}</strong> more to get{' '}
@@ -238,7 +261,6 @@ export default function CheckoutPage() {
 
       <div className="flex flex-col gap-6 sm:grid sm:grid-cols-2 sm:gap-8">
 
-        {/* Shipping Details */}
         <div className={cardClass}>
           <p className={sectionHeadClass}>Shipping Details</p>
           <div className="space-y-3">
@@ -283,10 +305,8 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* Right column */}
         <div className="flex flex-col gap-4">
 
-          {/* Order Summary */}
           <div className={cardClass}>
             <p className={sectionHeadClass}>Order Summary</p>
 
@@ -299,7 +319,6 @@ export default function CheckoutPage() {
               ))}
             </div>
 
-            {/* Coupon */}
             <div className="flex gap-2 mt-3">
               <input
                 placeholder="Coupon code"
@@ -318,7 +337,6 @@ export default function CheckoutPage() {
 
             <div className="h-px bg-neutral-100 my-4" />
 
-            {/* Price breakdown */}
             <div className="space-y-1.5 text-sm">
               <div className="flex justify-between text-neutral-600">
                 <span>Subtotal</span>
@@ -351,7 +369,6 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Payment Method */}
           <div className={cardClass}>
             <p className={sectionHeadClass}>Payment Method</p>
             <label className="flex items-center gap-3 text-sm cursor-pointer text-neutral-700">
@@ -365,7 +382,6 @@ export default function CheckoutPage() {
             </label>
           </div>
 
-          {/* Place Order CTA */}
           <button
             onClick={placeOrder}
             disabled={placeOrderDisabled}

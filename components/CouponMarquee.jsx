@@ -5,16 +5,24 @@ import { Tag, Truck } from 'lucide-react';
 
 export default function CouponMarquee() {
   const [coupons, setCoupons] = useState([]);
+  const [freeShippingAbove, setFreeShippingAbove] = useState(null);
 
   useEffect(() => {
     fetch('/api/coupons?active=true')
       .then((r) => r.json())
       .then((d) => setCoupons(d.coupons || []))
       .catch(() => {});
+
+    fetch('/api/admin/settings')
+      .then((r) => r.json())
+      .then((d) => setFreeShippingAbove(d.settings?.freeShippingAbove ?? null))
+      .catch(() => {});
   }, []);
 
-  const freeShippingItem = { type: 'freeshipping', minOrderValue: 1199 };
-  const allItems = [...coupons, freeShippingItem];
+  const freeShippingItem =
+    freeShippingAbove != null ? { type: 'freeshipping', minOrderValue: freeShippingAbove } : null;
+
+  const allItems = freeShippingItem ? [...coupons, freeShippingItem] : coupons;
   if (!allItems.length) return null;
 
   const items = [...allItems, ...allItems];
