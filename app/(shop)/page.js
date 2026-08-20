@@ -46,9 +46,12 @@ export default async function HomePage() {
 {/* Shop by Category */}
 {plainCategories?.length > 0 && (
   <section className="max-w-6xl mx-auto px-4 pt-14 pb-6">
-    <h2 className="text-lg font-semibold tracking-tight text-neutral-900 mb-6 text-center">
+    <h1
+      className="text-2xl sm:text-3xl font-semibold tracking-wide text-neutral-900 mb-6 text-center"
+      style={{ fontFamily: 'Georgia, serif' }}
+    >
       Shop by Category
-    </h2>
+    </h1>
     <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 sm:gap-4">
       {plainCategories.map((c) => (
         <Link

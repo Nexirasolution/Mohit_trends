@@ -57,18 +57,18 @@ export default function Navbar() {
 
             {/* Brand / Logo */}
             <Link href="/" className="flex items-center gap-2.5 shrink-0">
-              <div className="relative w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden">
-                <Image src="/logo.png" alt="Mohith Trends" fill className="object-cover scale-125" />
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full overflow-hidden">
+                <Image src="/logo.png" alt="Mohith Trends" fill className="object-cover scale-105" />
               </div>
               <div className="hidden sm:flex flex-col leading-tight">
                 <span
-                  className="font-semibold text-lg tracking-tight"
+                  className="font-semibold text-3xl tracking-tight"
                   style={{ color: INK, fontFamily: 'Georgia, serif' }}
                 >
                   Mohith
                 </span>
                 <span
-                  className="text-[10px] tracking-[2px] uppercase font-medium"
+                  className="text-sm tracking-[2px] uppercase font-medium"
                   style={{ color: ROSE }}
                 >
                   Trends
