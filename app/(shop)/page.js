@@ -91,9 +91,10 @@ export default async function HomePage() {
 )}
       {/* Product tabs — Bestsellers / Top Sellers / New Arrivals */}
       <ProductTabs
+      activeSellers={JSON.parse(JSON.stringify(activeSellers))}
         bestSellers={JSON.parse(JSON.stringify(bestSellers))}
         topSellers={JSON.parse(JSON.stringify(topSellers))}
-        activeSellers={JSON.parse(JSON.stringify(activeSellers))}
+        // activeSellers={JSON.parse(JSON.stringify(activeSellers))}
       />
 
       {/* Combo Offers */}

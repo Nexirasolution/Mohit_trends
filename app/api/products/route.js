@@ -9,6 +9,7 @@ import { requireAdmin } from '@/lib/apiAuth';
 import { generateSku } from '@/lib/sku';
 
 // GET /api/products?category=slug&size=M&minPrice=0&maxPrice=2000&sort=newest&page=1&limit=20&tag=bestseller
+// Pass limit=all to skip pagination entirely and return every matching product.
 export async function GET(req) {
   try {
     await dbConnect();
@@ -48,19 +49,30 @@ export async function GET(req) {
       rating: { rating: -1 }
     };
 
+    const limitParam = searchParams.get('limit');
+    const fetchAll = limitParam === 'all';
     const page = Number(searchParams.get('page') || 1);
-    const limit = Number(searchParams.get('limit') || 24);
+    const limit = Number(limitParam || 24);
+
+    let productsQuery = Product.find(query)
+      .populate('category', 'name slug type')
+      .sort(sortMap[sort] || sortMap.newest);
+
+    if (!fetchAll) {
+      productsQuery = productsQuery.skip((page - 1) * limit).limit(limit);
+    }
 
     const [products, total] = await Promise.all([
-      Product.find(query)
-        .populate('category', 'name slug type')
-        .sort(sortMap[sort] || sortMap.newest)
-        .skip((page - 1) * limit)
-        .limit(limit),
+      productsQuery,
       Product.countDocuments(query)
     ]);
 
-    return NextResponse.json({ products, total, page, pages: Math.ceil(total / limit) });
+    return NextResponse.json({
+      products,
+      total,
+      page: fetchAll ? 1 : page,
+      pages: fetchAll ? 1 : Math.ceil(total / limit),
+    });
   } catch (err) {
     console.error('GET /api/products error:', err);
     return NextResponse.json({ error: err.message || 'Failed to fetch products' }, { status: 500 });

@@ -1,13 +1,10 @@
 import ProductCard from '@/components/ProductCard';
-import Pagination from '@/components/Pagination';
 import Filters from '@/components/Filters';
 import { dbConnect } from '@/lib/mongodb';
 import Product from '@/models/Product';
 import '@/models/Category'; // registers the Category schema — required for .populate('category')
 
 export const dynamic = 'force-dynamic'; // never cache/statically render this page
-
-const LIMIT = 24;
 
 const SORT_MAP = {
   newest: { createdAt: -1 },
@@ -17,7 +14,7 @@ const SORT_MAP = {
   rating: { rating: -1 },
 };
 
-async function getAllProducts(page, sort) {
+async function getAllProducts(sort) {
   await dbConnect();
 
   const query = { isActive: true };
@@ -27,16 +24,13 @@ async function getAllProducts(page, sort) {
     Product.find(query)
       .populate('category', 'name slug type')
       .sort(sortStage)
-      .skip((page - 1) * LIMIT)
-      .limit(LIMIT)
-      .lean(),
+      .lean(), // no skip/limit — fetch everything
     Product.countDocuments(query),
   ]);
 
   return {
     products: JSON.parse(JSON.stringify(products)), // strip Mongoose/ObjectId wrappers for the client
     total,
-    pages: Math.ceil(total / LIMIT),
   };
 }
 
@@ -47,10 +41,9 @@ export const metadata = {
 export default async function ProductsPage({ searchParams }) {
   const resolvedSearchParams = await searchParams; // Next.js 15: searchParams is a Promise
 
-  const page = Math.max(1, Number(resolvedSearchParams?.page || 1));
   const sort = resolvedSearchParams?.sort || 'newest';
 
-  const { products, total, pages } = await getAllProducts(page, sort);
+  const { products, total } = await getAllProducts(sort);
 
   return (
     <section className="max-w-6xl mx-auto px-5 py-16 bg-white">
@@ -70,15 +63,11 @@ export default async function ProductsPage({ searchParams }) {
           Nothing here yet — check back soon.
         </p>
       ) : (
-        <>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10 mt-6">
-            {products.map((p) => (
-              <ProductCard key={p._id} product={p} />
-            ))}
-          </div>
-
-          <Pagination currentPage={page} totalPages={pages} basePath="/products" />
-        </>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-10 mt-6">
+          {products.map((p) => (
+            <ProductCard key={p._id} product={p} />
+          ))}
+        </div>
       )}
     </section>
   );

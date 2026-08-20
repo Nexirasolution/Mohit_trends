@@ -5,15 +5,16 @@ import Link from 'next/link';
 import ProductCard from './ProductCard';
 
 const TABS = [
+   { key: 'new',  label: 'New Arrivals' },
   { key: 'best', label: 'Bestsellers' },
   { key: 'top',  label: 'Top Sellers' },
-  { key: 'new',  label: 'New Arrivals' },
+ 
 ];
 
-export default function ProductTabs({ bestSellers, topSellers, activeSellers }) {
-  const [active, setActive] = useState('best');
+export default function ProductTabs({ activeSellers,bestSellers, topSellers }) {
+  const [active, setActive] = useState('new');
 
-  const map = { best: bestSellers, top: topSellers, new: activeSellers };
+  const map = { new: activeSellers,best: bestSellers, top: topSellers };
   const products = map[active] || [];
 
   return (
