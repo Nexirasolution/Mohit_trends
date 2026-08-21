@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { Save, Search, X, ChevronDown, ChevronRight } from 'lucide-react';
 
@@ -14,6 +15,9 @@ export default function AdminInventoryPage() {
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [collapsed, setCollapsed] = useState({}); // parentId -> bool
 
+  // --- Image zoom modal state ---
+  const [zoomImage, setZoomImage] = useState(null); // { src, alt } | null
+
   async function load() {
     setLoading(true);
     const res = await fetch('/api/products?limit=200');
@@ -26,6 +30,16 @@ export default function AdminInventoryPage() {
     load();
     fetch('/api/categories').then((r) => r.json()).then((d) => setCategories(d.categories || []));
   }, []);
+
+  // Close zoom modal on Escape
+  useEffect(() => {
+    if (!zoomImage) return;
+    function onKey(e) {
+      if (e.key === 'Escape') setZoomImage(null);
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [zoomImage]);
 
   function editKey(productId, variantId, size) { return `${productId}-${variantId}-${size}`; }
 
@@ -56,6 +70,11 @@ export default function AdminInventoryPage() {
 
   function catId(c) { return c?._id || c; }
   function parentId(c) { return c?.parent?._id || c?.parent || null; }
+
+  // Get the best available image for a variant, falling back to the product image
+  function variantImage(product, variant) {
+    return variant?.images?.[0] || product?.images?.[0] || null;
+  }
 
   const catMap = useMemo(() => {
     const map = {};
@@ -147,6 +166,7 @@ export default function AdminInventoryPage() {
       <table className="w-full text-sm mb-2">
         <thead>
           <tr className="text-left border-b border-brand-ink/10 text-brand-ink/40 text-xs">
+            <th className="p-2">Image</th>
             <th className="p-2">Product</th>
             <th className="p-2">Product SKU</th>
             <th className="p-2">Color</th>
@@ -162,9 +182,40 @@ export default function AdminInventoryPage() {
               v.sizes.map((s) => {
                 const key = editKey(p._id, v._id, s.size);
                 const value = edits[key] !== undefined ? edits[key] : s.stock;
+                const img = variantImage(p, v);
                 return (
                   <tr key={key} className="border-b border-brand-ink/5">
-                    <td className="p-2">{p.name}</td>
+                    <td className="p-2">
+                      {img ? (
+                        <button
+                          type="button"
+                          onClick={() => setZoomImage({ src: img, alt: `${p.name} - ${v.color}` })}
+                          className="block w-12 h-12 rounded-lg overflow-hidden border border-brand-ink/10 hover:opacity-80 transition-opacity"
+                          title="Click to zoom"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={img}
+                            alt={`${p.name} - ${v.color}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ) : (
+                        <div className="w-12 h-12 rounded-lg bg-brand-ink/5 flex items-center justify-center text-[10px] text-brand-ink/30">
+                          No image
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-2">
+                      <Link
+                        href={`/product/${p.slug || p._id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-brand-magenta hover:underline"
+                      >
+                        {p.name}
+                      </Link>
+                    </td>
                     <td className="p-2 text-xs text-brand-ink/50">{p.sku || '—'}</td>
                     <td className="p-2">{v.color}</td>
                     <td className="p-2">{s.size}</td>
@@ -306,6 +357,29 @@ export default function AdminInventoryPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Image zoom modal */}
+      {zoomImage && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-6"
+          onClick={() => setZoomImage(null)}
+        >
+          <button
+            onClick={() => setZoomImage(null)}
+            className="absolute top-4 right-4 text-white/80 hover:text-white"
+            aria-label="Close"
+          >
+            <X size={28} />
+          </button>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={zoomImage.src}
+            alt={zoomImage.alt}
+            onClick={(e) => e.stopPropagation()}
+            className="max-w-full max-h-full rounded-lg shadow-2xl object-contain"
+          />
         </div>
       )}
     </div>
