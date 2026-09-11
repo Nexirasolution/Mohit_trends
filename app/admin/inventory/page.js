@@ -1,15 +1,127 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, memo } from 'react';
 import Link from 'next/link';
 import toast from 'react-hot-toast';
 import { Save, Search, X, ChevronDown, ChevronRight } from 'lucide-react';
+
+function editKey(productId, variantId, size) { return `${productId}-${variantId}-${size}`; }
+function catId(c) { return c?._id || c; }
+function parentId(c) { return c?.parent?._id || c?.parent || null; }
+
+// Get the best available image for a variant, falling back to the product image
+function variantImage(product, variant) {
+  return variant?.images?.[0] || product?.images?.[0] || null;
+}
+
+// Defined OUTSIDE the page component so React treats it as a stable component
+// type across renders. Previously this was declared inside AdminInventoryPage,
+// which meant every state change (including a single keystroke in a stock
+// input) created a brand-new component identity — React unmounted and
+// remounted the entire table on every render, killing input focus and
+// collapsing/rebuilding the layout. That's what caused the page to jump.
+const ProductStockTable = memo(function ProductStockTable({
+  list,
+  edits,
+  savingKey,
+  onStockChange,
+  onSaveRow,
+  onZoomImage,
+}) {
+  return (
+    <div className="-mx-3 sm:mx-0 overflow-x-auto">
+      <table className="w-full min-w-[720px] text-sm mb-2">
+        <thead>
+          <tr className="text-left border-b border-brand-ink/10 text-brand-ink/40 text-xs">
+            <th className="p-2">Image</th>
+            <th className="p-2">Product</th>
+            <th className="p-2">Product SKU</th>
+            <th className="p-2">Color</th>
+            <th className="p-2">Size</th>
+            <th className="p-2">Size SKU</th>
+            <th className="p-2">Stock</th>
+            <th className="p-2"></th>
+          </tr>
+        </thead>
+        <tbody>
+          {list.flatMap((p) =>
+            p.variants.flatMap((v) =>
+              v.sizes.map((s) => {
+                const key = editKey(p._id, v._id, s.size);
+                const value = edits[key] !== undefined ? edits[key] : s.stock;
+                const img = variantImage(p, v);
+                const isSaving = savingKey === key;
+                return (
+                  <tr key={key} className="border-b border-brand-ink/5">
+                    <td className="p-2">
+                      {img ? (
+                        <button
+                          type="button"
+                          onClick={() => onZoomImage({ src: img, alt: `${p.name} - ${v.color}` })}
+                          className="block w-12 h-12 rounded-lg overflow-hidden border border-brand-ink/10 hover:opacity-80 transition-opacity"
+                          title="Click to zoom"
+                        >
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={img}
+                            alt={`${p.name} - ${v.color}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </button>
+                      ) : (
+                        <div className="w-12 h-12 rounded-lg bg-brand-ink/5 flex items-center justify-center text-[10px] text-brand-ink/30">
+                          No image
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-2 max-w-[220px] truncate">
+                      <Link
+                        href={`/product/${p.slug || p._id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-brand-magenta hover:underline"
+                      >
+                        {p.name}
+                      </Link>
+                    </td>
+                    <td className="p-2 text-xs text-brand-ink/50 whitespace-nowrap">{p.sku || '—'}</td>
+                    <td className="p-2 whitespace-nowrap">{v.color}</td>
+                    <td className="p-2 whitespace-nowrap">{s.size}</td>
+                    <td className="p-2 text-xs text-brand-ink/50 whitespace-nowrap">{s.sku || '—'}</td>
+                    <td className="p-2">
+                      <input
+                        type="number"
+                        className={`w-20 border rounded-lg px-2 py-1 text-sm ${value <= 5 ? 'border-brand-magenta text-brand-magenta' : ''}`}
+                        value={value}
+                        onChange={(e) => onStockChange(p._id, v._id, s.size, e.target.value)}
+                      />
+                    </td>
+                    <td className="p-2">
+                      <button
+                        onClick={() => onSaveRow(p, v, s)}
+                        disabled={isSaving}
+                        className="text-brand-magenta disabled:opacity-40"
+                      >
+                        <Save size={16} className={isSaving ? 'animate-pulse' : ''} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            )
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+});
 
 export default function AdminInventoryPage() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [edits, setEdits] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true); // only true on the very first load
+  const [savingKey, setSavingKey] = useState(null); // which row is currently saving
 
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
@@ -18,12 +130,12 @@ export default function AdminInventoryPage() {
   // --- Image zoom modal state ---
   const [zoomImage, setZoomImage] = useState(null); // { src, alt } | null
 
-  async function load() {
-    setLoading(true);
+  async function load({ silent = false } = {}) {
+    if (!silent) setLoading(true);
     const res = await fetch('/api/products?limit=200');
     const data = await res.json();
     setProducts(data.products || []);
-    setLoading(false);
+    if (!silent) setLoading(false);
   }
 
   useEffect(() => {
@@ -41,8 +153,6 @@ export default function AdminInventoryPage() {
     return () => window.removeEventListener('keydown', onKey);
   }, [zoomImage]);
 
-  function editKey(productId, variantId, size) { return `${productId}-${variantId}-${size}`; }
-
   function setStock(productId, variantId, size, value) {
     setEdits((e) => ({ ...e, [editKey(productId, variantId, size)]: value }));
   }
@@ -57,23 +167,50 @@ export default function AdminInventoryPage() {
         ? { ...v, sizes: v.sizes.map((s) => (s.size === sizeObj.size ? { ...s, stock: Number(newStock) } : s)) }
         : v
     );
-    const res = await fetch(`/api/products/${product._id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ variants: updatedVariants })
-    });
-    if (res.ok) {
+
+    setSavingKey(key);
+    try {
+      const res = await fetch(`/api/products/${product._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ variants: updatedVariants })
+      });
+
+      if (!res.ok) {
+        // Server rejected it — nothing was applied to `products`, so there's
+        // nothing to roll back. The edited value stays in `edits` so the
+        // input keeps showing what the user typed and they can retry.
+        let message = 'Failed to update stock';
+        try {
+          const body = await res.json();
+          if (body?.error) message = body.error;
+        } catch {
+          // response wasn't JSON, ignore
+        }
+        toast.error(message);
+        return;
+      }
+
+      // Confirmed by the server — now it's safe to apply locally.
+      setProducts((prev) =>
+        prev.map((p) => (p._id === product._id ? { ...p, variants: updatedVariants } : p))
+      );
+      setEdits((e) => {
+        const next = { ...e };
+        delete next[key];
+        return next;
+      });
       toast.success('Stock updated');
-      load();
-    } else toast.error('Failed to update stock');
-  }
 
-  function catId(c) { return c?._id || c; }
-  function parentId(c) { return c?.parent?._id || c?.parent || null; }
-
-  // Get the best available image for a variant, falling back to the product image
-  function variantImage(product, variant) {
-    return variant?.images?.[0] || product?.images?.[0] || null;
+      // Resync with the server in the background, no loading flicker.
+      load({ silent: true });
+    } catch (err) {
+      // Network error / request never completed — same as a rejection:
+      // products state is untouched, edited value is preserved for retry.
+      toast.error('Network error — stock was not saved. Please try again.');
+    } finally {
+      setSavingKey(null);
+    }
   }
 
   const catMap = useMemo(() => {
@@ -161,94 +298,12 @@ export default function AdminInventoryPage() {
     setCollapsed((c) => ({ ...c, [id]: !c[id] }));
   }
 
-  function ProductStockTable({ list }) {
-    return (
-      <table className="w-full text-sm mb-2">
-        <thead>
-          <tr className="text-left border-b border-brand-ink/10 text-brand-ink/40 text-xs">
-            <th className="p-2">Image</th>
-            <th className="p-2">Product</th>
-            <th className="p-2">Product SKU</th>
-            <th className="p-2">Color</th>
-            <th className="p-2">Size</th>
-            <th className="p-2">Size SKU</th>
-            <th className="p-2">Stock</th>
-            <th className="p-2"></th>
-          </tr>
-        </thead>
-        <tbody>
-          {list.flatMap((p) =>
-            p.variants.flatMap((v) =>
-              v.sizes.map((s) => {
-                const key = editKey(p._id, v._id, s.size);
-                const value = edits[key] !== undefined ? edits[key] : s.stock;
-                const img = variantImage(p, v);
-                return (
-                  <tr key={key} className="border-b border-brand-ink/5">
-                    <td className="p-2">
-                      {img ? (
-                        <button
-                          type="button"
-                          onClick={() => setZoomImage({ src: img, alt: `${p.name} - ${v.color}` })}
-                          className="block w-12 h-12 rounded-lg overflow-hidden border border-brand-ink/10 hover:opacity-80 transition-opacity"
-                          title="Click to zoom"
-                        >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
-                            src={img}
-                            alt={`${p.name} - ${v.color}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </button>
-                      ) : (
-                        <div className="w-12 h-12 rounded-lg bg-brand-ink/5 flex items-center justify-center text-[10px] text-brand-ink/30">
-                          No image
-                        </div>
-                      )}
-                    </td>
-                    <td className="p-2">
-                      <Link
-                        href={`/product/${p.slug || p._id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-brand-magenta hover:underline"
-                      >
-                        {p.name}
-                      </Link>
-                    </td>
-                    <td className="p-2 text-xs text-brand-ink/50">{p.sku || '—'}</td>
-                    <td className="p-2">{v.color}</td>
-                    <td className="p-2">{s.size}</td>
-                    <td className="p-2 text-xs text-brand-ink/50">{s.sku || '—'}</td>
-                    <td className="p-2">
-                      <input
-                        type="number"
-                        className={`w-20 border rounded-lg px-2 py-1 text-sm ${value <= 5 ? 'border-brand-magenta text-brand-magenta' : ''}`}
-                        value={value}
-                        onChange={(e) => setStock(p._id, v._id, s.size, e.target.value)}
-                      />
-                    </td>
-                    <td className="p-2">
-                      <button onClick={() => saveRow(p, v, s)} className="text-brand-magenta">
-                        <Save size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })
-            )
-          )}
-        </tbody>
-      </table>
-    );
-  }
-
   return (
     <div>
       <h1 className="font-display text-2xl font-bold text-brand-magenta mb-5">Inventory</h1>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 mb-4">
         <div className="relative flex-1 min-w-[220px]">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-brand-ink/40" />
           <input
@@ -267,7 +322,7 @@ export default function AdminInventoryPage() {
         <select
           value={categoryFilter}
           onChange={(e) => setCategoryFilter(e.target.value)}
-          className="px-3 py-2 text-sm rounded-lg border border-brand-ink/10 outline-none"
+          className="w-full sm:w-auto px-3 py-2 text-sm rounded-lg border border-brand-ink/10 outline-none"
         >
           <option value="all">All Categories</option>
           {categories.filter((c) => !c.parent).map((parent) => (
@@ -318,7 +373,7 @@ export default function AdminInventoryPage() {
               <div key={parent._id} className="card-soft">
                 <button
                   onClick={() => toggleCollapse(parent._id)}
-                  className="w-full flex items-center justify-between p-3"
+                  className="w-full flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 p-3 text-left"
                 >
                   <span className="flex items-center gap-2 font-display font-bold text-brand-magenta">
                     {isCollapsed ? <ChevronRight size={16} /> : <ChevronDown size={16} />}
@@ -334,7 +389,14 @@ export default function AdminInventoryPage() {
                     {directProducts.length > 0 && (
                       <div className="mb-3">
                         <p className="text-xs font-semibold text-brand-ink/40 mb-1">Uncategorized within {parent.name}</p>
-                        <ProductStockTable list={directProducts} />
+                        <ProductStockTable
+                          list={directProducts}
+                          edits={edits}
+                          savingKey={savingKey}
+                          onStockChange={setStock}
+                          onSaveRow={saveRow}
+                          onZoomImage={setZoomImage}
+                        />
                       </div>
                     )}
 
@@ -342,13 +404,20 @@ export default function AdminInventoryPage() {
                       const childStock = childProducts.reduce((s, p) => s + productStock(p), 0);
                       return (
                         <div key={category._id} className="mb-4">
-                          <div className="flex items-center justify-between mb-1">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 mb-1">
                             <p className="text-sm font-semibold text-brand-ink/70">{category.name}</p>
                             <p className="text-xs text-brand-ink/40">
                               {childProducts.length} products &middot; {childStock} units in stock
                             </p>
                           </div>
-                          <ProductStockTable list={childProducts} />
+                          <ProductStockTable
+                            list={childProducts}
+                            edits={edits}
+                            savingKey={savingKey}
+                            onStockChange={setStock}
+                            onSaveRow={saveRow}
+                            onZoomImage={setZoomImage}
+                          />
                         </div>
                       );
                     })}
