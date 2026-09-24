@@ -80,9 +80,21 @@ export default function BulkAddProductsPage() {
   async function uploadImage(file) {
     const formData = new FormData();
     formData.append('file', file);
+
     const res = await fetch('/api/upload', { method: 'POST', body: formData });
-    if (!res.ok) throw new Error(`Failed to upload ${file.name}`);
-    const data = await res.json();
+
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      // Server returned no/invalid JSON body (e.g. a platform-level 413 or timeout)
+      throw new Error(`Failed to upload ${file.name} (status ${res.status})`);
+    }
+
+    if (!res.ok) {
+      throw new Error(data.error || `Failed to upload ${file.name} (status ${res.status})`);
+    }
+
     return data.url;
   }
 
