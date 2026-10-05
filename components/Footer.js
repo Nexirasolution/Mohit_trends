@@ -23,7 +23,7 @@ async function getCategories() {
 }
 
 export default async function Footer() {
-  const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP || '9193982 81672';
+  const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP || '919398281672';
   const categories = await getCategories();
 
   return (
