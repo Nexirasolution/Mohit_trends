@@ -81,7 +81,7 @@ export default async function Footer() {
           {/* Social — outline circles on the dark field */}
           <div className="flex gap-2 mb-5">
             {[
-              { href: 'https://instagram.com/mohittrends', label: 'Instagram', Icon: Instagram },
+              { href: 'https://www.instagram.com/mohith_trends_avaasa?utm_source=ig_web_button_share_sheet&stkn=ZDNlZDc0MzIxNw==', label: 'Instagram', Icon: Instagram },
               { href: `https://wa.me/${whatsapp}`, label: 'WhatsApp', Icon: MessageCircle },
             ].map(({ href, label, Icon }) => (
               <a
